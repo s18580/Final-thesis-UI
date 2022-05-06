@@ -3,8 +3,8 @@
     <div id="content" class="row">
       <NavMenu/>
       <div id="mainContent">
-        <div>
-          <TopHeader/>
+        <TopHeader/>
+        <div id="view">
           <router-view/>
         </div>
       </div>
@@ -49,5 +49,11 @@ nav a.router-link-exact-active {
 
 #mainContent {
   margin-left: 260px;
+  padding: 0;
+}
+
+#view{
+  padding: 12px;
+  background: #f1f3fa;
 }
 </style>
