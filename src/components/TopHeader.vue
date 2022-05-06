@@ -4,10 +4,10 @@
       <div class="btn-group">
         <div class="userPanel" type="button" id="defaultDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
           <div id="user-icon">
-            <p class="icon-text">HG</p>
+            <p class="icon-text">{{ userInitials }}</p>
           </div>
           <div id="user-data">
-            <span class="fs-6" id="user-name">Hubert Gołębiowski</span>
+            <span class="fs-6" id="user-name">{{ userName }}</span>
           </div>
         </div>
         <ul class="dropdown-menu" aria-labelledby="defaultDropdown" data-popper-placement="bottom-end">
@@ -48,6 +48,15 @@
 <script>
 export default {
   name: 'TopHeader',
+  computed: {
+    userName () {
+      return this.$store.getters.userName
+    },
+    userInitials () {
+      let nameWords = this.userName.split(' ')
+      return nameWords[0].charAt(0) + nameWords[1].charAt(0)
+    },
+  },
 }
 </script>
 
