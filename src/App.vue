@@ -1,10 +1,29 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class=".container-fluid">
+    <div id="content">
+      <NavMenu/>
+      <div id="mainContent">
+        <TopHeader/>
+        <div id="view">
+          <router-view/>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
+<script>
+import NavMenu from '@/components/NavMenu.vue'
+import TopHeader from '@/components/TopHeader.vue'
+
+export default {
+  name: 'App',
+  components: {
+    NavMenu,
+    TopHeader
+  }
+}
+</script>
 
 <style>
 #app {
@@ -13,6 +32,7 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  
 }
 
 nav {
@@ -26,5 +46,15 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+#mainContent {
+  margin-left: 260px;
+  padding: 0;
+}
+
+#view{
+  padding: 12px;
+  background: #f1f3fa;
 }
 </style>
