@@ -1,6 +1,6 @@
 <template>
   <div class=".container-fluid">
-    <div id="content" class="row">
+    <div id="content">
       <NavMenu/>
       <div id="mainContent">
         <TopHeader/>
@@ -32,6 +32,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  
 }
 
 nav {
