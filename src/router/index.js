@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import AddSupplier from '../components/Forms/AddSupplier.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/addSupplier',
+    name: 'AddSupplier',
+    component: AddSupplier
   },
   {
     path: '/about',

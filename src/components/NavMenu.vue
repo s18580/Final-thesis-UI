@@ -133,7 +133,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseSuppliers">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'AddSupplier'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj dostawcę
           </div>
