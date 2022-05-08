@@ -68,8 +68,9 @@ export default {
 }
 
 #userMenu {
-  position: fixed;
+  position: absolute;
   right: 0;
+  top: 0;
   margin-right: 15px;
 }
 
