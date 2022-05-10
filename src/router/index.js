@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AddSupplier from '../components/Forms/AddSupplier.vue'
+import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: '/addSupplier',
     name: 'AddSupplier',
     component: AddSupplier
+  },
+  {
+    path: '/supplierSearch',
+    name: 'SupplierSearch',
+    component: SupplierSearch
   },
   {
     path: '/about',
