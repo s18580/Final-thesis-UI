@@ -183,6 +183,7 @@ form {
 	text-align: center;
 	margin-top: 10px;
 	margin-bottom: 10px;
+    border-radius: 25px;
 }
 
 .error-message {
@@ -216,6 +217,7 @@ form {
 .objects-card {
 	border-color: rgb(226, 226, 226);
 	border-style: solid;
+    border-radius: 10px;
 	width: 250px;
 	height: 300px;
 	margin-bottom: 10px;

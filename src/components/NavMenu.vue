@@ -143,7 +143,7 @@
             Wyszukaj dostawcę
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'SupplySearch'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj dostawę
           </div>
