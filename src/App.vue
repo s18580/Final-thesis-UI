@@ -54,7 +54,11 @@ nav a.router-link-exact-active {
 }
 
 #view{
-  padding: 12px;
+  padding: 24px;
+  background: #f1f3fa;
+}
+
+body {
   background: #f1f3fa;
 }
 </style>
