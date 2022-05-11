@@ -66,7 +66,7 @@
                 <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
             </svg>
       </div>
-      <button @click="searchForResults()" class="btn btn-primary my-3 search">Szukaj</button>
+      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
@@ -143,6 +143,11 @@ export default {
 	margin-bottom: 10px;
     border-radius: 100vw;
     min-width: 250px;
+    background: #f4f8fa;
+}
+
+.search-input-box label {
+	color: #2C82E0;
 }
 
 #show-more {

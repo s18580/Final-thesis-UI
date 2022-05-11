@@ -9,28 +9,42 @@
                 </div>
         </div>
         <div class="search-box">
-                <div class="search-input-box">
-                    <label>Typ przedmiotu dostawy - selectL:</label>
-                    <input v-model="supplyDate" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Typ przedmiotu dostawy:</label>
+                <select v-model="selectedSupplyItemType" class="form-control">
+                    <option v-for="itemType in supplyItemTypes" :key="itemType.Id">
+                        {{ itemType.name }}
+                    </option>
+                </select>
+            </div>
         </div>
         <div class="search-box">
-                <div class="search-input-box">
-                    <label>Dostawca - selectL:</label>
-                    <input v-model="supplyDate" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Dostawca:</label>
+                <select v-model="seledtedSupplier" class="form-control">
+                    <option v-for="supplier in suppliers" :key="supplier.Id">
+                        {{ supplier.name }}
+                    </option>
+                </select>
+            </div>
         </div>
         <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Reprezentant - selectL:</label>
-                    <input v-model="supplyDate" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Reprezentant:</label>
+                <select v-model="selectedRepresentative" class="form-control">
+                    <option v-for="representative in representatives" :key="representative.Id">
+                        {{ representative.name }}
+                    </option>
+                </select>
+            </div>
         </div>
         <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Odebrana - checkBox:</label>
-                    <input v-model="supplyDate" class="form-control" type="text">
+            <div class="search-input-box">
+                <label>Dostawa odebrana:</label>
+                <div>
+                   <input type="checkbox"> 
                 </div>
+            </div>
         </div>
       </div>
       <div @click="changeMode()" id="show-more">
@@ -42,7 +56,7 @@
                 <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
             </svg>
       </div>
-      <button @click="searchForResults()" class="btn btn-primary my-3 search">Szukaj</button>
+      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
@@ -59,6 +73,13 @@ export default {
 			supplyDate: "",
             largeMode: false,
             showResults: false,
+            selectedSupplyItemType: null,
+            supplyItemTypes: [],
+            seledtedSupplier: null,
+            suppliers: [],
+            selectedRepresentative: null,
+            representatives: [],
+            supplyReceived: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
 		}
@@ -105,15 +126,36 @@ export default {
 }
 
 .search-input-box input,
-.search-box textarea {
+.search-input-box select {
 	text-align: center;
-	margin-top: 10px;
+    margin-top: 10px;
 	margin-bottom: 10px;
     border-radius: 100vw;
     min-width: 250px;
+    background: #f4f8fa;
+}
+
+.search-input-box select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-position-x: 100%;
+    background-position-y: 5px;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+}
+
+select option {
+  background: #f4f8fa;
+  color: #2C82E0;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.search-input-box label {
+	color: #2C82E0;
 }
 
 #show-more {
+    color: #2C82E0;
     cursor: pointer;
     position: relative;
     text-align: right;
