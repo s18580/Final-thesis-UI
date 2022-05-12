@@ -8,3 +8,17 @@ const CallSeq = axios.create({
 });
 
 export default CallSeq;
+
+/*
+{
+  "Events": [{
+    "Timestamp": "2015-05-09T22:09:08.12345+10:00",
+    "Level": "Warning",
+    "MessageTemplate": "Disk space is low on {Drive}",
+    "Properties": {
+      "Drive": "C:",
+      "MachineName": "nblumhardt-rmbp"
+    }
+  }]
+}
+*/
