@@ -84,6 +84,7 @@
 
 <script>
 import CallAPI from '../../axios/axios-connection.js';
+import CallSeq from '../../logging/seq-logger.js';
 
 export default {
   name: 'AddSupplier',
@@ -103,7 +104,10 @@ export default {
             if(this.validateForm()) {
                 CallAPI.get(`/Address/getAddresses`)
                     .then(res => console.log(res))
-                    .catch(err => console.log(err))
+                    .catch(err => {
+                        CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    });
+
                 // Added info
                 // Redirect on user main page
             }
@@ -112,6 +116,8 @@ export default {
             this.$refs.form.validate();
             if(this.contactPepole.length == 0) this.isFormValidate = false;
             if(this.suplierAddresses.length == 0) this.isFormValidate = false;
+
+            this.isFormValidate = true;
 
             return this.isFormValidate;
         },
