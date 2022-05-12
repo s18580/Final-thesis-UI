@@ -110,19 +110,6 @@ export default {
 
                 // Added info
                 // Redirect on user main page
-                /*
-{
-  "Events": [{
-    "Timestamp": "2015-05-09T22:09:08.12345+10:00",
-    "Level": "Warning",
-    "MessageTemplate": "Disk space is low on {Drive}",
-    "Properties": {
-      "Drive": "C:",
-      "MachineName": "nblumhardt-rmbp"
-    }
-  }]
-}
-                */
             }
 		},
         validateForm() {
