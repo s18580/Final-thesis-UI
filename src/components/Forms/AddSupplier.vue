@@ -1,6 +1,6 @@
 <template>
   <div id="mainCo">
-		<form @submit.prevent="this.submitForm()">
+		<va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
 			<h1>Dodaj nowego dostawcę</h1>
             <va-input
                 class="some-space mb-4"
@@ -19,7 +19,7 @@
             <va-input
                 class="some-space mb-4"
                 v-model="supplierPhone"
-                :rules="[(v) => v.length > 0 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 255 || `Pole telefon przekroczyło limit znaków.`]"
+                :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 255 || `Pole telefon przekroczyło limit znaków.`]"
                 label="Telefon"
                 placeholder="Telefon dostawcy"
             />
@@ -78,11 +78,13 @@
                 label="Opis (opcjonalnie)"
             />
             <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
-		</form>
+		</va-form>
 	</div>
 </template>
 
 <script>
+import CallAPI from '../../axios/axios-connection.js';
+
 export default {
   name: 'AddSupplier',
 	data() {
@@ -91,10 +93,7 @@ export default {
             supplierEmail: "",
             supplierPhone: "",
 			supplierDescription: "",
-			nameErrorMessage: "",
-            emailErrorMessage: "",
-            phoneErrorMessage: "",
-            descriptionErrorMessage: "",
+            isFormValidate: false,
 			contactPepole: [],
 			suplierAddresses: [],
 		}
@@ -102,14 +101,21 @@ export default {
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
-                // API call
-                // Added info  
+                CallAPI.get(`/Address/getAddresses`)
+                    .then(res => console.log(res))
+                    .catch(err => console.log(err))
+                // Added info
+                // Redirect on user main page
             }
 		},
         validateForm() {
-            //check if form has errors
-        }
-	}
+            this.$refs.form.validate();
+            if(this.contactPepole.length == 0) this.isFormValidate = false;
+            if(this.suplierAddresses.length == 0) this.isFormValidate = false;
+
+            return this.isFormValidate;
+        },
+	},
 }
 </script>
 
@@ -134,7 +140,7 @@ h1 {
     padding-top: 20px;
 }
 
-form {
+#form {
 	padding-right: 150px;
 	padding-left: 150px;
 }
