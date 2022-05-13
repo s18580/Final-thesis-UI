@@ -151,6 +151,7 @@ export default {
 }
 
 #show-more {
+    color: #2C82E0;
     cursor: pointer;
     position: relative;
     text-align: right;
