@@ -192,7 +192,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseWorker">
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'WorkerSearch'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj pracownika
           </div>
