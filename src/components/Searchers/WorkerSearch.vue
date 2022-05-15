@@ -55,7 +55,7 @@
 
 <script>
 export default {
-  name: 'AddSupplier',
+  name: 'WorkerSearch',
 	data() {
 		return {
 			workerName: "",

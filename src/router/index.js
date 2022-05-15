@@ -4,6 +4,7 @@ import AddSupplier from '../components/Forms/AddSupplier.vue'
 import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
 import SupplySearch from '../components/Searchers/SupplySearch.vue'
 import WorkerSearch from '../components/Searchers/WorkerSearch.vue'
+import RepresentativeSearch from '../components/Searchers/RepresentativeSearch.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/workerSearch',
     name: 'WorkerSearch',
     component: WorkerSearch
+  },
+  {
+    path: '/representativeSearch',
+    name: 'RepresentativeSearch',
+    component: RepresentativeSearch
   }
 ]
 
