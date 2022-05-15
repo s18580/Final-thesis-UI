@@ -77,7 +77,7 @@
 
 <script>
 export default {
-  name: 'AddSupplier',
+  name: 'SupplierSearch',
 	data() {
 		return {
 			supplierName: "",

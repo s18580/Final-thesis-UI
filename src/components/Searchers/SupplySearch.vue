@@ -75,7 +75,7 @@ import CallAPI from '../../axios/axios-connection.js';
 import CallSeq from '../../logging/seq-logger.js';
 
 export default {
-  name: 'AddSupplier',
+  name: 'SupplySearch',
 	data() {
 		return {
 			supplyDate: "",
