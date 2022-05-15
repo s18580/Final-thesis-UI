@@ -60,12 +60,20 @@
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
-          <p v-if="results"> {{ resultMessage }} </p>
+            <va-data-table
+                v-if="areResultsLoaded()"
+                :items="results"
+                :columns="tableResultColumns"
+            />
+          <p v-if="!areResultsLoaded()"> {{ resultMessage }} </p>
       </div>
 	</div>
 </template>
 
 <script>
+import CallAPI from '../../axios/axios-connection.js';
+import CallSeq from '../../logging/seq-logger.js';
+
 export default {
   name: 'AddSupplier',
 	data() {
@@ -81,21 +89,61 @@ export default {
             representatives: [],
             supplyReceived: false,
             results: [],
-            resultMessage: "Brak wyników do wyświetlenia",
+            resultsColumns: [
+                {key: 'SupplyDate', label: 'Data dostawy', sortable: true},
+                {key: 'OrderItem.Name', label: 'Nazwa zamówienia', sortable: true},
+                {key: 'ItemDescription', label: 'Opis', sortable: true},
+                {key: 'IsReceived', label: 'Odebrana', sortable: true},
+                {key: 'SupplyItemType.Name', label: 'Typ', sortable: true},
+            ],
+            resultMessage: "Brak wyników do wyświetlenia"
 		}
 	},
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
         },
-        searchForResults() {
+        areResultsLoaded() {
+            return this.results.length > 0;
+        },
+        async searchForResults() {
             this.largeMode = false;
-            this.showResults = true;
+
             //API call
             //set result message or show table
+            this.showResults = true;
             this.resultMessage = "Brak wyników do wyświetlenia";
         }
-	}
+	},
+    async created() {
+        let dictionaryData = [
+            CallAPI.get(`SupplyItemType/getSupplyItemsTypes`)
+            .then(res => {
+                this.supplyItemTypes = res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+            }),
+            
+            CallAPI.get(`Supplier/getSuppliers`)
+            .then(res => {
+                this.suppliers = res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull suppliers: { err.message }", "Properties": { error: err }}]})
+            }),
+            
+            CallAPI.get(`Representative/getRepresentatives`)
+            .then(res => {
+                this.representatives = res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull representatives: { err.message }", "Properties": { error: err }}]})
+            })
+        ]
+        
+        Promise.all(dictionaryData);
+    }
 }
 </script>
 
