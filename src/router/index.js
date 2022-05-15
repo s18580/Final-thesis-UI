@@ -24,7 +24,7 @@ const routes = [
     path: '/supplySearch',
     name: 'SupplySearch',
     component: SupplySearch
-  },
+  }
 ]
 
 const router = createRouter({

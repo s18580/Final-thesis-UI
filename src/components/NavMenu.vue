@@ -24,12 +24,12 @@
           </svg>
         </div>
         <div class="collapse" id="collapseAccountsMenegment">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Zarządzaj kontami
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj konto
           </div>
@@ -72,22 +72,22 @@
             </svg>
           </div>
           <div class="collapse" id="collapseOrders">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj zamówienie
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj zamówienie
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             W trakcie realizacji
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Kolejka produkcyjna
           </div>
@@ -107,12 +107,12 @@
           </svg>
         </div>
         <div class="collapse" id="collapseClients">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj klienta
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj klienta
           </div>
@@ -166,12 +166,12 @@
           </svg>
         </div>
         <div class="collapse" id="collapseValuation">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Stwórz wycenę
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj wycenę
           </div>
@@ -192,7 +192,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseWorker">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj pracownika
           </div>
@@ -212,12 +212,12 @@
           </svg>
         </div>
         <div class="collapse" id="collapseStats">
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Statystyki biznesowe
           </div>
           </router-link>
-          <router-link :to="{ name: 'about'}">
+          <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content inner">
             Statystyki systemowe
           </div>
