@@ -77,7 +77,7 @@
             Dodaj zamówienie
           </div>
           </router-link>
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'OrderSearch'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj zamówienie
           </div>

@@ -42,7 +42,7 @@
             <div class="search-input-box">
                 <label>Dostawa odebrana:</label>
                 <div>
-                   <input type="checkbox"> 
+                   <input v-model="supplyReceived" type="checkbox"> 
                 </div>
             </div>
         </div>
