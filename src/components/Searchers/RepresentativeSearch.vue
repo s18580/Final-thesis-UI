@@ -1,60 +1,50 @@
 <template>
   <div id="mainCo">
-      <h4>Wyszukaj dostawcę</h4>
+      <h4>Wyszukaj osoby kontaktowej</h4>
       <div id="search-params">
         <div class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwa:</label>
-                    <input v-model="supplierName" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Imie:</label>
+                <input v-model="representativeName" class="form-control" type="text">
+            </div>
         </div>
         <div class="search-box">
-                <div class="search-input-box">
-                    <label>Email:</label>
-                    <input v-model="supplierEmail" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Nazwisko:</label>
+                <input v-model="representativeLastName" class="form-control" type="text">
+            </div>
         </div>
         <div class="search-box">
-                <div class="search-input-box">
-                    <label>Telefon:</label>
-                    <input v-model="supplierPhone" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Telefon:</label>
+                <input v-model="representativePhone" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="search-box">
+            <div class="search-input-box">
+                <label>Email:</label>
+                <input v-model="representativeEmail" class="form-control" type="text">
+            </div>
         </div>
         <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Imię:</label>
-                    <input v-model="concactName" class="form-control" type="text">
-                </div>
+            <div class="search-input-box">
+                <label>Klient:</label>
+                <select v-model="selectedCustomer" class="form-control">
+                    <option v-for="customer in customers" :key="customer.Id">
+                        {{ customer.name }}
+                    </option>
+                </select>
+            </div>
         </div>
         <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwisko:</label>
-                    <input v-model="concactSurrname" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwa adresu:</label>
-                    <input v-model="addressName" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Ulica:</label>
-                    <input v-model="addressStreet" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Miasto:</label>
-                    <input v-model="addressCity" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Fragment z opisu:</label>
-                    <textarea v-model="supplierDescription" class="form-control"></textarea>
-                </div>
+            <div class="search-input-box">
+                <label>Dostawca:</label>
+                <select v-model="seledtedSupplier" class="form-control">
+                    <option v-for="supplier in suppliers" :key="supplier.Id">
+                        {{ supplier.name }}
+                    </option>
+                </select>
+            </div>
         </div>
       </div>
       <div id="show-more">
@@ -79,18 +69,17 @@
 
 <script>
 export default {
-  name: 'SupplierSearch',
+  name: 'RepresentativeSearch',
 	data() {
 		return {
-			supplierName: "",
-            supplierEmail: "",
-            supplierPhone: "",
-			supplierDescription: "",
-            concactName: "",
-            concactSurrname: "",
-            addressName: "",
-            addressStreet: "",
-            addressCity: "",
+			representativeName: "",
+            representativeLastName: "",
+            representativePhone: "",
+            representativeEmail: "",
+            seledtedSupplier: "",
+            suppliers: [],
+            selectedCustomer: "",
+            customers: [],
             largeMode: false,
             showResults: false,
             results: [],
@@ -139,13 +128,28 @@ export default {
 }
 
 .search-input-box input,
-.search-box textarea {
+.search-input-box select {
 	text-align: center;
-	margin-top: 10px;
+    margin-top: 10px;
 	margin-bottom: 10px;
     border-radius: 100vw;
     min-width: 250px;
     background: #f4f8fa;
+}
+
+.search-input-box select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-position-x: 100%;
+    background-position-y: 5px;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+}
+
+select option {
+  background: #f4f8fa;
+  color: #2C82E0;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 .search-input-box label {
