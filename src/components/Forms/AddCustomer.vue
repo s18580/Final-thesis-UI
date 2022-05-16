@@ -1,32 +1,91 @@
 <template>
   <div id="mainCo">
 		<va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
-			<h1>Dodaj nowego dostawcę</h1>
+			<h1>Dodaj nowego klienta</h1>
+            <div class="radio-box">
+                <va-radio
+                    v-for="(option, index) in radioOptions"
+                    :key="index"
+                    v-model="selectedRadioOption"
+                    :option="option"
+                />
+            </div>
             <va-input
+                v-if="selectedRadioOption==='Firma'"
                 class="some-space mb-4"
-                v-model="supplierName"
+                v-model="companyName"
                 :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
                 label="Nazwa"
-                placeholder="Nazwa dostawcy"
+                placeholder="Nazwa firmy klienta"
             />
             <va-input
+                v-if="selectedRadioOption==='Firma'"
                 class="some-space mb-4"
-                v-model="supplierEmail"
-                :rules="[(v) => v.length > 0 || `Pole email nie może być puste`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
-                label="Email"
-                placeholder="Email dostawcy"
+                v-model="nip"
+                :rules="[(v) => v.length === 10 || `Pole nip jest nieprawidłowe.`]"
+                label="NIP"
+                placeholder="NIP klienta"
             />
             <va-input
+                v-if="selectedRadioOption==='Firma'"
                 class="some-space mb-4"
-                v-model="supplierPhone"
+                v-model="regon"
+                :rules="[(v) => v.length > 8 || `Pole regon jest nieprawidłowe.`, (v) => v.length < 15 || `Pole regon przekroczyło limit znaków.`]"
+                label="REGON"
+                placeholder="Regon klienta"
+            />
+            <va-input
+                v-if="selectedRadioOption==='Firma'"
+                class="some-space mb-4"
+                v-model="companyPhone"
+                :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                label="Telefon (opcjonalnie)"
+                placeholder="Telefon firmowy klienta"
+            />
+            <va-input
+                v-if="selectedRadioOption==='Firma'"
+                class="some-space mb-4"
+                v-model="companyEmail"
+                :rules="[(v) => v.length > 0 || `Pole email nie może być puste.`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                label="Email (opcjonalnie)"
+                placeholder="Email firmowy klienta"
+            />
+            <va-input
+                v-if="selectedRadioOption==='Osoba prywatna'"
+                class="some-space mb-4"
+                v-model="customerName"
+                :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
+                label="Imię"
+                placeholder="Imię klienta"
+            />
+            <va-input
+                v-if="selectedRadioOption==='Osoba prywatna'"
+                class="some-space mb-4"
+                v-model="customerLastName"
+                :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
+                label="Nazwisko"
+                placeholder="Nazwisko klienta"
+            />
+            <va-input
+                v-if="selectedRadioOption==='Osoba prywatna'"
+                class="some-space mb-4"
+                v-model="customerPhone"
                 :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
                 label="Telefon"
-                placeholder="Telefon dostawcy"
+                placeholder="Telefon klienta"
+            />
+            <va-input
+                v-if="selectedRadioOption==='Osoba prywatna'"
+                class="some-space mb-4"
+                v-model="customerEmail"
+                :rules="[(v) => v.length > 0 || `Pole email nie może być puste.`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                label="Email"
+                placeholder="Email klienta"
             />
             <va-divider inset />
 			<div id="card-container">
 				<div class="objects-card-wrapper">
-					<h6>Osoby kontaktowe dostawcy:</h6>
+					<h6>Osoby kontaktowe klienta:</h6>
 					<div class="objects-card">
 						<div v-for="person in contactPepole" :key="person.IdRepresentative" class="card-items">
                             <div>
@@ -48,7 +107,7 @@
 				</div>
                 <va-divider vertical />
 				<div class="objects-card-wrapper">
-					<h6>Adresy dostawcy:</h6>
+					<h6>Adresy klienta:</h6>
 					<div class="objects-card">
 						<div v-for="address in suplierAddresses" :key="address.IdAddress" class="card-items">
                             <div>
@@ -69,13 +128,6 @@
                     <va-button @click="AddD()" type="button" color="success" gradient>Dodaj adres</va-button>
 				</div>
 			</div>
-            <va-input
-                class="mb-4 some-top-space"
-                v-model="supplierDescription"
-                type="textarea"
-                :rules="[ (v) => v.length < 255 || `Pole opis przekroczyło limit znaków.`]"
-                label="Opis (opcjonalnie)"
-            />
             <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
 		</va-form>
 	</div>
@@ -86,16 +138,23 @@ import CallAPI from '../../axios/axios-connection.js';
 import CallSeq from '../../logging/seq-logger.js';
 
 export default {
-  name: 'AddSupplier',
+  name: 'AddCustomer',
 	data() {
 		return {
-			supplierName: "",
-            supplierEmail: "",
-            supplierPhone: "",
-			supplierDescription: "",
+			customerName: "",
+            customerLastName: "",
+            customerEmail: "",
+            customerPhone: "",
+            nip: "",
+            regon: "",
+            companyName: "",
+            companyEmail: "",
+            companyPhone: "",
+            selectedRadioOption: "Firma",
+            radioOptions: ['Firma', 'Osoba prywatna'],
             isFormValidate: false,
 			contactPepole: [],
-			suplierAddresses: [],
+			customerAddresses: [],
 		}
 	},
 	methods: {
@@ -152,6 +211,12 @@ h1 {
 #form {
 	padding-right: 150px;
 	padding-left: 150px;
+}
+
+.radio-box {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 50px;
 }
 
 .input-box {
