@@ -7,6 +7,7 @@ import WorkerSearch from '../components/Searchers/WorkerSearch.vue'
 import RepresentativeSearch from '../components/Searchers/RepresentativeSearch.vue'
 import CustomerSearch from '../components/Searchers/CustomerSearch.vue'
 import OrderSearch from '../components/Searchers/OrderSearch.vue'
+import ValuationSearch from '../components/Searchers/ValuationSearch.vue'
 
 const routes = [
   {
@@ -48,7 +49,12 @@ const routes = [
     path: '/orderSearch',
     name: 'OrderSearch',
     component: OrderSearch
-  }
+  },
+  {
+    path: '/valuationSearch',
+    name: 'ValuationSearch',
+    component: ValuationSearch
+  },
 ]
 
 const router = createRouter({

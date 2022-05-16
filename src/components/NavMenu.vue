@@ -171,7 +171,7 @@
             Stwórz wycenę
           </div>
           </router-link>
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'ValuationSearch'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj wycenę
           </div>
