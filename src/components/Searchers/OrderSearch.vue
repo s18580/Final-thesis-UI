@@ -11,13 +11,13 @@
         <div class="search-box">
             <div class="search-input-box">
                 <label>Data stworzenia:</label>
-                <input v-model="creationDate" class="form-control" type="text">
+                <input @click="showThatPicker('createDatePicker')" v-model="creationDate" class="form-control" type="date" id="createDatePicker">
             </div>
         </div>
         <div class="search-box">
             <div class="search-input-box">
                 <label>Data dostawy:</label>
-                <input v-model="deliveryDate" class="form-control" type="text">
+                <input @click="showThatPicker('deliveryDatePicker')" v-model="deliveryDate" class="form-control" type="date" id="deliveryDatePicker">
             </div>
         </div>
         <div class="search-box">
@@ -132,6 +132,14 @@ export default {
             //API call
             //set result message or show table
             this.resultMessage = "Brak wyników do wyświetlenia";
+        },
+        showThatPicker(id) {
+            const dateInput = document.getElementById(id);
+            try {
+                dateInput.showPicker();
+            } catch (error) {
+                //do nothing
+            }
         }
 	}
 }
@@ -199,4 +207,8 @@ select option {
     text-align: right;
 }
 
+#createDatePicker,
+#deliveryDatePicker {
+    cursor: pointer;
+}
 </style>

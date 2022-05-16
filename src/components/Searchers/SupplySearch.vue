@@ -5,7 +5,7 @@
         <div class="search-box">
                 <div class="search-input-box">
                     <label>Data dostawy:</label>
-                    <input v-model="supplyDate" class="form-control" type="text">
+                    <input @click="showThatPicker('deliveryDatePicker')" v-model="supplyDate" class="form-control" type="date" id="deliveryDatePicker">
                 </div>
         </div>
         <div class="search-box">
@@ -113,6 +113,14 @@ export default {
             //set result message or show table
             this.showResults = true;
             this.resultMessage = "Brak wyników do wyświetlenia";
+        },
+        showThatPicker(id) {
+            const dateInput = document.getElementById(id);
+            try {
+                dateInput.showPicker();
+            } catch (error) {
+                //do nothing
+            }
         }
 	},
     async created() {
@@ -207,6 +215,10 @@ select option {
     cursor: pointer;
     position: relative;
     text-align: right;
+}
+
+#deliveryDatePicker {
+    cursor: pointer;
 }
 
 </style>

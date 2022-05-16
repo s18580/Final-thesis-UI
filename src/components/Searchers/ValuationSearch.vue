@@ -5,7 +5,7 @@
         <div class="search-box">
             <div class="search-input-box">
                 <label>Data stworzenia:</label>
-                <input v-model="creationDate" class="form-control" type="date">
+                <input @click="showThatPicker('createDatePicker')" v-model="creationDate" class="form-control" type="date" id="createDatePicker">
             </div>
         </div>
         <div class="search-box">
@@ -87,14 +87,16 @@
             </div>
         </div>
       </div>
-      <div @click="changeMode()" id="show-more">
-            Pokaż więcej filtrów
-            <svg v-if="!largeMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-            </svg>
-            <svg v-if="largeMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
-            </svg>
+      <div id="show-more">
+          <div @click="changeMode()" id="inner-show-more">
+                Pokaż więcej filtrów
+                <svg v-if="!largeMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                </svg>
+                <svg v-if="largeMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
+                </svg>
+          </div>
       </div>
       <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
@@ -142,8 +144,16 @@ export default {
             //API call
             //set result message or show table
             this.resultMessage = "Brak wyników do wyświetlenia";
+        },
+        showThatPicker(id) {
+            const dateInput = document.getElementById(id);
+            try {
+                dateInput.showPicker();
+            } catch (error) {
+                //do nothing
+            }
         }
-	}
+	},
 }
 </script>
 
@@ -204,18 +214,20 @@ select option {
 
 #show-more {
     color: #2C82E0;
-    cursor: pointer;
     position: relative;
     text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
-    color: rgba(0, 0, 0, 0);
-    opacity: 1;
-    display: block;
-    width: 25px;
-    height: 25px;
-    border-width: thin
+#inner-show-more {
+    cursor: pointer;
+    max-width: 170px;
+}
+
+#createDatePicker {
+    cursor: pointer;
 }
 
 </style>
