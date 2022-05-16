@@ -5,6 +5,7 @@ import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
 import SupplySearch from '../components/Searchers/SupplySearch.vue'
 import WorkerSearch from '../components/Searchers/WorkerSearch.vue'
 import RepresentativeSearch from '../components/Searchers/RepresentativeSearch.vue'
+import CustomerSearch from '../components/Searchers/CustomerSearch.vue'
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/representativeSearch',
     name: 'RepresentativeSearch',
     component: RepresentativeSearch
+  },
+  {
+    path: '/customerSearch',
+    name: 'CustomerSearch',
+    component: CustomerSearch
   }
 ]
 
