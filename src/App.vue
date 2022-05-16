@@ -44,10 +44,6 @@ nav a {
   color: #2c3e50;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-
 #mainContent {
   margin-left: 260px;
   padding: 0;
@@ -60,5 +56,18 @@ nav a.router-link-exact-active {
 
 body {
   background: #f1f3fa;
+}
+
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #646f7c;
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9aaabe;
 }
 </style>
