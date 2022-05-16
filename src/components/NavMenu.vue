@@ -107,7 +107,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseClients">
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'AddCustomer'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj klienta
           </div>
@@ -342,4 +342,9 @@ svg {
 .rotated {
   transform: rotate(90deg)
 }
+
+.exact-active-link div{
+  color: white;
+}
+
 </style>
