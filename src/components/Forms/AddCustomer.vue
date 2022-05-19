@@ -1,15 +1,15 @@
 <template>
   <div id="mainCo">
-		<va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
-			<h1>Dodaj nowego klienta</h1>
-            <div class="radio-box">
-                <va-radio
-                    v-for="(option, index) in radioOptions"
-                    :key="index"
-                    v-model="selectedRadioOption"
-                    :option="option"
-                />
-            </div>
+        <h1>Dodaj nowego klienta</h1>
+        <div class="radio-box">
+            <va-radio
+                v-for="(option, index) in radioOptions"
+                :key="index"
+                v-model="selectedRadioOption"
+                :option="option"
+            />
+        </div>
+		<va-form @submit.prevent="this.submitFormCompany()" tag="form" ref="formCompany" @validation="isFormCompanyValidate = $event">
             <va-input
                 v-if="selectedRadioOption==='Firma'"
                 class="some-space mb-4"
@@ -50,6 +50,8 @@
                 label="Email (opcjonalnie)"
                 placeholder="Email firmowy klienta"
             />
+        </va-form>
+        <va-form @submit.prevent="this.submitFormPerson()" tag="form" ref="formPerson" @validation="isFormPersonValidate = $event">
             <va-input
                 v-if="selectedRadioOption==='Osoba prywatna'"
                 class="some-space mb-4"
@@ -82,65 +84,71 @@
                 label="Email"
                 placeholder="Email klienta"
             />
-            <va-divider inset />
-			<div id="card-container">
-				<div class="objects-card-wrapper">
-					<h6>Osoby kontaktowe klienta:</h6>
-					<div class="objects-card">
-						<div v-for="person in contactPepole" :key="person.IdRepresentative" class="card-items">
-                            <div>
-                                {{ person.Name }}
-                            </div>
-                            <div class="card-icons">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                </svg>
+        </va-form>
+        <va-divider inset />
+        <div id="card-container">
+            <div class="objects-card-wrapper">
+                <h6>Osoby kontaktowe klienta:</h6>
+                <div class="objects-card">
+                    <div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
+                        <div>
+                            {{ person.name + ' ' + person.lastName }}
+                        </div>
+                        <div class="card-icons">
+                            <svg @click="editContactInModal(person)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                            </svg>
 
-                                <svg @click="removeContact(person.IdRepresentative)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
-                            </div>
-						</div>
-					</div>
-                    <va-button type="button" color="success" gradient>Dodaj osobę</va-button>
-				</div>
-                <va-divider vertical />
-				<div class="objects-card-wrapper">
-					<h6>Adresy klienta:</h6>
-					<div class="objects-card">
-						<div v-for="address in suplierAddresses" :key="address.IdAddress" class="card-items">
-                            <div>
-                                {{ address.Name }}
-                            </div>
-                            <div class="card-icons">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                </svg>
+                            <svg @click="removeContact(person.IdForRepresentativeTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
+            </div>
+            <va-divider vertical />
+            <div class="objects-card-wrapper">
+                <h6>Adresy klienta:</h6>
+                <div class="objects-card">
+                    <div v-for="address in customerAddresses" :key="address.IdForAddressTable" class="card-items">
+                        <div>
+                            {{ address.name }}
+                        </div>
+                        <div class="card-icons">
+                            <svg @click="editAddressInModal(address)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                            </svg>
 
-                                <svg @click="removeAddress(address.IdAddress)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
-                            </div>
-						</div>
-					</div>
-                    <va-button @click="AddD()" type="button" color="success" gradient>Dodaj adres</va-button>
-				</div>
-			</div>
-            <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
-		</va-form>
+                            <svg @click="removeAddress(address.IdForAddressTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
+                <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+            </div>
+        </div>
+        <va-button @click="submitForm()" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
 	</div>
 </template>
 
 <script>
 import CallAPI from '../../axios/axios-connection.js';
 import CallSeq from '../../logging/seq-logger.js';
+import AddressModal from '../ReuseComponents/AddressModal.vue';
+import RepresentativeModal from '../ReuseComponents/RepresentativeModal.vue';
 
 export default {
   name: 'AddCustomer',
 	data() {
 		return {
+            addressCounter: 0,
+            contactCounter: 0,
 			customerName: "",
             customerLastName: "",
             customerEmail: "",
@@ -152,14 +160,27 @@ export default {
             companyPhone: "",
             selectedRadioOption: "Firma",
             radioOptions: ['Firma', 'Osoba prywatna'],
-            isFormValidate: false,
+            isFormCompanyValidate: false,
+            isFormPersonValidate: false,
 			contactPepole: [],
 			customerAddresses: [],
+            showAddressModal: false,
+            editedAddress: null,
+            showContactModal: false,
+            editedContact: null,
 		}
 	},
+    components: {AddressModal, RepresentativeModal},
 	methods: {
-		async submitForm() {
-            if(this.validateForm()) {
+        async submitForm() {
+            if(this.selectedRadioOption === 'Firma') {
+                await this.submitFormCompany();
+            } else {
+                await this.submitFormPerson();
+            }
+        },
+		async submitFormCompany() {
+            if(this.validateForm(true)) {
                 await CallAPI.get(`/Address/getAddresses`)
                 .then(res => {
                     console.log(res); // switch that on the toast message
@@ -170,19 +191,84 @@ export default {
                 });
             }
 		},
-        validateForm() {
-            this.$refs.form.validate();
-            if(this.contactPepole.length == 0) this.isFormValidate = false;
-            if(this.suplierAddresses.length == 0) this.isFormValidate = false;
-
-            return this.isFormValidate;
+        async submitFormPerson() {
+            if(this.validateForm(false)) {
+                await CallAPI.get(`/Address/getAddresses`)
+                .then(res => {
+                    console.log(res); // switch that on the toast message
+                    this.$router.push('home');
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+            }
+		},
+        validateForm(isCompany) {
+            if(isCompany) {
+                this.$refs.formCompany.validate();
+                return this.isFormCompanyValidate;
+            } else {
+                this.$refs.formPerson.validate();
+                return this.isFormPersonValidate;
+            }
+        },
+        closeAddressModal() {
+            this.showAddressModal=false;
+            this.editedAddress=null;
+        },
+        addAddress(e) {
+            e.newAddress.IdForAddressTable = this.addressCounter;
+            this.customerAddresses.push(e.newAddress);
+            this.addressCounter++;
+        },
+        editAddress(e) {
+            for(const obj of this.customerAddresses){
+                if (obj.IdForAddressTable === e.newAddress.IdForAddressTable) {
+                    obj.name = e.newAddress.name;
+                    obj.country = e.newAddress.country;
+                    obj.city = e.newAddress.city;
+                    obj.postCode = e.newAddress.postCode;
+                    obj.streetName = e.newAddress.streetName;
+                    obj.streetNumber = e.newAddress.streetNumber;
+                    obj.apartmentNumber = e.newAddress.apartmentNumber;
+                    break;
+                }
+            }
+        },
+        editAddressInModal(address) {
+            this.editedAddress = address;
+            this.showAddressModal = true;
         },
         removeAddress(id) {
-            this.suplierAddresses = this.suplierAddresses.filter(item => item.IdAddress !== id);
+            this.customerAddresses = this.customerAddresses.filter(item => item.IdForAddressTable !== id);
+        },
+        closeContactModal() {
+            this.showContactModal = false;
+            this.editedContact = null;
+        },
+        addContact(e) {
+            e.newRepresentative.IdForRepresentativeTable = this.contactCounter;
+            this.contactPepole.push(e.newRepresentative);
+            this.contactCounter++;
+        },
+        editContact(e) {
+            for(const obj of this.contactPepole){
+                if (obj.IdForRepresentativeTable === e.newRepresentative.IdForRepresentativeTable) {
+                    obj.name = e.newRepresentative.name;
+                    obj.lastName = e.newRepresentative.lastName;
+                    obj.phoneNumber = e.newRepresentative.phoneNumber;
+                    obj.addressEmail = e.newRepresentative.addressEmail;
+                    break;
+                }
+            }
+        },
+        editContactInModal(contact) {
+            this.editedContact = contact;
+            this.showContactModal = true;
         },
         removeContact(id) {
-            this.contactPepole = this.contactPepole.filter(item => item.IdAddress !== id);
-        }
+            this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
+        },
 	},
 }
 </script>
@@ -194,6 +280,8 @@ export default {
 	padding: 40px;
 	background: white;
 	border-radius: 25px;
+    padding-right: 190px;
+	padding-left: 190px;
 }
 
 h1 {
@@ -206,11 +294,6 @@ h1 {
 
 .some-top-space {
     padding-top: 20px;
-}
-
-#form {
-	padding-right: 150px;
-	padding-left: 150px;
 }
 
 .radio-box {

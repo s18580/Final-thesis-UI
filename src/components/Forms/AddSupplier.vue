@@ -1,7 +1,7 @@
 <template>
   <div id="mainCo">
+        <h1>Dodaj nowego dostawcę</h1>
 		<va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
-			<h1>Dodaj nowego dostawcę</h1>
             <va-input
                 class="some-space mb-4"
                 v-model="supplierName"
@@ -30,7 +30,7 @@
 					<div class="objects-card">
 						<div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
                             <div>
-                                {{ person.name }}
+                                {{ person.name + ' ' + person.lastName }}
                             </div>
                             <div class="card-icons">
                                 <svg @click="editContactInModal(person)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -126,8 +126,6 @@ export default {
 		},
         validateForm() {
             this.$refs.form.validate();
-            if(this.contactPepole.length == 0) this.isFormValidate = false;
-            if(this.suplierAddresses.length == 0) this.isFormValidate = false;
 
             return this.isFormValidate;
         },
