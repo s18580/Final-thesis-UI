@@ -24,12 +24,12 @@
           </svg>
         </div>
         <div class="collapse" id="collapseAccountsMenegment">
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'MaintenancePage'}">
           <div class="px-2 py-3 item-content inner">
             Zarządzaj kontami
           </div>
           </router-link>
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'ErrorPage'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj konto
           </div>
