@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AddSupplier from '../components/Forms/AddSupplier.vue'
-import AddCustomer from '../components/Forms/AddCustomer.vue'
+import SupplierForm from '../components/Forms/SupplierForm.vue'
+import CustomerForm from '../components/Forms/CustomerForm.vue'
 import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
 import SupplySearch from '../components/Searchers/SupplySearch.vue'
 import WorkerSearch from '../components/Searchers/WorkerSearch.vue'
@@ -17,14 +17,14 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/addSupplier',
-    name: 'AddSupplier',
-    component: AddSupplier
+    path: '/supplierForm',
+    name: 'SupplierForm',
+    component: SupplierForm
   },
   {
-    path: '/addCustomer',
-    name: 'AddCustomer',
-    component: AddCustomer
+    path: '/customerForm',
+    name: 'CustomerForm',
+    component: CustomerForm
   },
   {
     path: '/supplierSearch',

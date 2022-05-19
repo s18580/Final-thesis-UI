@@ -107,7 +107,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseClients">
-          <router-link :to="{ name: 'AddCustomer'}">
+          <router-link :to="{ name: 'CustomerForm'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj klienta
           </div>
@@ -133,7 +133,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseSuppliers">
-          <router-link :to="{ name: 'AddSupplier'}">
+          <router-link :to="{ name: 'SupplierForm'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj dostawcę
           </div>
