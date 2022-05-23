@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import ErrorPage from '../components/TechnicalPages/ErrorPage.vue'
+import MaintenancePage from '../components/TechnicalPages/MaintenancePage.vue'
 import SupplierForm from '../components/Forms/SupplierForm.vue'
 import CustomerForm from '../components/Forms/CustomerForm.vue'
 import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
@@ -11,6 +13,16 @@ import OrderSearch from '../components/Searchers/OrderSearch.vue'
 import ValuationSearch from '../components/Searchers/ValuationSearch.vue'
 
 const routes = [
+  {
+    path: '/error',
+    name: 'ErrorPage',
+    component: ErrorPage
+  },
+  {
+    path: '/maintenance',
+    name: 'MaintenancePage',
+    component: MaintenancePage
+  },
   {
     path: '/',
     name: 'home',
