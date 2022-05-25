@@ -67,10 +67,6 @@
                 label="Notatka (opcjonalnie)"
             />
             <va-divider inset />
-
-
-
-<!-- adjust -->
 			<div id="card-container">
 				<div class="objects-card-wrapper">
 					<h6>Przydzieleni pracownicy:</h6>
@@ -92,12 +88,8 @@
 						</div>
 					</div>
                     <va-button @click="showWorkerModal=true" type="button" color="success" gradient>Przydziel pracownika</va-button>
-                    <RepresentativeModal :person="editedWorker" v-if="showWorkerModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
+                    <WorkerModal :worker="editedWorker" v-if="showWorkerModal" @close="closeWorkerModal()" @createWorker="addWorker($event)" @editWorker="editWorker($event)"/>
 				</div>
-
-
-
-<!-- adjust -->
                 <va-divider vertical />
 				<div class="objects-card-wrapper">
 					<h6>Adresy dostawy zamówienia:</h6>
@@ -151,11 +143,6 @@
                     <AddressModal :addr="editedOrderItem" v-if="showOrderItemModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
 				</div>
                 <va-divider inset />
-
-
-
-
-<!-- adjust -->
                 <div class="file-container-wrapper">
 					<h6>Pliki dotyczące zamówienia:</h6>
 					<div class="file-container">
@@ -214,22 +201,22 @@
                             </div>
 						</div>
 					</div>
-                    <va-button @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj plik</va-button>
-                    <AddressModal :addr="editedOrderItem" v-if="showOrderItemModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+                    <va-button @click="showFileModal=true" type="button" color="success" gradient>Dodaj plik</va-button>
+                    <FileModal :file="editedFile" v-if="showFileModal" @close="closeFileModal()" @createFile="addFile($event)" @editFile="editFile($event)"/>
 				</div>
-
-
-
-
-
             <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
 		</va-form>
 	</div>
 </template>
 
 <script>
+import AddressModal from '../ReuseComponents/AddressModal.vue';
+import WorkerModal from '../ReuseComponents/WorkerModal.vue';
+import FileModal from '../ReuseComponents/FileModal.vue';
+
 export default {
   name: 'OrderForm',
+  components: {AddressModal, WorkerModal, FileModal},
   data() {
 		return {
             isAuction: false,
@@ -241,6 +228,7 @@ export default {
             showWorkerModal: false,
             showAddressModal: false,
             showOrderItemModal: false,
+            showFileModal: false,
             editedWorker: null,
             assignmentWorkers: [],
             workerCounter: 0,
@@ -261,6 +249,7 @@ export default {
                     {IdForFileTable: 9, name: "Wzory okładki", fileIcon: "tiff"},
                     {IdForFileTable: 10, name: "Wzory okładki", fileIcon: "svg"},
                     {IdForFileTable: 11, name: "Wzory okładki", fileIcon: "png"},],
+            editedFile: null,
             fileCounter: 0,
             orderNote: "",
 
@@ -268,7 +257,88 @@ export default {
 		}
 	},
     methods: {
-
+        closeFileModal() {
+            this.showFileModal = false;
+            this.editedFile = null;
+        },
+        addFile(e) {
+            e.newFile.IdForFileTable = this.fileCounter;
+            this.files.push(e.newFile);
+            this.fileCounter++;
+        },
+        editFile(e) {
+            for(const obj of this.files){
+                if (obj.IdForFileTable === e.newFile.IdForFileTable) {
+                    obj.name = e.newFile.fileName;
+                    obj.fileType = e.newFile.selectedFileType;
+                    obj.fileStatus = e.newFile.selectedFileStatus;
+                    break;
+                }
+            }
+        },
+        editFileInModal(file) {
+            this.editedFile = file;
+            this.showFileModal = true;
+        },
+        removeFile(id) {
+            this.files = this.files.filter(item => item.IdForFileTable !== id);
+        },
+        closeAddressModal() {
+            this.showAddressModal = false;
+            this.editedDeliveryAddress = null;
+        },
+        addAddress(e) {
+            e.newAddress.IdForAddressTable = this.addressCounter;
+            this.assignmentWorkers.push(e.newAddress);
+            this.addressCounter++;
+        },
+        editAddress(e) {
+            for(const obj of this.deliveryAddresses){
+                if (obj.IdForAddressTable === e.newAddress.IdForAddressTable) {
+                    obj.name = e.newAddress.name;
+                    obj.country = e.newAddress.country;
+                    obj.city = e.newAddress.city;
+                    obj.postCode = e.newAddress.postCode;
+                    obj.streetName = e.newAddress.streetName;
+                    obj.streetNumber = e.newAddress.streetNumber;
+                    obj.apartmentNumber = e.newAddress.apartmentNumber;
+                    break;
+                }
+            }
+        },
+        editAddressInModal(address) {
+            this.editedDeliveryAddress = address;
+            this.showAddressModal = true;
+        },
+        removeAddress(id) {
+            this.deliveryAddresses = this.deliveryAddresses.filter(item => item.IdForAddressTable !== id);
+        },
+        closeWorkerModal() {
+            this.showWorkerModal = false;
+            this.editedWorker = null;
+        },
+        addWorker(e) {
+            e.newWorker.IdForWorkerTable = this.workerCounter;
+            this.assignmentWorkers.push(e.newWorker);
+            this.workerCounter++;
+        },
+        editWorker(e) {
+            for(const obj of this.assignmentWorkers){
+                if (obj.IdForWorkerTable === e.newWorker.IdForWorkerTable) {
+                    obj.worker = e.newWorker.worker;
+                    obj.hoursWorker = e.newWorker.hoursWorker;
+                    obj.isLeader = e.newWorker.isLeader;
+                    break;
+                }
+            }
+        },
+        editWorkerInModal(worker) {
+            this.editedWorker = worker;
+            this.showWorkerModal = true;
+        },
+        removeWorker(id) {
+            this.assignmentWorkers = this.assignmentWorkers.filter(item => item.IdForWorkerTable !== id);
+        }
     },
 }
 </script>
