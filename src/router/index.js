@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ErrorPage from '../components/TechnicalPages/ErrorPage.vue'
 import MaintenancePage from '../components/TechnicalPages/MaintenancePage.vue'
 import SupplierForm from '../components/Forms/SupplierForm.vue'
+import OrderForm from '../components/Forms/OrderForm.vue'
 import CustomerForm from '../components/Forms/CustomerForm.vue'
 import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
 import SupplySearch from '../components/Searchers/SupplySearch.vue'
@@ -27,6 +28,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/orderForm',
+    name: 'OrderForm',
+    component: OrderForm
   },
   {
     path: '/supplierForm',

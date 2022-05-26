@@ -72,7 +72,7 @@
             </svg>
           </div>
           <div class="collapse" id="collapseOrders">
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'OrderForm'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj zamówienie
           </div>
