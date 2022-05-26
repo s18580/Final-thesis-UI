@@ -104,9 +104,9 @@ export default {
             this.IdForFileTable = null;
         }else {
             this.buttonMessage = "Edytuj plik";
-            this.selectedFileType = this.newFile.fileType;
-            this.selectedFileStatus = this.newFile.fileStatus;
-            this.fileName = this.newFile.name;
+            this.selectedFileType = this.file.fileType;
+            this.selectedFileStatus = this.file.fileStatus;
+            this.fileName = this.file.name;
             this.IdForFileTable = this.file.IdForFileTable;
         }
     }

@@ -7,6 +7,10 @@
                 label="Zamówienie jest przetargiem"
                 v-model="isAuction"
             />
+            <va-switch
+                class="mb-4 some-top-space"
+                v-model="isAuction"
+            />
             <va-input
                 class="some-space mb-4"
                 v-model="orderName"
@@ -115,11 +119,6 @@
 				</div>
 			</div>
             <va-divider inset />
-
-
-
-
-<!-- adjust -->
                 <div class="objects-card-wrapper">
 					<h6>Przedmioty zamówienia:</h6>
 					<div class="objects-card">
@@ -140,7 +139,7 @@
 						</div>
 					</div>
                     <va-button @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
-                    <AddressModal :addr="editedOrderItem" v-if="showOrderItemModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+                    <OrderItemModal :orderItem="editedOrderItem" v-if="showOrderItemModal" @close="closeOrderItemModal()" @createOrderItem="addOrderItem($event)" @editOrderItem="editOrderItem($event)"/>
 				</div>
                 <va-divider inset />
                 <div class="file-container-wrapper">
@@ -213,10 +212,11 @@
 import AddressModal from '../ReuseComponents/AddressModal.vue';
 import WorkerModal from '../ReuseComponents/WorkerModal.vue';
 import FileModal from '../ReuseComponents/FileModal.vue';
+import OrderItemModal from '../ReuseComponents/OrderItemModal.vue';
 
 export default {
   name: 'OrderForm',
-  components: {AddressModal, WorkerModal, FileModal},
+  components: {AddressModal, WorkerModal, FileModal, OrderItemModal},
   data() {
 		return {
             isAuction: false,
@@ -257,6 +257,32 @@ export default {
 		}
 	},
     methods: {
+        closeOrderItemModal() {
+            this.showOrderItemModal = false;
+            this.editedOrderItem = null;
+        },
+        addOrderItem(e) {
+            e.newOrderItem.IdForOrderItemTable = this.orderItemsCounter;
+            this.orderItems.push(e.newOrderItem);
+            this.orderItemsCounter++;
+        },
+        editOrderItem(e) {
+            for(const obj of this.orderItems){
+                if (obj.IdForOrderItemTable === e.newOrderItem.IdForOrderItemTable) {
+                    obj.name = e.newOrderItem.fileName;
+                    obj.fileType = e.newOrderItem.selectedFileType;
+                    obj.fileStatus = e.newOrderItem.selectedFileStatus;
+                    break;
+                }
+            }
+        },
+        editOrderItemInModal(orderItem) {
+            this.editedOrderItem = orderItem;
+            this.showOrderItemModal = true;
+        },
+        removeOrderItem(id) {
+            this.orderItems = this.orderItems.filter(item => item.IdForOrderItemTable !== id);
+        },
         closeFileModal() {
             this.showFileModal = false;
             this.editedFile = null;
