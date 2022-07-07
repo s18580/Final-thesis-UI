@@ -102,7 +102,23 @@
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
-          <p v-if="results"> {{ resultMessage }} </p>
+          <p v-if="results.length==0"> {{ resultMessage }} </p>
+          <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(actions)="{ rowIndex }">
+                <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
+                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
+                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
+            </template>
+            <template #bodyAppend>
+                <tr><td colspan="12" class="table-pagination">
+                    <va-pagination
+                    v-model="currentPage"
+                    input
+                    :pages="pages"
+                    />
+                </td></tr>
+            </template>
+          </va-data-table>
       </div>
 	</div>
 </template>
@@ -132,8 +148,30 @@ export default {
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
+            columns: [
+                { key: 'Name', label:"Nazwa", sortable: true },
+                { key: 'Author', label:"Autor", sortable: true },
+                { key: 'CreationDate', label:"Data stworzenia" },
+                { key: 'Paper', label:"Papier", sortable: true },
+                { key: 'Color', label:"Kolorystyka" },
+                { key: 'Service', label:"Usługi" },
+                { key: 'BindingType', label:"Rodzaj szycia" },
+                { key: 'OrderItemType', label:"Typ przedmiotu zamówienia" },
+                { key: 'Order', label:"Zamówienie" },
+                { key: 'OrderItem', label:"Przedmioty zamówienia" },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ],
+            perPage: 10,
+            currentPage: 1,
 		}
 	},
+    computed: {
+        pages() {
+            let c = parseInt(this.results.length/10, 10);
+            if(this.results.length%10 > 0) c+=1;
+            return c;
+        }
+    },
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
@@ -228,6 +266,12 @@ select option {
 
 #createDatePicker {
     cursor: pointer;
+}
+
+.table-pagination {
+    padding-top: 40px;
+    text-align: center;
+    text-align: -webkit-center;
 }
 
 </style>
