@@ -94,7 +94,23 @@
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
-          <p v-if="results"> {{ resultMessage }} </p>
+          <p v-if="results.length==0"> {{ resultMessage }} </p>
+          <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(actions)="{ rowIndex }">
+                <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
+                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
+                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
+            </template>
+            <template #bodyAppend>
+                <tr><td colspan="12" class="table-pagination">
+                    <va-pagination
+                    v-model="currentPage"
+                    input
+                    :pages="pages"
+                    />
+                </td></tr>
+            </template>
+          </va-data-table>
       </div>
 	</div>
 </template>
@@ -122,8 +138,28 @@ export default {
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
+            columns: [
+                { key: 'Name', label:"Nazwa", sortable: true },
+                { key: 'CreationDate', label:"Data stworzenia", sortable: true },
+                { key: 'DeliveryDate', label:"Data dostawy", sortable: true },
+                { key: 'OrderStatus', label:"Status zamówienia", sortable: true },
+                { key: 'RepresentativeName', label:"Reprezentant klienta" },
+                { key: 'Workers', label:"Przydzieleni pracownicy" },
+                { key: 'OrderItemType', label:"Typ przedmiotu zamówienia" },
+                { key: 'IsAuction', label:"Przetarg" },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ],
+            perPage: 10,
+            currentPage: 1,
 		}
 	},
+    computed: {
+        pages() {
+            let c = parseInt(this.results.length/10, 10);
+            if(this.results.length%10 > 0) c+=1;
+            return c;
+        }
+    },
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
@@ -133,7 +169,6 @@ export default {
             this.showResults = true;
             //API call
             //set result message or show table
-            this.resultMessage = "Brak wyników do wyświetlenia";
         },
         showThatPicker(id) {
             const dateInput = document.getElementById(id);
@@ -219,5 +254,11 @@ select option {
 #createDatePicker,
 #deliveryDatePicker {
     cursor: pointer;
+}
+
+.table-pagination {
+    padding-top: 40px;
+    text-align: center;
+    text-align: -webkit-center;
 }
 </style>
