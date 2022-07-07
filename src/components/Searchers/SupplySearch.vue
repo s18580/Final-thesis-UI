@@ -62,12 +62,23 @@
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
-            <va-data-table
-                v-if="areResultsLoaded()"
-                :items="results"
-                :columns="tableResultColumns"
-            />
-          <p v-if="!areResultsLoaded()"> {{ resultMessage }} </p>
+          <p v-if="results.length==0"> {{ resultMessage }} </p>
+          <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(actions)="{ rowIndex }">
+                <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
+                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
+                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
+            </template>
+            <template #bodyAppend>
+                <tr><td colspan="8" class="table-pagination">
+                    <va-pagination
+                    v-model="currentPage"
+                    input
+                    :pages="pages"
+                    />
+                </td></tr>
+            </template>
+          </va-data-table>
       </div>
 	</div>
 </template>
@@ -91,22 +102,30 @@ export default {
             representatives: [],
             supplyReceived: false,
             results: [],
-            resultsColumns: [
-                {key: 'SupplyDate', label: 'Data dostawy', sortable: true},
-                {key: 'OrderItem.Name', label: 'Nazwa zamówienia', sortable: true},
-                {key: 'ItemDescription', label: 'Opis', sortable: true},
-                {key: 'IsReceived', label: 'Odebrana', sortable: true},
-                {key: 'SupplyItemType.Name', label: 'Typ', sortable: true},
+            resultMessage: "Brak wyników do wyświetlenia",
+            columns: [
+                { key: 'SupplyDate', label:"Data dostawy", sortable: true },
+                { key: 'OrderName', label:"Nazwa zamówienia", sortable: true },
+                { key: 'EmailAddress', label:"Typ", sortable: true },
+                { key: 'IsReceived', label:"Odebrana" },
+                { key: 'SupplierName', label:"Dostawca" },
+                { key: 'RepresentativeName', label:"Reprezentant" },
+                { key: 'actions', label:"Akcje", width: 80 },
             ],
-            resultMessage: "Brak wyników do wyświetlenia"
+            perPage: 10,
+            currentPage: 1,
 		}
 	},
+    computed: {
+        pages() {
+            let c = parseInt(this.results.length/10, 10);
+            if(this.results.length%10 > 0) c+=1;
+            return c;
+        }
+    },
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
-        },
-        areResultsLoaded() {
-            return this.results.length > 0;
         },
         async searchForResults() {
             this.largeMode = false;
@@ -228,6 +247,12 @@ select option {
 
 #deliveryDatePicker {
     cursor: pointer;
+}
+
+.table-pagination {
+    padding-top: 40px;
+    text-align: center;
+    text-align: -webkit-center;
 }
 
 </style>
