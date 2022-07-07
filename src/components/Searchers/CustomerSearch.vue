@@ -82,7 +82,23 @@
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
-          <p v-if="results"> {{ resultMessage }} </p>
+          <p v-if="results.length==0"> {{ resultMessage }} </p>
+          <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(actions)="{ rowIndex }">
+                <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
+                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
+                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
+            </template>
+            <template #bodyAppend>
+                <tr><td colspan="8" class="table-pagination">
+                    <va-pagination
+                    v-model="currentPage"
+                    input
+                    :pages="pages"
+                    />
+                </td></tr>
+            </template>
+          </va-data-table>
       </div>
 	</div>
 </template>
@@ -107,8 +123,26 @@ export default {
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
+            columns: [
+                { key: 'Name', label:"Nazwa", sortable: true },
+                { key: 'PhoneNumber', label:"Telefon", sortable: true },
+                { key: 'EmailAddress', label:"Email", sortable: true },
+                { key: 'NIP', label:"NIP" },
+                { key: 'Regon', label:"REGON" },
+                { key: 'WorkerName', label:"Pracownik prowadzący" },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ],
+            perPage: 10,
+            currentPage: 1,
 		}
 	},
+    computed: {
+        pages() {
+            let c = parseInt(this.results.length/10, 10);
+            if(this.results.length%10 > 0) c+=1;
+            return c;
+        }
+    },
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
@@ -191,6 +225,12 @@ select option {
 #inner-show-more {
     cursor: pointer;
     max-width: 170px;
+}
+
+.table-pagination {
+    padding-top: 40px;
+    text-align: center;
+    text-align: -webkit-center;
 }
 
 </style>
