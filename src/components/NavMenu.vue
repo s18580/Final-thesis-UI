@@ -29,7 +29,7 @@
             Zarządzaj kontami
           </div>
           </router-link>
-          <router-link :to="{ name: 'ErrorPage'}">
+          <router-link :to="{ name: 'WorkerForm'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj konto
           </div>

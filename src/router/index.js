@@ -5,6 +5,7 @@ import MaintenancePage from '../components/TechnicalPages/MaintenancePage.vue'
 import SupplierForm from '../components/Forms/SupplierForm.vue'
 import OrderForm from '../components/Forms/OrderForm.vue'
 import CustomerForm from '../components/Forms/CustomerForm.vue'
+import WorkerForm from '../components/Forms/WorkerForm.vue'
 import SupplierSearch from '../components/Searchers/SupplierSearch.vue'
 import SupplySearch from '../components/Searchers/SupplySearch.vue'
 import WorkerSearch from '../components/Searchers/WorkerSearch.vue'
@@ -43,6 +44,11 @@ const routes = [
     path: '/customerForm',
     name: 'CustomerForm',
     component: CustomerForm
+  },
+  {
+    path: '/workerForm',
+    name: 'WorkerForm',
+    component: WorkerForm
   },
   {
     path: '/supplierSearch',
