@@ -206,6 +206,6 @@ select option {
     padding-top: 40px;
     text-align: center;
     text-align: -webkit-center;
-  }
+}
 
 </style>
