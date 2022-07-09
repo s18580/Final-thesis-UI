@@ -37,7 +37,7 @@
         </div>
       </li>
       <li class="nav-menu-item">
-        <router-link :to="{ name: 'home'}">
+        <router-link :to="{ name: 'ProgramConstants'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-motherboard-fill" viewBox="0 0 16 16">
               <path d="M5 7h3V4H5v3Z"/>
