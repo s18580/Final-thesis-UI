@@ -9,8 +9,8 @@
                 <p> {{ listLabel }} </p>
                 <va-data-table :items="myArray" :columns="columns" striped :hoverable="true" :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
                     <template #cell(actions)="{ rowIndex }">
-                        <va-button flat icon="edit" @click="openModalToEditItemById(rowIndex)" />
-                        <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
+                        <va-button flat icon="edit" @click="openEditModal(rowIndex)" />
+                        <va-button flat icon="delete" @click="openDeleteModal(rowIndex)" />
                     </template>
                     <template #bodyAppend>
                     <tr><td colspan="3" class="table-pagination">
@@ -24,10 +24,23 @@
                 </va-data-table>
             </div>
         </div>
+        <ConstantsEdit v-model="showEditModal" :constantValue="selectedConstant" @close="closeEditModal()" @editConstant="editConstant($event)" />
+        <va-modal v-model="showDeleteModal"
+            message="Czy napewno chcesz to usunąć ?"
+            size="small"
+            title="Usuń stałą"
+            cancel-text="Anuluj"
+            ok-text="Usuń"
+            @cancel="closeDeleteModal()"
+            @click-outside="closeDeleteModal()"
+            @ok="deleteConstant()"
+        />
     </div>
 </template>
 
 <script>
+import ConstantsEdit from './Modals/ConstantsEdit.vue';
+
 export default {
     name: 'ConstantsList',
     props: {
@@ -42,17 +55,21 @@ export default {
             default: null,
         }
     },
+    components: { ConstantsEdit },
     data() {
         return {
             listLabel: "Typy plików",
             resultMessage: "Brak stałych",
             columns: [
-                { key: 'Name', label:"Nazwa", sortable: true },
+                { key: 'Name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             myArray: [{Id: 1, Name: 'Graficzny'}, {Id: 2, Name: 'Pocztowy'}, {Id: 3, Name: 'Wymagania'}, {Id: 4, Name: 'Wzory'}, {Id: 5, Name: 'Wyniki'}, {Id: 6, Name: 'Umowa'},{Id: 1, Name: 'Graficzny'}],
             perPage: 6,
             currentPage: 1,
+            showDeleteModal: false,
+            showEditModal: false,
+            selectedConstant: {},
         }
     },
     computed: {
@@ -62,7 +79,32 @@ export default {
             return c;
         }
     },
-    // dodać modala z dodawaniem oraz obsługę danych z propsów
+    methods: {
+        openDeleteModal(s) {
+            this.selectedConstant = this.myArray[s];
+            this.showDeleteModal = true;
+        },
+        openEditModal(s) {
+            this.selectedConstant = this.myArray[s];
+            this.showEditModal = true;
+        },
+        closeDeleteModal() {
+            this.showDeleteModal = false;
+        },
+        closeEditModal() {
+            this.showEditModal = false;
+        },
+        deleteConstant() {
+            this.closeDeleteModal();
+            // call do API o usunięcie
+            // update listy
+        },
+        editConstant(e) {
+            this.closeEditModal();
+            // call do API o edycję
+            // update listy
+        },
+    }
 }
 </script>
 
