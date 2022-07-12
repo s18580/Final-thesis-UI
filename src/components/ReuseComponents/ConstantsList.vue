@@ -1,7 +1,7 @@
 <template>
     <div id="mainCo">
         <div id="buttonCo">
-            <va-button color="primary">Dodaj stałą</va-button>
+            <va-button @click="openAddModal()" color="primary">Dodaj stałą</va-button>
         </div>
         <div>
             <p v-if="myArray.length==0"> {{ resultMessage }} </p>
@@ -24,7 +24,7 @@
                 </va-data-table>
             </div>
         </div>
-        <ConstantsEdit v-model="showEditModal" :constantValue="selectedConstant" @close="closeEditModal()" @editConstant="editConstant($event)" />
+        <ConstantsEdit v-model="showEditModal" :constantValue="selectedConstant" @close="closeEditModal()" @editConstant="editConstant($event)" @addConstant="addConstant($event)" />
         <va-modal v-model="showDeleteModal"
             message="Czy napewno chcesz to usunąć ?"
             size="small"
@@ -68,7 +68,7 @@ export default {
             currentPage: 1,
             showDeleteModal: false,
             showEditModal: false,
-            selectedConstant: {},
+            selectedConstant: null,
         }
     },
     computed: {
@@ -82,6 +82,16 @@ export default {
         this.myArray = this.constants;
     },
     methods: {
+        openAddModal() {
+            this.selectedConstant = null;
+            this.showEditModal = true;
+        },
+        addConstant(e) {
+            this.closeEditModal();
+            console.log(e);
+            // call do API o dodanie
+            // update listy 
+        },
         openDeleteModal(s) {
             this.selectedConstant = this.myArray[s];
             this.showDeleteModal = true;
