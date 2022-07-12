@@ -82,7 +82,7 @@
             Wyszukaj zamówienie
           </div>
           </router-link>
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'OngoingOrders'}">
           <div class="px-2 py-3 item-content inner">
             W trakcie realizacji
           </div>
