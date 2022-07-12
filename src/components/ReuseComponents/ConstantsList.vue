@@ -6,7 +6,7 @@
         <div>
             <p v-if="myArray.length==0"> {{ resultMessage }} </p>
             <div v-else id="listCo">
-                <p> {{ listLabel }} </p>
+                <p> {{ this.listLabel }} </p>
                 <va-data-table :items="myArray" :columns="columns" striped :hoverable="true" :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
                     <template #cell(actions)="{ rowIndex }">
                         <va-button flat icon="edit" @click="openEditModal(rowIndex)" />
@@ -44,7 +44,7 @@ import ConstantsEdit from './Modals/ConstantsEdit.vue';
 export default {
     name: 'ConstantsList',
     props: {
-        label: {
+        listLabel: {
             type: String,
             required: true,
             default: "",
@@ -58,13 +58,12 @@ export default {
     components: { ConstantsEdit },
     data() {
         return {
-            listLabel: "Typy plików",
             resultMessage: "Brak stałych",
             columns: [
                 { key: 'Name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
-            myArray: [{Id: 1, Name: 'Graficzny'}, {Id: 2, Name: 'Pocztowy'}, {Id: 3, Name: 'Wymagania'}, {Id: 4, Name: 'Wzory'}, {Id: 5, Name: 'Wyniki'}, {Id: 6, Name: 'Umowa'},{Id: 1, Name: 'Graficzny'}],
+            myArray: [],
             perPage: 6,
             currentPage: 1,
             showDeleteModal: false,
@@ -78,6 +77,9 @@ export default {
             if(this.myArray.length%6 > 0) c+=1;
             return c;
         }
+    },
+    beforeUpdate() {
+        this.myArray = this.constants;
     },
     methods: {
         openDeleteModal(s) {
@@ -101,6 +103,7 @@ export default {
         },
         editConstant(e) {
             this.closeEditModal();
+            console.log(e);
             // call do API o edycję
             // update listy
         },

@@ -25,7 +25,7 @@
             <va-sidebar-item/>
         </va-sidebar>
         <div id="mainCo">
-            <ConstantsList />
+            <ConstantsList :listLabel="constantTitle" :constants="constantData"/>
         </div>
     </div>
 </template>
@@ -49,19 +49,16 @@ export default {
                 { title: 'Usługa' },
                 { title: 'Cennik' },
             ],
-            showFileStatus: false,
-            showFileType: true,
-            showBindingType: false,
-            showDeliveryType: false,
-            showOrderStatus: false,
-            showWorksite: false,
-            showSupplyItemType: false,
-            showOrderItemType: false,
-            showService: false,
-            showPriceList: false,
+            constantTitle: "",
+            constantData: [],
 		}
 	},
     components: {ConstantsList},
+    mounted() {
+        //api calls for an arrays
+        this.constantData = [{Id: 1, Name: 'Graficzny'}, {Id: 2, Name: 'Pocztowy'}, {Id: 3, Name: 'Wymagania'}, {Id: 4, Name: 'Wzory'}, {Id: 5, Name: 'Wyniki'}, {Id: 6, Name: 'Umowa'},{Id: 11, Name: 'Graficzny2'}];
+        this.constantTitle = "Typy plików";
+    },
 	methods: {
         activeSwitch(e) {
             let clickedItem = e.path.find(element => element.className.includes("clicableItem"));
@@ -80,51 +77,39 @@ export default {
             let selectedItemIndex = this.dictionaryData.findIndex(element => element.title == selectedTitle);
             this.dictionaryData[selectedItemIndex].active = true;
         },
-        switchShowOff() {
-            this.showFileStatus = false;
-            this.showFileType = false;
-            this.showBindingType = false;
-            this.showDeliveryType = false;
-            this.showOrderStatus = false;
-            this.showWorksite = false;
-            this.showSupplyItemType = false;
-            this.showOrderItemType = false;
-            this.showService = false;
-            this.showPriceList = false;
-        },
         showSelectedTable(selectedTitle) {   
             this.switchShowOff();
 
             switch(selectedTitle) {
             case 'Status pliku':
-                this.showFileStatus = false;
+                //api call
                 break;
             case 'Typ pliku':
-                this.showFileType = false;
+                //api call
                 break;
             case 'Typ wiązania':
-                this.showBindingType = false;
+                //api call
                 break;
             case 'Rodzaj dostawy':
-                this.showDeliveryType = false;
+                //api call
                 break;
             case 'Status zamówienia':
-                this.showOrderStatus = false
+                //api call
                 break;
             case 'Stanowisko pracy':
-                this.showWorksite = false;
+                //api call
                 break;
             case 'Typ przedmiotu dostawy':
-                this.showSupplyItemType = false;
+                //api call
                 break;
             case 'Typ przedmiotu zamówienia':
-                this.showOrderItemType = false;
+                //api call
                 break;
             case 'Usługa':
-                this.showService = false;
+                //api call
                 break;
             case 'Cennik':
-                this.showPriceList = false;
+                //api call
                 break;
             default:
                 // do nothing
