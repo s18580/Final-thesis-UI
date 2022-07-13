@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ErrorPage from '../components/TechnicalPages/ErrorPage.vue'
 import MaintenancePage from '../components/TechnicalPages/MaintenancePage.vue'
 import ProgramConstants from '../components/ProgramConstants.vue'
+import UserMenegment from '../components/UserMenegment.vue'
 import OngoingOrders from '../components/OngoingOrders.vue'
 import SupplierForm from '../components/Forms/SupplierForm.vue'
 import OrderForm from '../components/Forms/OrderForm.vue'
@@ -36,6 +37,11 @@ const routes = [
     path: '/programConstants',
     name: 'ProgramConstants',
     component: ProgramConstants
+  },
+  {
+    path: '/userMenegment',
+    name: 'UserMenegment',
+    component: UserMenegment
   },
   {
     path: '/ongoingOrders',

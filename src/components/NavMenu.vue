@@ -24,7 +24,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseAccountsMenegment">
-          <router-link :to="{ name: 'MaintenancePage'}">
+          <router-link :to="{ name: 'UserMenegment'}">
           <div class="px-2 py-3 item-content inner">
             Zarządzaj kontami
           </div>

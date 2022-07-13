@@ -34,7 +34,7 @@
 import ConstantsList from './ReuseComponents/ConstantsList.vue';
 
 export default {
-  name: 'ProgramConstants',
+    name: 'ProgramConstants',
 	data() {
 		return {
 			dictionaryData: [
