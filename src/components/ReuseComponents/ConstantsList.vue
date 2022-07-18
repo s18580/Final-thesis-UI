@@ -24,7 +24,14 @@
                 </va-data-table>
             </div>
         </div>
-        <ConstantsEdit v-model="showEditModal" :constantValue="selectedConstant" @close="closeEditModal()" @editConstant="editConstant($event)" @addConstant="addConstant($event)" />
+        <ConstantsEdit 
+            v-model="showEditModal"
+            :constantValue="selectedConstant"
+            :constantType="constantType"
+            @close="closeEditModal()"
+            @editConstant="editConstant($event)"
+            @addConstant="addConstant($event)"
+        />
         <va-modal v-model="showDeleteModal"
             message="Czy napewno chcesz to usunąć ?"
             size="small"
@@ -53,14 +60,20 @@ export default {
             type: Array,
             required: true,
             default: null,
-        }
+        },
+        constantType: {
+            type: String,
+            required: true,
+            default: "",
+        },
     },
+    emits: ["updateList", "deleteConstant", "editConstant", "addConstant"],
     components: { ConstantsEdit },
     data() {
         return {
             resultMessage: "Brak stałych",
             columns: [
-                { key: 'Name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             myArray: [],
@@ -88,9 +101,7 @@ export default {
         },
         addConstant(e) {
             this.closeEditModal();
-            console.log(e);
-            // call do API o dodanie
-            // update listy 
+            this.$emit('addConstant', { Name: e.Name });
         },
         openDeleteModal(s) {
             this.selectedConstant = this.myArray[s];
@@ -108,14 +119,15 @@ export default {
         },
         deleteConstant() {
             this.closeDeleteModal();
-            // call do API o usunięcie
-            // update listy
+            console.log(this.selectedConstant);
+            this.$emit('deleteConstant', { Constant: this.selectedConstant });
         },
         editConstant(e) {
             this.closeEditModal();
-            console.log(e);
-            // call do API o edycję
-            // update listy
+            this.$emit('editConstant', { Id: e.Id, Name: e.Name });
+        },
+        updateMyArray() {
+            this.$emit('updateList');
         },
     }
 }
