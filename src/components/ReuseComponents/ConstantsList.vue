@@ -13,7 +13,7 @@
                         <va-button flat icon="delete" @click="openDeleteModal(rowIndex)" />
                     </template>
                     <template #bodyAppend>
-                    <tr><td colspan="3" class="table-pagination">
+                    <tr><td colspan="6" class="table-pagination">
                         <va-pagination
                         v-model="currentPage"
                         input
@@ -24,7 +24,14 @@
                 </va-data-table>
             </div>
         </div>
-        <ConstantsEdit v-model="showEditModal" :constantValue="selectedConstant" @close="closeEditModal()" @editConstant="editConstant($event)" @addConstant="addConstant($event)" />
+        <ConstantsEdit 
+            v-model="showEditModal"
+            :constantValue="selectedConstant"
+            :constantType="constantType"
+            @close="closeEditModal()"
+            @editConstant="editConstant($event)"
+            @addConstant="addConstant($event)"
+        />
         <va-modal v-model="showDeleteModal"
             message="Czy napewno chcesz to usunąć ?"
             size="small"
@@ -53,22 +60,27 @@ export default {
             type: Array,
             required: true,
             default: null,
-        }
+        },
+        constantType: {
+            type: String,
+            required: true,
+            default: "",
+        },
     },
+    emits: ["deleteConstant", "editConstant", "addConstant"],
     components: { ConstantsEdit },
     data() {
         return {
             resultMessage: "Brak stałych",
-            columns: [
-                { key: 'Name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
-                { key: 'actions', label:"Akcje", width: 80 },
-            ],
+            columns: [],
             myArray: [],
             perPage: 6,
             currentPage: 1,
             showDeleteModal: false,
             showEditModal: false,
             selectedConstant: null,
+            serviceNameType: false,
+            priceListType: false,
         }
     },
     computed: {
@@ -80,6 +92,31 @@ export default {
     },
     beforeUpdate() {
         this.myArray = this.constants;
+        this.currentPage = 1;
+        this.serviceNameType = this.constantType === 'Usługa';
+        this.priceListType = this.constantType === 'Cennik';
+
+        if(this.serviceNameType) {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'defaultPrice', label:"Cena domyślna", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'minimumPrice', label:"Cena minimalna", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'minimumCirculation', label:"Nakład minimalny", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        }
+        else if(this.priceListType) {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'price', label:"Cena", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        } else {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        }
     },
     methods: {
         openAddModal() {
@@ -88,9 +125,7 @@ export default {
         },
         addConstant(e) {
             this.closeEditModal();
-            console.log(e);
-            // call do API o dodanie
-            // update listy 
+            this.$emit('addConstant', e);
         },
         openDeleteModal(s) {
             this.selectedConstant = this.myArray[s];
@@ -108,14 +143,11 @@ export default {
         },
         deleteConstant() {
             this.closeDeleteModal();
-            // call do API o usunięcie
-            // update listy
+            this.$emit('deleteConstant', { Constant: this.selectedConstant });
         },
         editConstant(e) {
             this.closeEditModal();
-            console.log(e);
-            // call do API o edycję
-            // update listy
+            this.$emit('editConstant', e);
         },
     }
 }

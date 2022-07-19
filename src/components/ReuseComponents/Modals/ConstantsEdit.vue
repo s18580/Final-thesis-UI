@@ -7,8 +7,33 @@
     >
         <div class="background-modal">
             <va-input
-                v-model="constantName"
+                class="mb-3"
+                v-model="constantNewName"
                 label="Nowa nazwa"
+            />
+            <va-input
+                class="mb-3"
+                v-if="priceListType"
+                v-model="constantPrice"
+                label="Nowa cena"
+            />
+            <va-input
+                class="mb-3"
+                v-if="serviceNameType"
+                v-model="constantDefaultPrice"
+                label="Nowa cena domyślna"
+            />
+            <va-input
+                class="mb-3"
+                v-if="serviceNameType"
+                v-model="constantMinPrice"
+                label="Nowa cena minimalna"
+            />
+            <va-input
+                class="mb-3"
+                v-if="serviceNameType"
+                v-model="constantMinCirculation"
+                label="Nowy nakład minimalny"
             />
         </div>
 
@@ -28,14 +53,24 @@ export default {
         required: false,
         default: null
     },
+    constantType: {
+        type: String,
+        required: true,
+        default: ""
+    },
   },
   emits: ["editConstant", "close", "addConstant"],
 	data() {
 		return {
             buttonMessage: "",
             titleMessage: "",
-            constantId: "",
-            constantName: "",
+            constantNewName: "",
+            constantPrice: "",
+            constantDefaultPrice: "",
+            constantMinPrice: "",
+            constantMinCirculation: "",
+            serviceNameType: false,
+            priceListType: false,
             showModal: true,
 		}
 	},
@@ -44,23 +79,33 @@ export default {
             this.$emit('close');
         },
         editConstant() {
-            this.$emit('editConstant', { Id: this.constantId, Name: this.constantName });
+            if(this.constantValue !== null) {
+                this.$emit('editConstant', { Constant: this.constantValue, NewValues: { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation }});
+            } else {
+                this.$emit('addConstant', { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation });
+            }
         },
-        addConstant(){
-            this.$emit('addConstant', { Name: this.constantName });
-        }
 	},
     beforeUpdate() {
+        this.serviceNameType = this.constantType === 'Usługa';
+        this.priceListType = this.constantType === 'Cennik';
+
         if(this.constantValue !== null){
             this.titleMessage = "Edytuj stałą";
             this.buttonMessage = "Edytuj";
-            this.constantName = this.constantValue.Name;
-            this.constantId = this.constantValue.Id;
+            this.constantNewName = this.constantValue.name;
+            this.constantPrice = this.constantValue.price;
+            this.constantDefaultPrice = this.constantValue.defaultPrice;
+            this.constantMinPrice = this.constantValue.minimumPrice;
+            this.constantMinCirculation = this.constantValue.minimumCirculation;
         }else{
             this.titleMessage = "Dodaj stałą";
             this.buttonMessage = "Dodaj";
-            this.constantName = "";
-            this.constantId = "";
+            this.constantNewName = "";
+            this.constantPrice = "";
+            this.constantDefaultPrice = "";
+            this.constantMinPrice = "";
+            this.constantMinCirculation = "";
         }
     }
 }
