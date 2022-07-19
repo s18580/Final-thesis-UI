@@ -13,7 +13,7 @@
                         <va-button flat icon="delete" @click="openDeleteModal(rowIndex)" />
                     </template>
                     <template #bodyAppend>
-                    <tr><td colspan="3" class="table-pagination">
+                    <tr><td colspan="6" class="table-pagination">
                         <va-pagination
                         v-model="currentPage"
                         input
@@ -67,21 +67,20 @@ export default {
             default: "",
         },
     },
-    emits: ["updateList", "deleteConstant", "editConstant", "addConstant"],
+    emits: ["deleteConstant", "editConstant", "addConstant"],
     components: { ConstantsEdit },
     data() {
         return {
             resultMessage: "Brak stałych",
-            columns: [
-                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
-                { key: 'actions', label:"Akcje", width: 80 },
-            ],
+            columns: [],
             myArray: [],
             perPage: 6,
             currentPage: 1,
             showDeleteModal: false,
             showEditModal: false,
             selectedConstant: null,
+            serviceNameType: false,
+            priceListType: false,
         }
     },
     computed: {
@@ -93,6 +92,31 @@ export default {
     },
     beforeUpdate() {
         this.myArray = this.constants;
+        this.currentPage = 1;
+        this.serviceNameType = this.constantType === 'Usługa';
+        this.priceListType = this.constantType === 'Cennik';
+
+        if(this.serviceNameType) {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'defaultPrice', label:"Cena domyślna", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'minimumPrice', label:"Cena minimalna", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'minimumCirculation', label:"Nakład minimalny", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        }
+        else if(this.priceListType) {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'price', label:"Cena", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        } else {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        }
     },
     methods: {
         openAddModal() {
@@ -101,7 +125,7 @@ export default {
         },
         addConstant(e) {
             this.closeEditModal();
-            this.$emit('addConstant', { Name: e.Name });
+            this.$emit('addConstant', e);
         },
         openDeleteModal(s) {
             this.selectedConstant = this.myArray[s];
@@ -119,15 +143,11 @@ export default {
         },
         deleteConstant() {
             this.closeDeleteModal();
-            console.log(this.selectedConstant);
             this.$emit('deleteConstant', { Constant: this.selectedConstant });
         },
         editConstant(e) {
             this.closeEditModal();
-            this.$emit('editConstant', { Id: e.Id, Name: e.Name });
-        },
-        updateMyArray() {
-            this.$emit('updateList');
+            this.$emit('editConstant', e);
         },
     }
 }

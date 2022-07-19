@@ -8,7 +8,7 @@
         <div class="background-modal">
             <va-input
                 class="mb-3"
-                v-model="constantName"
+                v-model="constantNewName"
                 label="Nowa nazwa"
             />
             <va-input
@@ -64,8 +64,7 @@ export default {
 		return {
             buttonMessage: "",
             titleMessage: "",
-            constantId: "",
-            constantName: "",
+            constantNewName: "",
             constantPrice: "",
             constantDefaultPrice: "",
             constantMinPrice: "",
@@ -81,9 +80,9 @@ export default {
         },
         editConstant() {
             if(this.constantValue !== null) {
-                this.$emit('editConstant', { Id: this.constantId, Name: this.constantName });
+                this.$emit('editConstant', { Constant: this.constantValue, NewValues: { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation }});
             } else {
-                this.$emit('addConstant', { Name: this.constantName });
+                this.$emit('addConstant', { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation });
             }
         },
 	},
@@ -94,17 +93,15 @@ export default {
         if(this.constantValue !== null){
             this.titleMessage = "Edytuj stałą";
             this.buttonMessage = "Edytuj";
-            this.constantName = this.constantValue.Name;
-            this.constantId = this.constantValue.Id;
-            this.constantPrice = this.constantValue.Price;
-            this.constantDefaultPrice = this.constantValue.DefaultPrice;
-            this.constantMinPrice = this.constantValue.MinPrice;
-            this.constantMinCirculation = this.constantValue.MinCirculation;
+            this.constantNewName = this.constantValue.name;
+            this.constantPrice = this.constantValue.price;
+            this.constantDefaultPrice = this.constantValue.defaultPrice;
+            this.constantMinPrice = this.constantValue.minimumPrice;
+            this.constantMinCirculation = this.constantValue.minimumCirculation;
         }else{
             this.titleMessage = "Dodaj stałą";
             this.buttonMessage = "Dodaj";
-            this.constantName = "";
-            this.constantId = "";
+            this.constantNewName = "";
             this.constantPrice = "";
             this.constantDefaultPrice = "";
             this.constantMinPrice = "";

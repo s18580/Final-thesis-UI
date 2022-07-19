@@ -29,7 +29,6 @@
                 :listLabel="constantTitle"
                 :constants="constantData"
                 :constantType="activeConstant"
-                @updateList="updateList()"
                 @deleteConstant="deleteElement($event)"
                 @editConstant="editElement($event)"
                 @addConstant="addElement($event)"
@@ -51,7 +50,7 @@ export default {
                 { title: 'Status pliku' },
                 { title: 'Typ pliku', active: true },
                 { title: 'Typ wiązania' },
-                { title: 'Rodzaj dostawy' },
+                { title: 'Sposób dostawy' },
                 { title: 'Status zamówienia' },
                 { title: 'Stanowisko pracy' },
                 { title: 'Typ przedmiotu dostawy' },
@@ -186,38 +185,36 @@ export default {
             }
         },
         async deleteElement(e) {
-            console.log('tu');
-            console.log(e.Constant.idWorksite);
             switch(this.activeConstant) {
                 case 'Status pliku':
-                    await this.callApiForAction('/FileStatus/deleteFileStatus', 'delete', { idFileStatus: e.Id });
+                    await this.callApiForAction('/FileStatus/deleteFileStatus', 'delete', { idFileStatus: e.Constant.idFileStatus });
                     break;
                 case 'Typ pliku':
-                    await this.callApiForAction('/FileType/deleteFileType', 'delete', { idFileType: e.Id });
+                    await this.callApiForAction('/FileType/deleteFileType', 'delete', { idFileType: e.Constant.idFileType });
                     break;
                 case 'Typ wiązania':
-                    await this.callApiForAction('/BindingType/deleteBindingType', 'delete', { idBindingType: e.Id });
+                    await this.callApiForAction('/BindingType/deleteBindingType', 'delete', { idBindingType: e.Constant.idBindingType });
                     break;
                 case 'Sposób dostawy':
-                    await this.callApiForAction('/DeliveryType/deleteDeliveryType', 'delete', { idDeliveryType: e.Id });
+                    await this.callApiForAction('/DeliveryType/deleteDeliveryType', 'delete', { idDeliveryType: e.Constant.idDeliveryType });
                     break;
                 case 'Status zamówienia':
-                    await this.callApiForAction('/OrderStatus/deleteOrderStatus', 'delete', { idOrderStatus: e.Id });
+                    await this.callApiForAction('/OrderStatus/deleteOrderStatus', 'delete', { idOrderStatus: e.Constant.idStatus });
                     break;
                 case 'Stanowisko pracy':
                     await this.callApiForAction('/Worksite/deleteWorksite', 'delete', { idWorksite: e.Constant.idWorksite });
                     break;
                 case 'Typ przedmiotu dostawy':
-                    await this.callApiForAction('/SupplyItemType/deleteSupplyItemsType', 'delete', { idSupplyItemType: e.Id });
+                    await this.callApiForAction('/SupplyItemType/deleteSupplyItemsType', 'delete', { idSupplyItemType: e.Constant.idSupplyItemType });
                     break;
                 case 'Typ przedmiotu zamówienia':
-                    await this.callApiForAction('/OrderItemType/deleteOrderItemsType', 'delete', { idOrderItemType: e.Id });
+                    await this.callApiForAction('/OrderItemType/deleteOrderItemsType', 'delete', { idOrderItemType: e.Constant.idOrderItemType });
                     break;
                 case 'Usługa':
-                    await this.callApiForAction('/ServiceName/deleteServiceName', 'delete', { idServiceName: e.Id });
+                    await this.callApiForAction('/ServiceName/deleteServiceName', 'delete', { idServiceName: e.Constant.idServiceName });
                     break;
                 case 'Cennik':
-                    await this.callApiForAction('/PriceList/deletePriceList', 'delete', { idPriceList: e.Id });
+                    await this.callApiForAction('/PriceList/deletePriceList', 'delete', { idPriceList: e.Constant.idPriceList });
                     break;
                 default:
                     // do nothing
@@ -229,34 +226,34 @@ export default {
         async editElement(e) {
             switch(this.activeConstant) {
                 case 'Status pliku':
-                    await this.callApiForAction('/FileStatus/updateFileStatus', 'edit', { idFileStatus: e.Id, name: e.Name });
+                    await this.callApiForAction('/FileStatus/updateFileStatus', 'edit', { idFileStatus: e.Constant.idFileStatus, name: e.NewValues.Name });
                     break;
                 case 'Typ pliku':
-                    await this.callApiForAction('/FileType/updateFileType', 'edit', { idFileType: e.Id, name: e.Name });
+                    await this.callApiForAction('/FileType/updateFileType', 'edit', { idFileType: e.Constant.idFileType, name: e.NewValues.Name });
                     break;
                 case 'Typ wiązania':
-                    await this.callApiForAction('/BindingType/updateBindingType', 'edit', { idBindingType: e.Id, name: e.Name });
+                    await this.callApiForAction('/BindingType/updateBindingType', 'edit', { idBindingType: e.Constant.idBindingType, name: e.NewValues.Name });
                     break;
                 case 'Sposób dostawy':
-                    await this.callApiForAction('/DeliveryType/updateDeliveryType', 'edit', { idDeliveryType: e.Id, name: e.Name });
+                    await this.callApiForAction('/DeliveryType/updateDeliveryType', 'edit', { idDeliveryType: e.Constant.idDeliveryType, name: e.NewValues.Name });
                     break;
                 case 'Status zamówienia':
-                    await this.callApiForAction('/OrderStatus/updateOrderStatus', 'edit', { idOrderStatus: e.Id, name: e.Name });
+                    await this.callApiForAction('/OrderStatus/updateOrderStatus', 'edit', { idOrderStatus: e.Constant.idStatus, name: e.NewValues.Name });
                     break;
                 case 'Stanowisko pracy':
-                    await this.callApiForAction('/Worksite/updateWorksite', 'edit', { idWorksite: e.Id, name: e.Name });
+                    await this.callApiForAction('/Worksite/updateWorksite', 'edit', { idWorksite: e.Constant.idWorksite, name: e.NewValues.NewValues.Name });
                     break;
                 case 'Typ przedmiotu dostawy':
-                    await this.callApiForAction('/SupplyItemType/updateSupplyItemsType', 'edit', { idSupplyItemType: e.Id, name: e.Name });
+                    await this.callApiForAction('/SupplyItemType/updateSupplyItemsType', 'edit', { idSupplyItemType: e.Constant.idSupplyItemType, name: e.NewValues.Name });
                     break;
                 case 'Typ przedmiotu zamówienia':
-                    await this.callApiForAction('/OrderItemType/updateOrderItemsType', 'edit', { idOrderItemType: e.Id, name: e.Name });
+                    await this.callApiForAction('/OrderItemType/updateOrderItemsType', 'edit', { idOrderItemType: e.Constant.idOrderItemType, name: e.NewValues.Name });
                     break;
                 case 'Usługa':
-                    await this.callApiForAction('/ServiceName/updateServiceName', 'edit', { idServiceName: e.Id, name: e.Name, defaultPrice: e.DefaultPrice, minimumPrice: e.MinPrice, minimumCirculation: e.MinCirculation });
+                    await this.callApiForAction('/ServiceName/updateServiceName', 'edit', { idServiceName: e.Constant.idServiceName, name: e.NewValues.Name, defaultPrice: e.NewValues.DefaultPrice, minimumPrice: e.NewValues.MinPrice, minimumCirculation: e.NewValues.MinCirculation });
                     break;
                 case 'Cennik':
-                    await this.callApiForAction('/PriceList/updatePriceList', 'edit', { idPriceList: e.Id, name: e.Name, price: e.Price });
+                    await this.callApiForAction('/PriceList/updatePriceList', 'edit', { idPriceList: e.Constant.idPriceList, name: e.NewValues.Name, price: e.NewValues.Price });
                     break;
                 default:
                     // do nothing
@@ -266,7 +263,6 @@ export default {
             this.updateList();
         },
         async addElement(e) {
-            console.log(e);
             switch(this.activeConstant) {
                 case 'Status pliku':
                     await this.callApiForAction('/FileStatus/createFileStatus', 'add', { name: e.Name });
