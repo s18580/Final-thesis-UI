@@ -175,11 +175,12 @@ export default {
         async submitForm() {
             if(this.validateForm(this.selectedRadioOption === 'Firma')){
                 let customerId = await this.createClient(this.selectedRadioOption === 'Firma');
-                //further validation needed
-                await this.createClientAddresses(customerId);
-                await this.createClientRepresentatives(customerId);
-                // delete after unsucces ?
-                this.$router.push('home');
+                if(customerId !== undefined) {
+                    await this.createClientAddresses(customerId);
+                    await this.createClientRepresentatives(customerId);
+                    // delete after unsucces ?
+                    this.$router.push('home');
+                }
             }
         },
         async createClientAddresses(customerId) {
@@ -250,6 +251,7 @@ export default {
                 });
 
             } else {
+                //create person customer
                 let callPath = "/Customer/createPersonCustomer"
                 let body = {
                     Name: this.customerName,
@@ -259,13 +261,33 @@ export default {
                     IdWorker: null
                 }
 
-                return await CallAPI.post(callPath, body)
+                let newCustomerId = await CallAPI.post(callPath, body)
                 .then(res => {
                     return res.data;
                 })
                 .catch(err => {
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                 });
+
+                // create representative as customer
+                callPath = "/Representative/createRepresentative"
+                body = {
+                    Name: this.customerName,
+                    LastName: this.customerLastName,
+                    PhoneNumber: this.customerPhone,
+                    EmailAddress: this.customerEmail,
+                    IdCustomer: newCustomerId
+                }
+
+                await CallAPI.post(callPath, body)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+
+                return newCustomerId;
             }
         },
         validateForm(isCompany) {
