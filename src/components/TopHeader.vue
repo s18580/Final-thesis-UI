@@ -53,11 +53,14 @@
 </template>
 
 <script>
+import { useUserStore } from '@/stores/UserStore';
+
 export default {
   name: 'TopHeader',
   computed: {
     userName () {
-      return this.$store.getters.userName
+      const userStore = useUserStore();
+      return userStore.userName;
     },
     userInitials () {
       let nameWords = this.userName.split(' ')
