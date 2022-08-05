@@ -72,6 +72,7 @@ export default {
       const userStore = useUserStore();
       userStore.$reset();
       this.$router.push({ name: 'LoginPage' });
+      this.$vaToast.init({ message: 'Wylogowano pomyślnie.', color: 'success', duration: 3000 })
     }
   }
 }
