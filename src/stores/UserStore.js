@@ -23,6 +23,7 @@ export const useUserStore = defineStore('UserStore', {
     },
 
     actions: {
-
-    }
+        
+    },
+    persist: true,
   })
