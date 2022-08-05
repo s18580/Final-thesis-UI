@@ -11,7 +11,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseAccountsMenegment" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
@@ -36,7 +36,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')">
         <router-link :to="{ name: 'ProgramConstants'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-motherboard-fill" viewBox="0 0 16 16">
@@ -47,7 +47,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')">
         <router-link :to="{ name: 'home'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cloud-download-fill" viewBox="0 0 16 16">
@@ -239,15 +239,16 @@
 </template>
 
 <script>
+import { useUserStore } from '@/stores/UserStore';
+
 export default {
   name: 'NavMenu',
-  data() {
-    return {
-
-    }
-  },
   methods: {
     
+    checkIfAuthorized(role) {
+      const userStore = useUserStore();
+      return userStore.doesUserHasRole(role);
+    }
   }
 }
 </script>

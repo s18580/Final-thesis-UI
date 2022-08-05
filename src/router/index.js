@@ -26,82 +26,98 @@ const children = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { requiresAuth: true, authorize: ['Admin', 'Office', 'Production'] }
   },
   {
     path: '/notAllowed',
     name: 'NotAllowed',
-    component: NotAllowed
+    component: NotAllowed,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/programConstants',
     name: 'ProgramConstants',
-    component: ProgramConstants
+    component: ProgramConstants,
+    meta: { requiresAuth: true, authorize: ['Admin', 'Office', 'Production'] }
   },
   {
     path: '/userMenegment',
     name: 'UserMenegment',
-    component: UserMenegment
+    component: UserMenegment,
+    meta: { requiresAuth: true, authorize: ['Admin'] }
   },
   {
     path: '/ongoingOrders',
     name: 'OngoingOrders',
-    component: OngoingOrders
+    component: OngoingOrders,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/orderForm',
     name: 'OrderForm',
-    component: OrderForm
+    component: OrderForm,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/supplierForm',
     name: 'SupplierForm',
-    component: SupplierForm
+    component: SupplierForm,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/customerForm',
     name: 'CustomerForm',
-    component: CustomerForm
+    component: CustomerForm,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/workerForm',
     name: 'WorkerForm',
-    component: WorkerForm
+    component: WorkerForm,
+    meta: { requiresAuth: true, authorize: ['Admin'] }
   },
   {
     path: '/supplierSearch',
     name: 'SupplierSearch',
-    component: SupplierSearch
+    component: SupplierSearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/supplySearch',
     name: 'SupplySearch',
-    component: SupplySearch
+    component: SupplySearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/workerSearch',
     name: 'WorkerSearch',
-    component: WorkerSearch
+    component: WorkerSearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/representativeSearch',
     name: 'RepresentativeSearch',
-    component: RepresentativeSearch
+    component: RepresentativeSearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/customerSearch',
     name: 'CustomerSearch',
-    component: CustomerSearch
+    component: CustomerSearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/orderSearch',
     name: 'OrderSearch',
-    component: OrderSearch
+    component: OrderSearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
   {
     path: '/valuationSearch',
     name: 'ValuationSearch',
-    component: ValuationSearch
+    component: ValuationSearch,
+    meta: { requiresAuth: true, authorize: [] }
   },
 ]
 
@@ -109,23 +125,27 @@ const routes = [
   {
     path: '/login',
     name: 'LoginPage',
-    component: LoginPage
+    component: LoginPage,
+    meta: { requiresAuth: false }
   },
   {
     path: '/error',
     name: 'ErrorPage',
-    component: ErrorPage
+    component: ErrorPage,
+    meta: { requiresAuth: false }
   },
   {
     path: '/maintenance',
     name: 'MaintenancePage',
-    component: MaintenancePage
+    component: MaintenancePage,
+    meta: { requiresAuth: false }
   },
   {
     path: '/',
     name: 'LandingView',
     component: LandingView,
-    children: children
+    children: children,
+    meta: { requiresAuth: true, authorize: ['Admin', 'Office', 'Production'] }
   },
 ]
 
@@ -137,11 +157,19 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  const userStore = useUserStore();
-  const isAuthenticated = userStore.isUserAuthenticated;
-  const isAuthorized = true; // add some function to check it
+  if(to.meta.requiresAuth) {
+    const userStore = useUserStore();
+    const isAuthenticated = userStore.isUserAuthenticated;
+    let isAuthorized = false;
 
-  if(to.name != "LoginPage"){
+    if(to.meta.authorize.length !== 0) {
+      to.meta.authorize.forEach(element => {
+        if(userStore.doesUserHasRole(element)) { isAuthorized = true; }
+      })
+    } else {
+      isAuthorized = true;
+    }
+
     if(!isAuthenticated) {
       return { name: 'LoginPage' }
     } else if(!isAuthorized) {
