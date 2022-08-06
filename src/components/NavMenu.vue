@@ -57,7 +57,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
           <div class="px-2 py-3 item-content nonclicable item-content2"  data-bs-toggle="collapse" data-bs-target="#collapseOrders" role="button" aria-expanded="false" aria-controls="collapseExample">
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-clipboard2-check" viewBox="0 0 16 16">
@@ -94,7 +94,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseClients" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
@@ -119,7 +119,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseSuppliers" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
@@ -150,7 +150,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Office')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseValuation" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
@@ -178,7 +178,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Accountant')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseWorker" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-workspace" viewBox="0 0 16 16">
@@ -199,7 +199,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Menedzer')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseStats" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
@@ -224,7 +224,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
         <router-link :to="{ name: 'RepresentativeSearch'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -244,7 +244,6 @@ import { useUserStore } from '@/stores/UserStore';
 export default {
   name: 'NavMenu',
   methods: {
-    
     checkIfAuthorized(role) {
       const userStore = useUserStore();
       return userStore.doesUserHasRole(role);

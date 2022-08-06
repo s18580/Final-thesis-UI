@@ -27,7 +27,7 @@ const children = [
     path: '/',
     name: 'home',
     component: HomeView,
-    meta: { requiresAuth: true, authorize: ['Admin', 'Office', 'Production'] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/notAllowed',
@@ -39,7 +39,7 @@ const children = [
     path: '/programConstants',
     name: 'ProgramConstants',
     component: ProgramConstants,
-    meta: { requiresAuth: true, authorize: ['Admin', 'Office', 'Production'] }
+    meta: { requiresAuth: true, authorize: ['Admin'] }
   },
   {
     path: '/userMenegment',
@@ -51,25 +51,25 @@ const children = [
     path: '/ongoingOrders',
     name: 'OngoingOrders',
     component: OngoingOrders,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/orderForm',
     name: 'OrderForm',
     component: OrderForm,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/supplierForm',
     name: 'SupplierForm',
     component: SupplierForm,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/customerForm',
     name: 'CustomerForm',
     component: CustomerForm,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/workerForm',
@@ -81,43 +81,43 @@ const children = [
     path: '/supplierSearch',
     name: 'SupplierSearch',
     component: SupplierSearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/supplySearch',
     name: 'SupplySearch',
     component: SupplySearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/workerSearch',
     name: 'WorkerSearch',
     component: WorkerSearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Accountant'] }
   },
   {
     path: '/representativeSearch',
     name: 'RepresentativeSearch',
     component: RepresentativeSearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/customerSearch',
     name: 'CustomerSearch',
     component: CustomerSearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/orderSearch',
     name: 'OrderSearch',
     component: OrderSearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
     path: '/valuationSearch',
     name: 'ValuationSearch',
     component: ValuationSearch,
-    meta: { requiresAuth: true, authorize: [] }
+    meta: { requiresAuth: true, authorize: ['Office'] }
   },
 ]
 
@@ -126,26 +126,26 @@ const routes = [
     path: '/login',
     name: 'LoginPage',
     component: LoginPage,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, authorize: [] }
   },
   {
     path: '/error',
     name: 'ErrorPage',
     component: ErrorPage,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, authorize: [] }
   },
   {
     path: '/maintenance',
     name: 'MaintenancePage',
     component: MaintenancePage,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, authorize: [] }
   },
   {
     path: '/',
     name: 'LandingView',
     component: LandingView,
     children: children,
-    meta: { requiresAuth: true, authorize: ['Admin', 'Office', 'Production'] }
+    meta: { requiresAuth: true, authorize: ['Basic'] }
   },
 ]
 
