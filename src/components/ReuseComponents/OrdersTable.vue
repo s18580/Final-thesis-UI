@@ -84,7 +84,17 @@ export default {
             return orders;
         },
         async getClosestOrders() {
-            return [];
+            let callPath = '/Order/getOrdersByDeliveryDate';
+
+            var orders = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            return orders;
         }
     },
 }
