@@ -60,22 +60,26 @@ export default {
                 let body = { email : this.login, password: this.password };
                 let callPath = "/User/login";
 
-                var userData = await CallAPI.post(callPath, body)
+                await CallAPI.post(callPath, body)
                 .then(res => {
-                    return res.data;
+                    const userStore = useUserStore();
+                    userStore.$patch({
+                        name: res.data.userName,
+                        userToken: res.data.userToken,
+                        roles: res.data.userRoles,
+                    })
+
+                    this.$router.push({ name: 'home' });
                 })
                 .catch(err => {
+                    if(err.message.includes("401")) {
+                        this.$vaToast.init({ message: 'Nieprawidłowe dane logowania.', color: 'danger', duration: 3000 })
+                    }else{
+                        this.$vaToast.init({ message: 'Błąd logowania.', color: 'danger', duration: 3000 })
+                    }
+                    
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                 });
-
-                const userStore = useUserStore();
-                userStore.$patch({
-                    name: userData.userName,
-                    userToken: userData.userToken,
-                    roles: userData.userRoles,
-                })
-
-                this.$router.push({ name: 'home' });
             }
         },
         validateForm() {
