@@ -24,15 +24,15 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="representativePhone"
-                    :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
-                    label="Telefon"
+                    :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                    label="Telefon (opcjonalne)"
                     placeholder="Telefon"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="representativeEmail"
-                    :rules="[(v) => v.length > 0 || `Pole email nie może być puste.`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
-                    label="Email"
+                    :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                    label="Email (opcjonalne)"
                     placeholder="Adres email"
                 />
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>

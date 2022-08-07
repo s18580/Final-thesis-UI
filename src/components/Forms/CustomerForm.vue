@@ -38,7 +38,7 @@
                 v-if="selectedRadioOption==='Firma'"
                 class="some-space mb-4"
                 v-model="companyPhone"
-                :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
                 label="Telefon (opcjonalnie)"
                 placeholder="Telefon firmowy klienta"
             />
@@ -46,7 +46,7 @@
                 v-if="selectedRadioOption==='Firma'"
                 class="some-space mb-4"
                 v-model="companyEmail"
-                :rules="[(v) => v.length > 0 || `Pole email nie może być puste.`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
                 label="Email (opcjonalnie)"
                 placeholder="Email firmowy klienta"
             />
@@ -72,16 +72,16 @@
                 v-if="selectedRadioOption==='Osoba prywatna'"
                 class="some-space mb-4"
                 v-model="customerPhone"
-                :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
-                label="Telefon"
+                :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                label="Telefon (opcjonalnie)"
                 placeholder="Telefon klienta"
             />
             <va-input
                 v-if="selectedRadioOption==='Osoba prywatna'"
                 class="some-space mb-4"
                 v-model="customerEmail"
-                :rules="[(v) => v.length > 0 || `Pole email nie może być puste.`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
-                label="Email"
+                :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                label="Email (opcjonalnie)"
                 placeholder="Email klienta"
             />
         </va-form>
@@ -170,42 +170,131 @@ export default {
             editedContact: null,
 		}
 	},
-    components: {AddressModal, RepresentativeModal},
+    components: { AddressModal, RepresentativeModal },
 	methods: {
         async submitForm() {
-            if(this.selectedRadioOption === 'Firma') {
-                await this.submitFormCompany();
-            } else {
-                await this.submitFormPerson();
+            if(this.validateForm(this.selectedRadioOption === 'Firma')){
+                let customerId = await this.createClient(this.selectedRadioOption === 'Firma');
+                if(customerId !== undefined) {
+                    await this.createClientAddresses(customerId);
+                    await this.createClientRepresentatives(customerId);
+                    // delete after unsucces ?
+                    this.$router.push('home');
+                }
             }
         },
-		async submitFormCompany() {
-            if(this.validateForm(true)) {
-                await CallAPI.get(`/Address/getAddresses`)
+        async createClientAddresses(customerId) {
+            for(var i=0; i < this.customerAddresses.length; i++) {
+                console.log(this.customerAddresses[i]);
+                let callPath = "/Address/createAddress"
+                let body = {
+                    Name: this.customerAddresses[i].name,
+                    City: this.customerAddresses[i].city,
+                    Country: this.customerAddresses[i].country,
+                    PostCode: this.customerAddresses[i].postCode,
+                    StreetName: this.customerAddresses[i].streetName,
+                    StreetNumber: this.customerAddresses[i].streetNumber,
+                    ApartmentNumber: this.customerAddresses[i].apartmentNumber,
+                    IdSupplier: null,
+                    IdCustomer: customerId
+                }
+
+                await CallAPI.post(callPath, body)
                 .then(res => {
-                    console.log(res); // switch that on the toast message
-                    this.$router.push('home');
+                    return res.data;
                 })
                 .catch(err => {
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                 });
             }
-		},
-        async submitFormPerson() {
-            if(this.validateForm(false)) {
-                await CallAPI.get(`/Address/getAddresses`)
+        },
+        async createClientRepresentatives(customerId) {
+            for(var i=0; i < this.contactPepole.length; i++) {
+                console.log(this.contactPepole[i]);
+                let callPath = "/Representative/createRepresentative"
+                let body = {
+                    Name: this.contactPepole[i].name,
+                    LastName: this.contactPepole[i].lastName,
+                    PhoneNumber: this.contactPepole[i].phoneNumber,
+                    EmailAddress: this.contactPepole[i].addressEmail,
+                    IdSupplier: null,
+                    IdCustomer: customerId
+                }
+
+                await CallAPI.post(callPath, body)
                 .then(res => {
-                    console.log(res); // switch that on the toast message
-                    this.$router.push('home');
+                    return res.data;
                 })
                 .catch(err => {
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                 });
+            } 
+        },
+        async createClient(isCompany) {
+            if(isCompany) { //to add WorkerId
+                let callPath = "/Customer/createCompanyCustomer"
+                let body = {
+                    CompanyName: this.companyName,
+                    NIP: this.nip,
+                    Regon: this.regon,
+                    CompanyPhoneNumber: this.companyPhone,
+                    CompanyEmailAddress: this.companyEmail,
+                    IdWorker: null
+                }
+
+                return await CallAPI.post(callPath, body)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+
+            } else {
+                //create person customer
+                let callPath = "/Customer/createPersonCustomer"
+                let body = {
+                    Name: this.customerName,
+                    LastName: this.customerLastName,
+                    CompanyPhoneNumber: this.customerPhone,
+                    CompanyEmailAddress: this.customerEmail,
+                    IdWorker: null
+                }
+
+                let newCustomerId = await CallAPI.post(callPath, body)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+
+                // create representative as customer
+                callPath = "/Representative/createRepresentative"
+                body = {
+                    Name: this.customerName,
+                    LastName: this.customerLastName,
+                    PhoneNumber: this.customerPhone,
+                    EmailAddress: this.customerEmail,
+                    IdCustomer: newCustomerId
+                }
+
+                await CallAPI.post(callPath, body)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+
+                return newCustomerId;
             }
-		},
+        },
         validateForm(isCompany) {
             if(isCompany) {
                 this.$refs.formCompany.validate();
+                if(this.contactPepole.length === 0) this.isFormCompanyValidate = false;
+                //popup info -> min 1 contact person
                 return this.isFormCompanyValidate;
             } else {
                 this.$refs.formPerson.validate();
