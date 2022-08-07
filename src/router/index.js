@@ -4,7 +4,7 @@ import LoginPage from '../components/AuthComponents/LoginPage.vue';
 import ErrorPage from '../components/TechnicalPages/ErrorPage.vue';
 import MaintenancePage from '../components/TechnicalPages/MaintenancePage.vue';
 import NotAllowed from '../components/TechnicalPages/NotAllowed.vue';
-import HomeView from '../views/HomeView.vue';
+import BasicHome from '../components/HomePages/BasicHome.vue';
 import ProgramConstants from '../components/ProgramConstants.vue';
 import UserMenegment from '../components/UserMenegment.vue';
 import OngoingOrders from '../components/OngoingOrders.vue';
@@ -26,7 +26,7 @@ const children = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
+    component: BasicHome,
     meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
