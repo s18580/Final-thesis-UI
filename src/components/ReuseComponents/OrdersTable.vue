@@ -31,6 +31,11 @@ export default {
             required: true,
             default: null,
         },
+        dataType: {
+            type: String,
+            required: true,
+            default: "workers",
+        }
     },
 	data() {
 		return {
@@ -48,18 +53,14 @@ export default {
         }
     },
     async mounted() {
-        const userStore = useUserStore();
-        let callPath = `/Order/getOrdersByWorker?id=${userStore.userId}`;
-
-        var orders = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
-
-        this.myArray = orders;
+        switch(this.dataType) {
+            case "workers":
+                this.myArray = await this.getWorkersOrders();
+            break;
+            case "closest":
+                this.myArray = await this.getClosestOrders(); 
+            break;
+        }
     },
     methods: {
         viewItemById() {
@@ -67,6 +68,23 @@ export default {
         },
         editItemById() {
             //open edit view
+        },
+        async getWorkersOrders() {
+            const userStore = useUserStore();
+            let callPath = `/Order/getOrdersByWorker?id=${userStore.userId}`;
+
+            var orders = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            return orders;
+        },
+        async getClosestOrders() {
+            return [];
         }
     },
 }

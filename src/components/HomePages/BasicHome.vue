@@ -5,14 +5,14 @@
             <va-divider />
         </div>
         <div id="yoursOrderTable" class="mainCo">
-            <OrdersTable :columns="yourColumns"/>
+            <OrdersTable :columns="yourColumns" dataType="workers"/>
         </div>
         <div id="closestOrderHeader" class="sectionHeader">
             <h1>Zamówienia z najbliższym terminem wykonania</h1>
             <va-divider />
         </div>
         <div id="closestOrderTable" class="mainCo">
-            <OrdersTable :columns="closeColumns"/>
+            <OrdersTable :columns="closeColumns" dataType="closest"/>
         </div>
     </div>
 </template>
