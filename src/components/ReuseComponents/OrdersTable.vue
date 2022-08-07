@@ -19,27 +19,22 @@
 </template>
 
 <script>
+import CallAPI from '../../axios/axios-connection.js';
+import CallSeq from '../../logging/seq-logger.js';
+import { useUserStore } from '@/stores/UserStore';
+
 export default {
     name: 'OrdersTable',
     props: {
-        ordersOwner: {
-            type: Object,
-            required: false,
+        columns: {
+            type: Array,
+            required: true,
             default: null,
         },
     },
 	data() {
 		return {
             resultMessage: "Brak zamówień",
-            columns: [
-                { key: 'Identifier', label:"Identyfikator", sortable: true },
-                { key: 'Name', label:"Nazwa", sortable: true },
-                { key: 'CreationDate', label:"Data stworzenia", sortable: true },
-                { key: 'OrderItemsNames', label:"Przedmioty zamówienia" },
-                { key: 'StatusName', label:"Status" },
-                { key: 'IsAuction', label:"Przetarg" },
-                { key: 'actions', label:"Akcje", width: 80 },
-            ],
             myArray: [],
 			perPage: 20,
             currentPage: 1,
@@ -52,9 +47,19 @@ export default {
             return c;
         }
     },
-    mounted() {
-        //api call for data
-        this.myArray = [];
+    async mounted() {
+        const userStore = useUserStore();
+        let callPath = `/Order/getOrdersByWorker?id=${userStore.userId}`;
+
+        var orders = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+        this.myArray = orders;
     },
     methods: {
         viewItemById() {
