@@ -1,6 +1,11 @@
 <template>
     <div id="mainCo">
         <va-data-table :items="myArray" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(statusName)="{ value }"><va-chip size="small" :color="chipColor(value)">{{ value }}</va-chip></template>
+            <template #cell(isAuction)="{ value }">
+                <va-icon v-if="value" color="success" class="material-icons">done</va-icon>
+                <va-icon v-if="!value" color="danger" class="material-icons">close</va-icon>
+            </template>
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
                 <va-button flat icon="edit" @click="editItemById(rowIndex)" />
@@ -19,27 +24,27 @@
 </template>
 
 <script>
+import CallAPI from '../../axios/axios-connection.js';
+import CallSeq from '../../logging/seq-logger.js';
+import { useUserStore } from '@/stores/UserStore';
+
 export default {
     name: 'OrdersTable',
     props: {
-        ordersOwner: {
-            type: Object,
-            required: false,
+        columns: {
+            type: Array,
+            required: true,
             default: null,
         },
+        dataType: {
+            type: String,
+            required: true,
+            default: "workers",
+        }
     },
 	data() {
 		return {
             resultMessage: "Brak zamówień",
-            columns: [
-                { key: 'Identifier', label:"Identyfikator", sortable: true },
-                { key: 'Name', label:"Nazwa", sortable: true },
-                { key: 'CreationDate', label:"Data stworzenia", sortable: true },
-                { key: 'OrderItemsNames', label:"Przedmioty zamówienia" },
-                { key: 'StatusName', label:"Status" },
-                { key: 'IsAuction', label:"Przetarg" },
-                { key: 'actions', label:"Akcje", width: 80 },
-            ],
             myArray: [],
 			perPage: 20,
             currentPage: 1,
@@ -50,18 +55,58 @@ export default {
             let c = parseInt(this.myArray.length/6, 10);
             if(this.myArray.length%6 > 0) c+=1;
             return c;
+        },
+    },
+    async mounted() {
+        switch(this.dataType) {
+            case "workers":
+                this.myArray = await this.getWorkersOrders();
+            break;
+            case "closest":
+                this.myArray = await this.getClosestOrders(); 
+            break;
         }
     },
-    mounted() {
-        //api call for data
-        this.myArray = [];
-    },
     methods: {
+        chipColor(status) {
+            if(status === "Przygotowanie wyceny") {
+                return "blue";
+            }else{
+                return "red";  
+            }
+        },
         viewItemById() {
             //open view
         },
         editItemById() {
             //open edit view
+        },
+        async getWorkersOrders() {
+            const userStore = useUserStore();
+            let callPath = `/Order/getOrdersByWorker?id=${userStore.userId}`;
+
+            var orders = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            return orders;
+        },
+        async getClosestOrders() {
+            let callPath = '/Order/getOrdersByDeliveryDate';
+
+            var orders = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            return orders;
         }
     },
 }

@@ -64,10 +64,13 @@ export default {
                 .then(res => {
                     const userStore = useUserStore();
                     userStore.$patch({
+                        id: res.data.userId,
                         name: res.data.userName,
-                        userToken: res.data.userToken,
+                        token: res.data.userToken,
                         roles: res.data.userRoles,
                     })
+
+                    CallAPI.defaults.headers.common['Authorization'] = "bearer " + userStore.token;
 
                     this.$router.push({ name: 'home' });
                 })

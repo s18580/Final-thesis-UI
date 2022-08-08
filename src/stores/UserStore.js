@@ -3,19 +3,26 @@ import { defineStore } from 'pinia'
 export const useUserStore = defineStore('UserStore', {
     state: () => {
         return {
+            id: null,
             name: "",
-            userToken: "",
-            userRefreshToken: "",
+            token: "",
+            refreshToken: "",
             roles: [],
         }
     },
 
     getters: {
+        userId() {
+            return this.id;  
+        },
         userName() {
             return this.name;
         },
         userRoles() {
             return this.roles;
+        },
+        userToken() {
+            return this.token;
         },
         isUserAuthenticated() {
             if(this.userToken) {
@@ -29,7 +36,7 @@ export const useUserStore = defineStore('UserStore', {
     actions: {
         doesUserHasRole(role) {
             return this.roles.includes(role);
-        }
+        },
     },
     persist: true,
   })
