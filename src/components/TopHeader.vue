@@ -15,8 +15,10 @@
                 <span class="fs-6" id="user-name">{{ userName }}</span>
               </div>
             </div>
-            <ul class="dropdown-menu start-25 translate-bottom ml-3 mt-1" aria-labelledby="defaultDropdown" data-popper-placement="bottom-end">
-              <li>
+            <HelpModal v-model="showHelpModal" @close="closeHelpModal()" />
+            <AccountModal v-model="showAccountModal" @close="closeAccountModal()" />
+            <ul class="dropdown-menu start-25 ml-3 mt-1 moveUserMenu" aria-labelledby="defaultDropdown" data-popper-placement="bottom-end">
+              <li @click="openAccountModal()">
                 <a class="dropdown-item text-light" href="#">
                   Moje konto
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -25,7 +27,7 @@
                   </svg>
                 </a>
               </li>
-              <li>
+              <li @click="openHelpModal()">
                 <a class="dropdown-item text-light" href="#">
                   Pomoc
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-question-octagon" viewBox="0 0 16 16">
@@ -53,10 +55,19 @@
 </template>
 
 <script>
+import HelpModal from '@/components/ReuseComponents/Modals/HelpModal.vue'
+import AccountModal from '@/components/ReuseComponents/Modals/AccountModal.vue'
 import { useUserStore } from '@/stores/UserStore';
 
 export default {
   name: 'TopHeader',
+  data() {
+		return {
+      showHelpModal: false,
+      showAccountModal: false,
+		}
+	},
+  components: { HelpModal, AccountModal },
   computed: {
     userName () {
       const userStore = useUserStore();
@@ -73,7 +84,19 @@ export default {
       userStore.$reset();
       this.$router.push({ name: 'LoginPage' });
       this.$vaToast.init({ message: 'Wylogowano pomyślnie.', color: 'success', duration: 3000 })
-    }
+    },
+    openHelpModal() {
+      this.showHelpModal= true;
+    },
+    closeHelpModal() {
+      this.showHelpModal= false;
+    },
+    openAccountModal() {
+      this.showAccountModal = true;
+    },
+    closeAccountModal() {
+      this.showAccountModal = false;
+    },
   }
 }
 </script>
@@ -110,5 +133,9 @@ export default {
 
 #logo {
   width: 170px;
+}
+
+.moveUserMenu {
+  transform: translate(-20px, 50px) !important;
 }
 </style>
