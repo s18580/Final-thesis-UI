@@ -59,7 +59,7 @@ export default {
             this.$emit('close');
         }
 	},
-    async mounted() {
+    async updated() {
         const userStore = useUserStore();
         let callPath = "/Worker/getWorker?id=" + userStore.userId;
 

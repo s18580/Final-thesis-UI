@@ -1,8 +1,28 @@
 <template>
   <div id="navigationMenu">
     <ul>
-      <li class="nav-menu-item">
-        <router-link :to="{ name: 'home'}">
+      <li class="nav-menu-item" v-if="checkIfAdminHome()">
+        <router-link :to="{ name: 'AdminHome'}">
+          <div class="px-2 py-3 item-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
+              <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+            </svg>
+            Strona główna
+          </div>
+        </router-link>
+      </li>
+      <li class="nav-menu-item" v-if="checkIfBasicHome()">
+        <router-link :to="{ name: 'BasicHome'}">
+          <div class="px-2 py-3 item-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
+              <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+            </svg>
+            Strona główna
+          </div>
+        </router-link>
+      </li>
+      <li class="nav-menu-item" v-if="checkIfAccountantHome()">
+        <router-link :to="{ name: 'AccountantHome'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
               <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
@@ -244,6 +264,21 @@ import { useUserStore } from '@/stores/UserStore';
 export default {
   name: 'NavMenu',
   methods: {
+    checkIfAdminHome(){
+      let hasRoleAdmin = this.checkIfAuthorized('Admin');
+      return hasRoleAdmin;
+    },
+    checkIfAccountantHome(){
+      let hasRoleAdmin = this.checkIfAuthorized('Admin');
+      let hasRoleAccountant = this.checkIfAuthorized('Accountant');
+      return hasRoleAccountant && !hasRoleAdmin;
+    },
+    checkIfBasicHome(){
+      let hasRoleAdmin = this.checkIfAuthorized('Admin');
+      let hasRoleAccountant = this.checkIfAuthorized('Accountant');
+      let hasRoleBasic = this.checkIfAuthorized('Basic');
+      return hasRoleBasic && !(hasRoleAccountant || hasRoleAdmin);
+    },
     checkIfAuthorized(role) {
       const userStore = useUserStore();
       return userStore.doesUserHasRole(role);
