@@ -1,6 +1,11 @@
 <template>
     <div id="mainCo">
         <va-data-table :items="myArray" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(statusName)="{ value }"><va-chip size="small" :color="chipColor(value)">{{ value }}</va-chip></template>
+            <template #cell(isAuction)="{ value }">
+                <va-icon v-if="value" color="success" class="material-icons">done</va-icon>
+                <va-icon v-if="!value" color="danger" class="material-icons">close</va-icon>
+            </template>
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
                 <va-button flat icon="edit" @click="editItemById(rowIndex)" />
@@ -50,7 +55,7 @@ export default {
             let c = parseInt(this.myArray.length/6, 10);
             if(this.myArray.length%6 > 0) c+=1;
             return c;
-        }
+        },
     },
     async mounted() {
         switch(this.dataType) {
@@ -63,6 +68,13 @@ export default {
         }
     },
     methods: {
+        chipColor(status) {
+            if(status === "Przygotowanie wyceny") {
+                return "blue";
+            }else{
+                return "red";  
+            }
+        },
         viewItemById() {
             //open view
         },
