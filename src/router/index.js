@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import AdminHome from '@/components/HomePages/AdminHome.vue';
+import BasicHome from '@/components/HomePages/BasicHome.vue';
+import AccountantHome from '@/components/HomePages/AccountantHome.vue';
 import LandingView from '../components/LandingView.vue';
 import LoginPage from '../components/AuthComponents/LoginPage.vue';
 import ErrorPage from '../components/TechnicalPages/ErrorPage.vue';
 import MaintenancePage from '../components/TechnicalPages/MaintenancePage.vue';
 import NotAllowed from '../components/TechnicalPages/NotAllowed.vue';
-import BasicHome from '../components/HomePages/BasicHome.vue';
 import ProgramConstants from '../components/ProgramConstants.vue';
 import UserMenegment from '../components/UserMenegment.vue';
 import OngoingOrders from '../components/OngoingOrders.vue';
@@ -26,8 +28,36 @@ const children = [
   {
     path: '/',
     name: 'home',
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    beforeEnter: () => {
+      const userStore = useUserStore();
+      let userRoles = userStore.userRoles;
+      
+      if(userRoles.includes('Admin')) {
+        return { name: 'AdminHome' }
+      } else if(userRoles.includes('Accountant')) {
+        return { name: 'AccountantHome' }
+      }
+      return { name: 'BasicHome' }
+    },
+  },
+  {
+    path: '/',
+    name: 'AccountantHome',
+    component: AccountantHome,
+    meta: { requiresAuth: true, authorize: ['Accountant'] },
+  },
+  {
+    path: '/',
+    name: 'BasicHome',
     component: BasicHome,
-    meta: { requiresAuth: true, authorize: ['Basic'] }
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+  },
+  {
+    path: '/',
+    name: 'AdminHome',
+    component: AdminHome,
+    meta: { requiresAuth: true, authorize: ['Admin'] },
   },
   {
     path: '/notAllowed',
