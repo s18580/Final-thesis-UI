@@ -167,7 +167,7 @@ export default {
                     if(err.message.includes("422")) {
                         this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
                     }else{
-                        this.$vaToast.init({ message: 'Błąd dodawania konta.', color: 'danger', duration: 3000 })
+                        this.$vaToast.init({ message: 'Błąd dodawania dostwcy.', color: 'danger', duration: 3000 })
                     }
 
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
@@ -176,6 +176,10 @@ export default {
 		},
         validateForm() {
             this.$refs.form.validate();
+            if(this.contactPepole.length === 0){
+                this.isFormValidate = false;
+                this.$vaToast.init({ message: 'Potrzebna jest minimum jedna osoba kontaktowa.', color: 'danger', duration: 3000 })
+            }
             return this.isFormValidate;
         },
         closeAddressModal() {

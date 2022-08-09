@@ -1,139 +1,140 @@
 <template>
   <div id="mainCo">
-        <h1>Dodaj nowego klienta</h1>
-        <div class="radio-box">
-            <va-radio
-                v-for="(option, index) in radioOptions"
-                :key="index"
-                v-model="selectedRadioOption"
-                :option="option"
-            />
+    <div id="headerCo">
+            <h1>Dodaj nowego klienta</h1>
+            <va-divider />
         </div>
-		<va-form @submit.prevent="this.submitFormCompany()" tag="form" ref="formCompany" @validation="isFormCompanyValidate = $event">
-            <va-input
-                v-if="selectedRadioOption==='Firma'"
-                class="some-space mb-4"
-                v-model="companyName"
-                :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
-                label="Nazwa"
-                placeholder="Nazwa firmy klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Firma'"
-                class="some-space mb-4"
-                v-model="nip"
-                :rules="[(v) => v.length === 10 || `Pole nip jest nieprawidłowe.`]"
-                label="NIP"
-                placeholder="NIP klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Firma'"
-                class="some-space mb-4"
-                v-model="regon"
-                :rules="[(v) => v.length > 8 || `Pole regon jest nieprawidłowe.`, (v) => v.length < 15 || `Pole regon przekroczyło limit znaków.`]"
-                label="REGON"
-                placeholder="Regon klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Firma'"
-                class="some-space mb-4"
-                v-model="companyPhone"
-                :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
-                label="Telefon (opcjonalnie)"
-                placeholder="Telefon firmowy klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Firma'"
-                class="some-space mb-4"
-                v-model="companyEmail"
-                :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
-                label="Email (opcjonalnie)"
-                placeholder="Email firmowy klienta"
-            />
-        </va-form>
-        <va-form @submit.prevent="this.submitFormPerson()" tag="form" ref="formPerson" @validation="isFormPersonValidate = $event">
-            <va-input
-                v-if="selectedRadioOption==='Osoba prywatna'"
-                class="some-space mb-4"
-                v-model="customerName"
-                :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
-                label="Imię"
-                placeholder="Imię klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Osoba prywatna'"
-                class="some-space mb-4"
-                v-model="customerLastName"
-                :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
-                label="Nazwisko"
-                placeholder="Nazwisko klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Osoba prywatna'"
-                class="some-space mb-4"
-                v-model="customerPhone"
-                :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
-                label="Telefon (opcjonalnie)"
-                placeholder="Telefon klienta"
-            />
-            <va-input
-                v-if="selectedRadioOption==='Osoba prywatna'"
-                class="some-space mb-4"
-                v-model="customerEmail"
-                :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
-                label="Email (opcjonalnie)"
-                placeholder="Email klienta"
-            />
-        </va-form>
-        <va-divider inset />
-        <div id="card-container">
-            <div class="objects-card-wrapper">
-                <h6>Osoby kontaktowe klienta:</h6>
-                <div class="objects-card">
-                    <div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
-                        <div>
-                            {{ person.name + ' ' + person.lastName }}
-                        </div>
-                        <div class="card-icons">
-                            <svg @click="editContactInModal(person)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                            </svg>
-
-                            <svg @click="removeContact(person.IdForRepresentativeTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                            </svg>
-                        </div>
-                    </div>
+        <div id="mainCoOuter">
+            <h3>Dane klienta</h3>
+            <va-divider />
+            <div id="mainCoInner">
+                <div class="gridSpreadC">
+                    <va-radio
+                        v-for="(option, index) in radioOptions"
+                        :key="index"
+                        v-model="selectedRadioOption"
+                        :option="option"
+                    />
                 </div>
-                <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
-                <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
-            </div>
-            <va-divider vertical />
-            <div class="objects-card-wrapper">
-                <h6>Adresy klienta:</h6>
-                <div class="objects-card">
-                    <div v-for="address in customerAddresses" :key="address.IdForAddressTable" class="card-items">
-                        <div>
-                            {{ address.name }}
-                        </div>
-                        <div class="card-icons">
-                            <svg @click="editAddressInModal(address)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                            </svg>
-
-                            <svg @click="removeAddress(address.IdForAddressTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                            </svg>
-                        </div>
+                <va-form v-if="selectedRadioOption==='Firma'" @submit.prevent="this.submitFormCompany()" id="companyForm" tag="form" ref="formCompany" @validation="isFormCompanyValidate = $event">
+                    <va-input
+                        class="gridSpreadC gridFirstR inputWidthLong"
+                        v-model="companyName"
+                        :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                        label="Nazwa"
+                        placeholder="Nazwa firmy klienta"
+                    />
+                    <va-input
+                        class="gridFirstC gridSecondR inputWidth"
+                        v-model="nip"
+                        :rules="[(v) => v.length === 10 || `Pole nip jest nieprawidłowe.`]"
+                        label="NIP"
+                        placeholder="NIP klienta"
+                    />
+                    <va-input
+                        class="gridSecondC gridSecondR inputWidth"
+                        v-model="regon"
+                        :rules="[(v) => v.length > 8 || `Pole regon jest nieprawidłowe.`, (v) => v.length < 15 || `Pole regon przekroczyło limit znaków.`]"
+                        label="REGON"
+                        placeholder="Regon klienta"
+                    />
+                    <va-input
+                        class="gridSecondC gridThirdR inputWidth"
+                        v-model="companyPhone"
+                        :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                        label="Telefon (opcjonalnie)"
+                        placeholder="Telefon firmowy klienta"
+                    />
+                    <va-input
+                        class="gridFirstC gridThirdR inputWidth"
+                        v-model="companyEmail"
+                        :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                        label="Email (opcjonalnie)"
+                        placeholder="Email firmowy klienta"
+                    />
+                    <div class="gridSpreadC gridFourthR">
+                        <va-button @click="submitForm()" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
                     </div>
-                </div>
-                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
-                <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+                </va-form>
+                <va-form v-if="selectedRadioOption==='Osoba prywatna'" @submit.prevent="this.submitFormPerson()" id="privateForm" tag="form" ref="formPerson" @validation="isFormPersonValidate = $event">
+                    <va-input
+                        class="gridFirstC gridFirstR inputWidth"
+                        v-model="customerName"
+                        :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
+                        label="Imię"
+                        placeholder="Imię klienta"
+                    />
+                    <va-input
+                        class="gridSecondC gridFirstR inputWidth"
+                        v-model="customerLastName"
+                        :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
+                        label="Nazwisko"
+                        placeholder="Nazwisko klienta"
+                    />
+                    <va-input
+                        class="gridSecondC gridSecondR inputWidth"
+                        v-model="customerPhone"
+                        :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                        label="Telefon (opcjonalnie)"
+                        placeholder="Telefon klienta"
+                    />
+                    <va-input
+                        class="gridFirstC gridSecondR inputWidth"
+                        v-model="customerEmail"
+                        :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                        label="Email (opcjonalnie)"
+                        placeholder="Email klienta"
+                    />
+                    <div class="gridSpreadC gridThirdR">
+                        <va-button @click="submitForm()" type="submit" color="info" gradient class="my-3">Dodaj</va-button> 
+                    </div>
+                </va-form>
             </div>
         </div>
-        <va-button @click="submitForm()" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+        <div id="representativesCoOuter">
+            <h3>Osoby kontaktowe klienta</h3>
+            <va-divider />
+            <div id="representativesCoInner">
+                <div class="objects-card-wrapper">
+					<h6>Lista osób kontaktowych:</h6>
+					<div class="objects-card">
+						<div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
+                            <div class="my-1">
+                                {{ person.name + ' ' + person.lastName }}
+                            </div>
+                            <div class="card-icons">
+                                <va-icon @click="editContactInModal(person)" color="#1b63b1" class="material-icons">edit</va-icon>
+                                <va-icon @click="removeContact(person.IdForRepresentativeTable)" color="#1b63b1" class="material-icons">delete</va-icon>
+                            </div>
+						</div>
+					</div>
+                    <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                    <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
+				</div>
+            </div>
+        </div>
+        <div id="adressesCoOuter">
+            <h3>Adresy klienta</h3>
+            <va-divider />
+            <div id="adressesCoInner">
+                <div class="objects-card-wrapper">
+					<h6>Lista adresów:</h6>
+					<div class="objects-card">
+						<div v-for="address in suplierAddresses" :key="address.IdForAddressTable" class="card-items">
+                            <div class="my-1">
+                                {{ address.name }}
+                            </div>
+                            <div class="card-icons">
+                                <va-icon @click="editAddressInModal(address)" color="#1b63b1" class="material-icons">edit</va-icon>
+                                <va-icon @click="removeAddress(address.IdForAddressTable)" color="#1b63b1" class="material-icons">delete</va-icon>
+                            </div>
+						</div>
+					</div>
+                    <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
+                    <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+				</div>
+            </div>
+        </div>
 	</div>
 </template>
 
@@ -142,6 +143,7 @@ import CallAPI from '../../axios/axios-connection.js';
 import CallSeq from '../../logging/seq-logger.js';
 import AddressModal from '../ReuseComponents/AddressModal.vue';
 import RepresentativeModal from '../ReuseComponents/RepresentativeModal.vue';
+import { useUserStore } from '@/stores/UserStore';
 
 export default {
   name: 'AddCustomer',
@@ -174,127 +176,102 @@ export default {
 	methods: {
         async submitForm() {
             if(this.validateForm(this.selectedRadioOption === 'Firma')){
-                let customerId = await this.createClient(this.selectedRadioOption === 'Firma');
-                if(customerId !== undefined) {
-                    await this.createClientAddresses(customerId);
-                    await this.createClientRepresentatives(customerId);
-                    // delete after unsucces ?
-                    this.$router.push('home');
-                }
-            }
-        },
-        async createClientAddresses(customerId) {
-            for(var i=0; i < this.customerAddresses.length; i++) {
-                console.log(this.customerAddresses[i]);
-                let callPath = "/Address/createAddress"
-                let body = {
-                    Name: this.customerAddresses[i].name,
-                    City: this.customerAddresses[i].city,
-                    Country: this.customerAddresses[i].country,
-                    PostCode: this.customerAddresses[i].postCode,
-                    StreetName: this.customerAddresses[i].streetName,
-                    StreetNumber: this.customerAddresses[i].streetNumber,
-                    ApartmentNumber: this.customerAddresses[i].apartmentNumber,
-                    IdSupplier: null,
-                    IdCustomer: customerId
-                }
+                var contactPeopleAPI = this.contactPepole.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        lastName: item["lastName"],
+                        phoneNumber: item["phoneNumber"],
+                        addressEmail: item["addressEmail"]
+                    }
 
-                await CallAPI.post(callPath, body)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
-            }
-        },
-        async createClientRepresentatives(customerId) {
-            for(var i=0; i < this.contactPepole.length; i++) {
-                console.log(this.contactPepole[i]);
-                let callPath = "/Representative/createRepresentative"
-                let body = {
-                    Name: this.contactPepole[i].name,
-                    LastName: this.contactPepole[i].lastName,
-                    PhoneNumber: this.contactPepole[i].phoneNumber,
-                    EmailAddress: this.contactPepole[i].addressEmail,
-                    IdSupplier: null,
-                    IdCustomer: customerId
-                }
-
-                await CallAPI.post(callPath, body)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
-            } 
-        },
-        async createClient(isCompany) {
-            if(isCompany) { //to add WorkerId
-                let callPath = "/Customer/createCompanyCustomer"
-                let body = {
-                    CompanyName: this.companyName,
-                    NIP: this.nip,
-                    Regon: this.regon,
-                    CompanyPhoneNumber: this.companyPhone,
-                    CompanyEmailAddress: this.companyEmail,
-                    IdWorker: null
-                }
-
-                return await CallAPI.post(callPath, body)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    return result;
                 });
 
-            } else {
-                //create person customer
-                let callPath = "/Customer/createPersonCustomer"
-                let body = {
-                    Name: this.customerName,
-                    LastName: this.customerLastName,
-                    CompanyPhoneNumber: this.customerPhone,
-                    CompanyEmailAddress: this.customerEmail,
-                    IdWorker: null
-                }
+                var customerAddressesAPI = this.suplierAddresses.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        country: item["country"],
+                        city: item["city"],
+                        postCode: item["postCode"],
+                        streetName: item["streetName"],
+                        streetNumber: item["streetNumber"],
+                        apartmentNumber: item["apartmentNumber"]
+                    }
 
-                let newCustomerId = await CallAPI.post(callPath, body)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    return result;
                 });
 
-                // create representative as customer
-                callPath = "/Representative/createRepresentative"
-                body = {
-                    Name: this.customerName,
-                    LastName: this.customerLastName,
-                    PhoneNumber: this.customerPhone,
-                    EmailAddress: this.customerEmail,
-                    IdCustomer: newCustomerId
+                const userStore = useUserStore();
+
+                if(this.selectedRadioOption === 'Firma') {
+                    let callPath = "/Customer/createCompanyCustomer";
+                    let body = {
+                        CreateCustomerCommand: {
+                            companyName: this.companyName,
+                            nip: this.nip,
+                            regon: this.regon,
+                            companyPhoneNumber: this.companyPhone,
+                            companyEmailAddress: this.companyEmail,
+                            idWorker: userStore.userId
+                        },
+                        contactPeopleAPI,
+                        customerAddressesAPI
+                    };
+
+                    await CallAPI.post(callPath, body)
+                    .then(res => {
+                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 3000 })
+                        this.$router.push('home');
+                        return res.data;
+                    })
+                    .catch(err => {
+                        if(err.message.includes("422")) {
+                            this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                        }else{
+                            this.$vaToast.init({ message: 'Błąd dodawania klienta.', color: 'danger', duration: 3000 })
+                        }
+
+                        CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    });
+                } else {
+                    let callPath = "/Customer/createPersonCustomer";
+                    let body = {
+                        CreateCustomerCommand: {
+                            name: this.customerName,
+                            lastName: this.customerLastName,
+                            companyEmailAddress: this.customerEmail,
+                            companyPhoneNumber: this.customerPhone,
+                            idWorker: userStore.userId
+                        },
+                        contactPeopleAPI,
+                        customerAddressesAPI
+                    };
+
+                    await CallAPI.post(callPath, body)
+                    .then(res => {
+                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 3000 })
+                        this.$router.push('home');
+                        return res.data;
+                    })
+                    .catch(err => {
+                        if(err.message.includes("422")) {
+                            this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                        }else{
+                            this.$vaToast.init({ message: 'Błąd dodawania klienta.', color: 'danger', duration: 3000 })
+                        }
+
+                        CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    });
                 }
-
-                await CallAPI.post(callPath, body)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
-
-                return newCustomerId;
             }
         },
         validateForm(isCompany) {
             if(isCompany) {
                 this.$refs.formCompany.validate();
-                if(this.contactPepole.length === 0) this.isFormCompanyValidate = false;
-                //popup info -> min 1 contact person
+                if(this.contactPepole.length === 0){ 
+                    this.isFormCompanyValidate = false;
+                    this.$vaToast.init({ message: 'Potrzebna jest minimum jedna osoba kontaktowa.', color: 'danger', duration: 3000 })
+                }
                 return this.isFormCompanyValidate;
             } else {
                 this.$refs.formPerson.validate();
@@ -364,71 +341,123 @@ export default {
 
 <style scoped>
 #mainCo {
-	margin-right: 100px;
-	margin-left: 100px;
-	padding: 40px;
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr 1fr 1fr 100px;
+    grid-template-rows: auto;
+    grid-template-areas: 
+    ". header header header header ."
+    ". main main sidebarA sidebarB .";
+    grid-gap: 30px;
+}
+
+#headerCo {
+    padding: 20px;
+    grid-area: header;
+    background: white;
+	border-radius: 25px;
+}
+
+#mainCoOuter {
+    grid-area: main;
+}
+
+#mainCoInner {
+	padding-top: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
 	background: white;
 	border-radius: 25px;
-    padding-right: 190px;
-	padding-left: 190px;
 }
 
-h1 {
-    margin-bottom: 50px;
+#representativesCoOuter {
+    grid-area: sidebarA;
 }
 
-.some-space {
-    padding-bottom: 20px;
+#representativesCoInner {
+    padding-top: 5px;
+    background: white;
+	border-radius: 25px;
 }
 
-.some-top-space {
-    padding-top: 20px;
+#adressesCoOuter {
+    grid-area: sidebarB;
 }
 
-.radio-box {
-    display: flex;
-    justify-content: space-evenly;
-    margin-bottom: 50px;
+#adressesCoInner {
+    padding-top: 5px;
+    background: white;
+	border-radius: 25px;
 }
 
-.input-box {
-	padding-top: 50px;
+#companyForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    height: 360px;
+    margin-top: 20px
 }
 
-.input-box input,
-.input-box textarea {
-	text-align: center;
-	margin-top: 10px;
-	margin-bottom: 10px;
-    border-radius: 25px;
+#privateForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    height: 360px;
+    margin-top: 20px
 }
 
-.error-message {
-	text-align: left;
-	color: red;
+.gridSpreadC {
+    grid-column-start: 1;
+    grid-column-end: end;
 }
 
-.error-box {
-	display: flex;
-	justify-content: center;
+.gridFirstC {
+    grid-column-start: 1;
+    grid-column-end: 1;
 }
 
-.error-icon {
-	margin-right: 5px;
-	color: red;
+.gridFirstR {
+    grid-row-start: 1;
+    grid-row-end: 1;
 }
 
-#card-container {
-	display: flex;
-	justify-content: space-around;
+.gridSecondC {
+    grid-column-start: 2;
+    grid-column-end: 2;
+}
+
+.gridSecondR {
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.gridThirdR {
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+.gridFourthR {
+    grid-row-start: 4;
+    grid-row-end: 4;
+}
+
+.inputWidth {
+    width: 250px;
+}
+
+.inputWidthLong {
+    width: 350px;
 }
 
 .objects-card-wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin-top: 60px;
-	margin-bottom: 60px;
+	margin-top: 20px;
+	padding-bottom: 20px;
 }
 
 .objects-card {
@@ -447,32 +476,39 @@ h1 {
 }
 
 .card-items {
-    background: #ffcc80;
-    padding: 5px;
+    background: #d3e5f8;
+    padding-bottom: 10px;
+    padding-top: 10px;
     margin: 5px;
-    width: 100%;
+    width: 240px;
     border-radius: 50px;
-    border-color:burlywood;
-    border-style: solid;
-    border-width: 3px;
-    display: flex;
-    justify-content: space-between;
+    border: solid 1px #1b63b1;
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    grid-template-rows: 1fr;
 }
 
 .card-icons svg{
     margin-left: 5px;
+    cursor: pointer;
 }
 
 .objects-card::-webkit-scrollbar {
-  width: 0.25rem;
+    width: 0.25rem;
 }
 
 .objects-card::-webkit-scrollbar-thumb {
-  background: burlywood;
-  border-radius: 100vw;
+    background: #1b63b1;
+    border-radius: 100vw;
 }
 
 .objects-card::-webkit-scrollbar-thumb:hover {
-  background: rgb(214, 145, 54);
+    background: #217cde;
 }
+
+.background-modal {
+    min-height: 600px;
+    min-width: 600px;
+}
+
 </style>
