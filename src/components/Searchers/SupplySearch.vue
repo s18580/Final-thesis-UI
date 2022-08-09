@@ -84,8 +84,8 @@
 </template>
 
 <script>
-import CallAPI from '../../axios/axios-connection.js';
-import CallSeq from '../../logging/seq-logger.js';
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
 
 export default {
   name: 'SupplySearch',

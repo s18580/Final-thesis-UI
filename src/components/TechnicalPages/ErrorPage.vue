@@ -2,7 +2,7 @@
     <div>
         <h1 class="display-1">Strona nie znaleziona.</h1>
         <h6 class="display-6">Nie znaleźliśmy zasobu, którego szukasz. Odśwież stronę i spróbuj ponownie.</h6>
-        <img src="../../assets/undraw_page_not_found_re_e9o6.svg" alt="My Happy SVG"/>
+        <img src="@/assets/undraw_page_not_found_re_e9o6.svg" alt="My Happy SVG"/>
     </div>
 </template>
 

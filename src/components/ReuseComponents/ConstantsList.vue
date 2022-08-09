@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import ConstantsEdit from './Modals/ConstantsEdit.vue';
+import ConstantsEdit from '@/components/ReuseComponents/Modals/ConstantsEdit.vue';
 
 export default {
     name: 'ConstantsList',

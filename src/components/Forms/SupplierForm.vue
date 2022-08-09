@@ -92,10 +92,10 @@
 </template>
 
 <script>
-import CallAPI from '../../axios/axios-connection.js';
-import CallSeq from '../../logging/seq-logger.js';
-import AddressModal from '../ReuseComponents/AddressModal.vue';
-import RepresentativeModal from '../ReuseComponents/RepresentativeModal.vue';
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+import AddressModal from '@/components/ReuseComponents/Modals/AddressModal.vue';
+import RepresentativeModal from '@/components/ReuseComponents/Modals/RepresentativeModal.vue';
 
 export default {
   name: 'AddSupplier',

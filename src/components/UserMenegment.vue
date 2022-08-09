@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import UserDetails from './ReuseComponents/Modals/UserDetails.vue';
+import UserDetails from '@/components/ReuseComponents/Modals/UserDetails.vue';
 
 export default {
     name: 'UserMenegment',

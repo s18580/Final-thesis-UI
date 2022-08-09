@@ -209,10 +209,10 @@
 </template>
 
 <script>
-import AddressModal from '../ReuseComponents/AddressModal.vue';
-import WorkerModal from '../ReuseComponents/WorkerModal.vue';
-import FileModal from '../ReuseComponents/FileModal.vue';
-import OrderItemModal from '../ReuseComponents/OrderItemModal.vue';
+import AddressModal from '@/components/ReuseComponents/Modals/AddressModal.vue';
+import WorkerModal from '@/components/ReuseComponents/WorkerModal.vue';
+import FileModal from '@/components/ReuseComponents/FileModal.vue';
+import OrderItemModal from '@/components/ReuseComponents/OrderItemModal.vue';
 
 export default {
   name: 'OrderForm',

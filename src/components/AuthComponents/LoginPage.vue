@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import CallAPI from '../../axios/axios-connection.js';
-import CallSeq from '../../logging/seq-logger.js';
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
 import { useUserStore } from '@/stores/UserStore';
 
 export default {

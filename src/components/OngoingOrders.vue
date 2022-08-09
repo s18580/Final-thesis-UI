@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import OrdersTable from './ReuseComponents/OrdersTable.vue';
+import OrdersTable from '@/components/ReuseComponents/OrdersTable.vue';
 
 export default {
     name: 'OngoingOrders',
