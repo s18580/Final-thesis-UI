@@ -74,13 +74,11 @@
 					<h6>Role użytkownika:</h6>
 					<div class="objects-card">
 						<div v-for="role in workerRoles" :key="role.idRole" class="card-items">
-                            <div>
+                            <div id="roleNameCo" class="my-1">
                                 {{ role.name }}
                             </div>
                             <div class="card-icons">
-                                <svg @click="removeRole(role)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
+                                <va-icon @click="removeRole(role)" color="#1b63b1" class="material-icons">delete</va-icon>
                             </div>
 						</div>
 					</div>
@@ -107,7 +105,7 @@ export default {
 			workerPhone: "",
             passwordOne: "",
             passwordTwo: "",
-            workerRoles: [],
+            workerRoles: [{name: "Basic"}, {name: "Admin"}, {name: "Office"}, {name: "Accountant"}, {name: "Manager"}],
             isFormValidate: false,
             selectedWorksite: "Bez stanowiska",
             rawWorksites: [],
@@ -312,16 +310,15 @@ export default {
 }
 
 .card-items {
-    background: #ffcc80;
-    padding: 5px;
+    background: #d3e5f8;
+    padding: 10px;
     margin: 5px;
     width: 100%;
     border-radius: 50px;
-    border-color:burlywood;
-    border-style: solid;
-    border-width: 3px;
-    display: flex;
-    justify-content: space-between;
+    border: solid 1px #1b63b1;
+    display: grid;
+    grid-template-columns: 1fr 40px;
+    grid-template-rows: 1fr;
 }
 
 .card-icons svg{
