@@ -49,7 +49,7 @@
                 <va-input
                     class="gridFirstC gridThirdR inputWidth"
                     v-model="passwordOne"
-                    :rules="[(v) => v.length > 8 || `Hasło jest nieprawidłowe.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == passwordTwo || `Hasła nie są takie same.`]"
+                    :rules="[(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == passwordTwo || `Hasła nie są takie same.`]"
                     label="Hasło"
                     placeholder="Hasło pracownika"
                 />
