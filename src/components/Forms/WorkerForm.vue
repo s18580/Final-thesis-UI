@@ -105,7 +105,7 @@ export default {
 			workerPhone: "",
             passwordOne: "",
             passwordTwo: "",
-            workerRoles: [{name: "Basic"}, {name: "Admin"}, {name: "Office"}, {name: "Accountant"}, {name: "Manager"}],
+            workerRoles: [],
             isFormValidate: false,
             selectedWorksite: "Bez stanowiska",
             rawWorksites: [],
@@ -281,10 +281,6 @@ export default {
     background: white;
 	border-radius: 25px;
 }
-
-
-
-
 
 .objects-card-wrapper {
 	display: flex;
