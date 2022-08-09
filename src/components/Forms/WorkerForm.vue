@@ -5,7 +5,7 @@
             <va-divider />
         </div>
         <div id="mainCoOuter">
-            <h3>Dane uzytkownika</h3>
+            <h3>Dane użytkownika</h3>
             <va-divider />
             <div id="mainCoInner">
             <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
@@ -67,7 +67,7 @@
         </div>
         </div>
         <div id="rolesCoOuter">
-            <h3>Dostępy uzytkownika</h3>
+            <h3>Dostępy użytkownika</h3>
             <va-divider />
             <div id="rolesCoInner">
                 <div class="objects-card-wrapper">
