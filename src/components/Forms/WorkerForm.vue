@@ -326,17 +326,4 @@ export default {
     cursor: pointer;
 }
 
-.objects-card::-webkit-scrollbar {
-    width: 0.25rem;
-}
-
-.objects-card::-webkit-scrollbar-thumb {
-    background: burlywood;
-    border-radius: 100vw;
-}
-
-.objects-card::-webkit-scrollbar-thumb:hover {
-    background: rgb(214, 145, 54);
-}
-
 </style>
