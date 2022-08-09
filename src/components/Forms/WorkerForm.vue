@@ -34,7 +34,7 @@
                     class="gridSecondC gridSecondR inputWidth"
                     v-model="workerPhone"
                     :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
-                    label="Telefon"
+                    label="Telefon (opcjonalnie)"
                     placeholder="Telefon pracownika"
                 />
                 <div class="gridSpreadC gridFourthR inputWidth">
@@ -74,7 +74,7 @@
 					<h6>Role użytkownika:</h6>
 					<div class="objects-card">
 						<div v-for="role in workerRoles" :key="role.idRole" class="card-items">
-                            <div id="roleNameCo" class="my-1">
+                            <div class="my-1">
                                 {{ role.name }}
                             </div>
                             <div class="card-icons">
@@ -311,13 +311,14 @@ export default {
 
 .card-items {
     background: #d3e5f8;
-    padding: 10px;
+    padding-bottom: 10px;
+    padding-top: 10px;
     margin: 5px;
-    width: 100%;
+    width: 240px;
     border-radius: 50px;
     border: solid 1px #1b63b1;
     display: grid;
-    grid-template-columns: 1fr 40px;
+    grid-template-columns: 1fr 80px;
     grid-template-rows: 1fr;
 }
 
