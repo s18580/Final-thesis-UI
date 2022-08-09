@@ -170,6 +170,10 @@ export default {
         },  
         validateForm() {
             this.$refs.form.validate();
+            if(this.workerRoles.length == 0) {
+                this.isFormValidate = false;
+                this.$vaToast.init({ message: 'Użytkownik musi mieć przynajmniej jedną rolę.', color: 'danger', duration: 2000 })
+            }
 
             return this.isFormValidate;
         },
