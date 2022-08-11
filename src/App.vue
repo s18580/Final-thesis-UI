@@ -3,8 +3,23 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import { useUserStore } from '@/stores/UserStore';
+
 export default {
   name: 'App',
+  created() {
+    CallAPI.interceptors.request.use(function (config) {
+      const userStore = useUserStore();
+      if(userStore.userToken !== "") {
+        config.headers.common['Authorization'] = "bearer " + userStore.userToken;
+      }
+      return config;
+    }, function (error) {
+      // Do something with request error
+      return Promise.reject(error);
+    });
+  }
 }
 </script>
 

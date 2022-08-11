@@ -70,8 +70,6 @@ export default {
                         roles: res.data.userRoles,
                     })
 
-                    CallAPI.defaults.headers.common['Authorization'] = "bearer " + userStore.token;
-
                     this.$router.push({ name: 'home' });
                 })
                 .catch(err => {
