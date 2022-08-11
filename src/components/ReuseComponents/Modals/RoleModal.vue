@@ -77,8 +77,6 @@ export default {
         .catch(err => {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
-
-        console.log(this.rawRoles);
     }
 }
 </script>
