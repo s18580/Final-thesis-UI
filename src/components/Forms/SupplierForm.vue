@@ -125,12 +125,11 @@ export default {
                         name: item["name"],
                         lastName: item["lastName"],
                         phoneNumber: item["phoneNumber"],
-                        addressEmail: item["addressEmail"]
+                        emailAddress: item["addressEmail"]
                     }
 
                     return result;
                 });
-
                 let suplierAddressesAPI = this.suplierAddresses.map(function(item) {
                     let result = {
                         name: item["name"],
@@ -145,29 +144,27 @@ export default {
                     return result;
                 });
 
-                let callPath = "/Supplier/createSupplier";
+                let callPath = "/Supplier/createSupplierWithData";
                 let body = {
-                    CreateSupplierCommand: {
-                        name: this.supplierName,
-                        emailAddress: this.supplierEmail,
-                        phoneNumber: this.supplierPhone,
-                        description: this.supplierDescription
-                    },
-                    contactPeopleAPI,
-                    suplierAddressesAPI
+                    name: this.supplierName,
+                    emailAddress: this.supplierEmail,
+                    phoneNumber: this.supplierPhone,
+                    description: this.supplierDescription,
+                    representatives: contactPeopleAPI,
+                    addresses: suplierAddressesAPI
                 };
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
+                    this.resetData();
                     this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 })
-                    this.$router.push('home');
                     return res.data;
                 })
                 .catch(err => {
                     if(err.message.includes("422")) {
                         this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
                     }else{
-                        this.$vaToast.init({ message: 'Błąd dodawania dostwcy.', color: 'danger', duration: 3000 })
+                        this.$vaToast.init({ message: 'Błąd dodawania dostawcy.', color: 'danger', duration: 3000 })
                     }
 
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
@@ -238,6 +235,9 @@ export default {
         },
         removeContact(id) {
             this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
+        },
+        resetData() {
+            window.location.reload(true);
         },
 	},
 }

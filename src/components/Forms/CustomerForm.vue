@@ -16,7 +16,7 @@
                         :option="option"
                     />
                 </div>
-                <va-form v-if="selectedRadioOption==='Firma'" @submit.prevent="this.submitFormCompany()" id="companyForm" tag="form" ref="formCompany" @validation="isFormCompanyValidate = $event">
+                <va-form v-if="selectedRadioOption==='Firma'" @submit.prevent="this.submitForm()" id="companyForm" tag="form" ref="formCompany" @validation="isFormCompanyValidate = $event">
                     <va-input
                         class="gridSpreadC gridFirstR inputWidthLong"
                         v-model="companyName"
@@ -53,10 +53,10 @@
                         placeholder="Email firmowy klienta"
                     />
                     <div class="gridSpreadC gridFourthR">
-                        <va-button @click="submitForm()" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+                        <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
                     </div>
                 </va-form>
-                <va-form v-if="selectedRadioOption==='Osoba prywatna'" @submit.prevent="this.submitFormPerson()" id="privateForm" tag="form" ref="formPerson" @validation="isFormPersonValidate = $event">
+                <va-form v-if="selectedRadioOption==='Osoba prywatna'" @submit.prevent="this.submitForm()" id="privateForm" tag="form" ref="formPerson" @validation="isFormPersonValidate = $event">
                     <va-input
                         class="gridFirstC gridFirstR inputWidth"
                         v-model="customerName"
@@ -86,7 +86,7 @@
                         placeholder="Email klienta"
                     />
                     <div class="gridSpreadC gridThirdR">
-                        <va-button @click="submitForm()" type="submit" color="info" gradient class="my-3">Dodaj</va-button> 
+                        <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button> 
                     </div>
                 </va-form>
             </div>
@@ -120,7 +120,7 @@
                 <div class="objects-card-wrapper">
 					<h6>Lista adresów:</h6>
 					<div class="objects-card">
-						<div v-for="address in suplierAddresses" :key="address.IdForAddressTable" class="card-items">
+						<div v-for="address in customerAddresses" :key="address.IdForAddressTable" class="card-items">
                             <div class="my-1">
                                 {{ address.name }}
                             </div>
@@ -181,13 +181,12 @@ export default {
                         name: item["name"],
                         lastName: item["lastName"],
                         phoneNumber: item["phoneNumber"],
-                        addressEmail: item["addressEmail"]
+                        emailAddress: item["addressEmail"]
                     }
 
                     return result;
                 });
-
-                var customerAddressesAPI = this.suplierAddresses.map(function(item) {
+                var customerAddressesAPI = this.customerAddresses.map(function(item) {
                     let result = {
                         name: item["name"],
                         country: item["country"],
@@ -204,24 +203,22 @@ export default {
                 const userStore = useUserStore();
 
                 if(this.selectedRadioOption === 'Firma') {
-                    let callPath = "/Customer/createCompanyCustomer";
+                    let callPath = "/Customer/createCompanyCustomerWithData";
                     let body = {
-                        CreateCustomerCommand: {
-                            companyName: this.companyName,
-                            nip: this.nip,
-                            regon: this.regon,
-                            companyPhoneNumber: this.companyPhone,
-                            companyEmailAddress: this.companyEmail,
-                            idWorker: userStore.userId
-                        },
-                        contactPeopleAPI,
-                        customerAddressesAPI
+                        companyName: this.companyName,
+                        nip: this.nip,
+                        regon: this.regon,
+                        companyPhoneNumber: this.companyPhone,
+                        companyEmailAddress: this.companyEmail,
+                        idWorker: userStore.userId,
+                        representatives: contactPeopleAPI,
+                        addresses: customerAddressesAPI
                     };
 
                     await CallAPI.post(callPath, body)
                     .then(res => {
-                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 3000 })
-                        this.$router.push('home');
+                        this.resetData();
+                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 5000 })
                         return res.data;
                     })
                     .catch(err => {
@@ -234,23 +231,21 @@ export default {
                         CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                     });
                 } else {
-                    let callPath = "/Customer/createPersonCustomer";
+                    let callPath = "/Customer/createPersonCustomerWithData";
                     let body = {
-                        CreateCustomerCommand: {
-                            name: this.customerName,
-                            lastName: this.customerLastName,
-                            companyEmailAddress: this.customerEmail,
-                            companyPhoneNumber: this.customerPhone,
-                            idWorker: userStore.userId
-                        },
-                        contactPeopleAPI,
-                        customerAddressesAPI
+                        name: this.customerName,
+                        lastName: this.customerLastName,
+                        companyEmailAddress: this.customerEmail,
+                        companyPhoneNumber: this.customerPhone,
+                        idWorker: userStore.userId,
+                        representatives: contactPeopleAPI,
+                        addresses: customerAddressesAPI
                     };
 
                     await CallAPI.post(callPath, body)
                     .then(res => {
-                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 3000 })
-                        this.$router.push('home');
+                        this.resetData();
+                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 5000 })
                         return res.data;
                     })
                     .catch(err => {
@@ -334,6 +329,9 @@ export default {
         },
         removeContact(id) {
             this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
+        },
+        resetData() {
+            window.location.reload(true);
         },
 	},
 }
