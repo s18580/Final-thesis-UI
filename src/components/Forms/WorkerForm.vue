@@ -39,7 +39,6 @@
                 />
                 <div class="gridSpreadC gridFourthR inputWidth">
                     <va-select
-                        class=""
                         v-model="selectedWorksite"
                         :options="worksites"
                         label="Stanowisko"
@@ -114,6 +113,10 @@ export default {
 	},
     components: { RoleModal },
     async mounted() {
+        this.isFormValidate = false;
+        this.selectedWorksite = "Bez stanowiska";
+        this.showModal = false;
+
         let callPath = "/Worksite/getWorksites";
         this.rawWorksites = await CallAPI.get(callPath)
         .then(res => {
@@ -135,19 +138,21 @@ export default {
 	methods: {
 		async submitForm() {
             if(this.validateForm()) {
-                let callPath = "/User/register";
+                let callPath = "/User/registerWithRoles";
                 let body = {
                     name: this.workerName,
                     lastName: this.workerLastName,
                     phoneNumber: this.workerPhone,
                     emailAddres: this.workerEmail,
                     password: this.passwordOne,
-                    idWorksite: this.getWorksiteByName(this.selectedWorksite)
+                    idWorksite: this.getWorksiteByName(this.selectedWorksite),
+                    userRoles: this.workerRoles,
                 };
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.$vaToast.init({ message: 'Konto zostało dodane.', color: 'success', duration: 3000 })
+                    this.resetData();
+                    this.$vaToast.init({ message: 'Konto zostało dodane.', color: 'success', duration: 3000 });
                     return res.data;
                 })
                 .catch(err => {
@@ -187,7 +192,10 @@ export default {
             if (index > -1) {
                 this.workerRoles.splice(index, 1);
             }
-        }
+        },
+        resetData() {
+            window.location.reload(true);
+        },
 	},
 }
 </script>
