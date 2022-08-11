@@ -20,11 +20,6 @@
                     label="Przepracowane godziny przy zamówieniu"
                     placeholder="Przepracowane godziny przy zamówieniu"
                 />
-                <va-checkbox
-                    class="mb-4 some-top-space"
-                    label="Prowadzący zamówienie"
-                    v-model="idLeader"
-                />
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
@@ -48,7 +43,6 @@ export default {
             isWorkerFormValidate: false,
             showWorkerModal: true,
             hoursWorked: 0,
-            idLeader: false,
             workers: [],
             selectedWorker: null,
             IdForWorkerTable: null,
@@ -61,7 +55,6 @@ export default {
                     newWorker: {
                         worker: this.selectedWorker,
                         hoursWorker: this.hoursWorked,
-                        isLeader: this.idLeader,
                     }
                 };
 
@@ -86,14 +79,12 @@ export default {
     mounted() {
         if(this.worker === null) {
             this.buttonMessage = "Przydziel pracownika";
-            this.idLeader = false;
             this.hoursWorked = 0;
             this.selectedWorker = null;
         }else {
             this.buttonMessage = "Edytuj przydział";
             this.selectedWorker = this.worker.worker;
             this.hoursWorker = this.worker.hoursWorker;
-            this.isLeader = this.worker.isLeader;
             this.IdForWorkerTable = this.worker.IdForWorkerTable;
         }
     }
