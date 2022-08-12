@@ -2,15 +2,6 @@
   <div id="mainCo">
         <h1>Dodaj nowe zamówienie</h1>
 		<va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
-            <va-checkbox
-                class="mb-4 some-top-space"
-                label="Zamówienie jest przetargiem"
-                v-model="isAuction"
-            />
-            <va-switch
-                class="mb-4 some-top-space"
-                v-model="isAuction"
-            />
             <div class="search-input-box">
                 <label>Zamówienie jest przetargiem:</label>
                 <div>
@@ -361,7 +352,7 @@ export default {
             this.orderItems.push(e.newOrderItem);
             this.orderItemsCounter++;
         },
-        editOrderItem(e) { // wtf?
+        editOrderItem(e) {
             for(const obj of this.orderItems){
                 if (obj.IdForOrderItemTable === e.newOrderItem.IdForOrderItemTable) {
                     obj.name = e.newOrderItem.fileName;
