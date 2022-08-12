@@ -70,7 +70,7 @@ export default {
         if(this.color === null) {
             this.buttonMessage = "Dodaj kolorystykę";
             this.colorName = "";
-            this.IdForFileTable = null;
+            this.IdForColorTable = null;
         }else {
             this.buttonMessage = "Edytuj kolorystykę";
             this.colorName = this.color.name;
@@ -82,7 +82,7 @@ export default {
 
 <style scoped>
 #modalColorForm {
-    min-width: 600px;
+    min-width: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;

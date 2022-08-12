@@ -53,7 +53,7 @@ export default {
             if(this.validateForm()) {
                 let data = {
                     newService: {
-                        selectedService: this.selectedService,
+                        idServiceName: this.selectedService,
                         price: this.servicePrice,
                     }
                 };
@@ -77,7 +77,7 @@ export default {
         }
 	},
     mounted() {
-        if(this.file === null) {
+        if(this.service === null) {
             this.buttonMessage = "Dodaj usługę";
             this.selectedService = null;
             this.services = [];
@@ -95,7 +95,7 @@ export default {
 
 <style scoped>
 #modalServiceForm {
-    min-width: 600px;
+    min-width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;

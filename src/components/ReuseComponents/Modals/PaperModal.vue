@@ -145,7 +145,7 @@ export default {
 
 <style scoped>
 #modalPaperForm {
-    min-width: 600px;
+    min-width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
