@@ -11,32 +11,49 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="orderItemName"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa przedmiotu zamówienia"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="insideFormat"
+                    :rules="[(v) => v.length > 0 || `Pole format nie może być puste.`, (v) => v.length < 101 || `Pole format przekroczyło limit znaków.`]"
                     label="Format"
                     placeholder="Format przedmiotu zamówienia"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="coverFormat"
+                    :rules="[(v) => v.length < 101 || `Pole format okładki przekroczyło limit znaków.`]"
                     label="Format okładki"
                     placeholder="Format okładki przedmiotu zamówienia"
+                />
+                <va-input
+                    class="some-space mb-4"
+                    v-model="circulation"
+                    :rules="[(v) => v >= 0 || `Nakład nie może być ujmeny.`]"
+                    label="Nakład"
+                />
+                <va-input
+                    class="some-space mb-4"
+                    v-model="capacity"
+                    :rules="[(v) => v >= 0 || `Objętość nie może być ujemna.`]"
+                    label="Objętość"
                 />
                 <va-date-input
                     class="some-space mb-4"
                     v-model="expectedCompletionDate"
                     label="Pożądana data ukończenia"
                     placeholder="Pożądana data ukończenia"
+                    clearable
                 />
                 <va-date-input
                     class="some-space mb-4"
                     v-model="completionDate"
                     label="Data ukończenia"
                     placeholder="Data ukończenia"
+                    clearable
                 />
                 <va-select
                     class="mb-4 some-space"
@@ -63,7 +80,7 @@
                     class="mb-4 some-space"
                     v-model="comments"
                     type="textarea"
-                    :rules="[ (v) => v.length < 255 || `Pole notatka przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length < 256 || `Pole notatka przekroczyło limit znaków.`]"
                     label="Notatka (opcjonalnie)"
                 />
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
@@ -86,7 +103,7 @@
                             </div>
                         </div>
                         <va-button @click="showColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
-                        <ColorModal v-if="showColorModal" @close="showColorModal=false" @createColor="addColor($event)" @editColor="editColor($event)"/>
+                        <ColorModal v-if="showColorModal" :color="editedColor" @close="closeColorModal()" @createColor="addColor($event)" @editColor="editColor($event)"/>
                     </div>
                 </div>
             </div>
@@ -108,7 +125,7 @@
                             </div>
                         </div>
                         <va-button @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
-                        <PaperModal v-if="showPaperModal" @close="showPaperModal=false" @createPaper="addPaper($event)" @editPaper="editPaper($event)"/>
+                        <PaperModal v-if="showPaperModal" :paper="editedPaper" @close="closePaperModal()" @createPaper="addPaper($event)" @editPaper="editPaper($event)"/>
                     </div>
                 </div>
             </div>
@@ -130,7 +147,7 @@
                             </div>
                         </div>
                         <va-button @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
-                        <ServiceModal v-if="showServiceModal" @close="showServiceModal=false" @createService="addService($event)" @editService="editService($event)"/>
+                        <ServiceModal v-if="showServiceModal" :service="editedService" @close="closeServiceModal()" @createService="addService($event)" @editService="editService($event)"/>
                     </div>
                 </div>
             </div>
@@ -139,6 +156,8 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
 import ColorModal from '@/components/ReuseComponents/Modals/ColorModal.vue';
 import PaperModal from '@/components/ReuseComponents/Modals/PaperModal.vue';
 import ServiceModal from '@/components/ReuseComponents/Modals/ServiceModal.vue';
@@ -156,16 +175,18 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
-            orderItemColors: [{name: "cos tam"}],
+            orderItemColors: [],
             showColorModal: false,
             colorCounter: 0,
+            editedColor: null,
             orderItemPapers: [],
             showPaperModal: false,
             paperCounter: 0,
+            editedPaper: null,
             orderItemService: [],
             showServiceModal: false,
             serviceCounter: 0,
-
+            editedService: null,
             buttonMessage: "",
             isOrderItemFormValidate: false,
             showOrderItemModal: true,
@@ -174,21 +195,46 @@ export default {
             comments: "",
             insideFormat: "",
             coverFormat: "",
-            completionDate: new Date(),
-            expectedCompletionDate: new Date(),
-            capacity: null,
-            circulation: 0,
-            orderItemTypes: [],
-            selectedOrderItemType: null,
-            deliveryTypes: [],
-            selectedDeliveryType: null,
-            bindingTypes: [],
-            selectedBindingTypes: null,
+            completionDate: null,
+            expectedCompletionDate: null,
+            capacity: 0,
+            circulation: 1,
+            rawOrderItemTypes: [],
+            selectedOrderItemType: "",
+            rawDeliveryTypes: [],
+            selectedDeliveryType: "",
+            rawBindingTypes: [],
+            selectedBindingTypes: "Bez szycia",
 		}
 	},
+    computed: {
+        orderItemTypes(){
+            let resultArr = this.rawOrderItemTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        deliveryTypes(){
+            let resultArr = this.rawDeliveryTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        bindingTypes(){
+            let resultArr = this.rawBindingTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return ["Bez szycia"].concat(resultArr);
+        },
+    },
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
+                if(this.capacity == 0 || this.capacity == 1) this.capacity == null;
+
                 let data = {
                     newOrderItem: {
                         name: this.orderItemName,
@@ -197,9 +243,14 @@ export default {
                         coverFormat: this.coverFormat,
                         capacity: this.capacity,
                         circulation: this.circulation,
-                        selectedOrderItemType: this.selectedOrderItemType,
-                        selectedDeliveryType: this.selectedDeliveryType,
-                        selectedBindingTypes: this.selectedBindingTypes,
+                        completionDate: this.completionDate,
+                        expectedCompletionDate: this.expectedCompletionDate,
+                        selectedOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
+                        selectedDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
+                        selectedBindingTypes: this.getIdByName("bindingType", this.selectedBindingTypes),
+                        colors: this.orderItemColors,
+                        papers: this.orderItemPapers,
+                        services: this.orderItemService,
                     }
                 };
 
@@ -209,11 +260,35 @@ export default {
                 } else {
                     this.$emit('createOrderItem', data);
                 }
-                this.closeFileModal();
+                this.closeOrderItemModal();
             }
 		},
+        getIdByName(what, objName){
+            switch(what) {
+                case "orderItemType":
+                    return this.rawOrderItemTypes.find(element => element.name == objName).idOrderItemType;
+                case "deliveryType":
+                    return this.rawDeliveryTypes.find(element => element.name == objName).idDeliveryType;
+                case "bindingType":
+                    if(objName  === "Bez szycia") {
+                        return null;
+                    } else {
+                        return this.rawBindingTypes.find(element => element.name == objName).idBindingType;
+                    }
+            }
+        },
         validateForm() {
             this.$refs.modalOrderItemForm.validate();
+
+            if(this.selectedOrderItemType === "") {
+                this.isOrderItemFormValidate = false;
+                this.$vaToast.init({ message: 'Wybierz typ przedmiotu zamówienia', color: 'danger', duration: 2000 })
+            }
+
+            if(this.selectedDeliveryType === "") {
+                this.isOrderItemFormValidate = false;
+                this.$vaToast.init({ message: 'Wybierz typ dostawy.', color: 'danger', duration: 2000 })
+            }
 
             return this.isOrderItemFormValidate;
         },
@@ -236,11 +311,16 @@ export default {
 
             this.showColorModal = false;
         },
-        editColorInModal() {
-
+        editColorInModal(color) {
+            this.editedColor = color;
+            this.showColorModal = true;
         },
-        removeColor() {
-
+        removeColor(id) {
+            this.orderItemColors = this.orderItemColors.filter(item => item.IdForColorTable !== id);
+        },
+        closeColorModal() {
+            this.showColorModal = false;
+            this.editedColor = null;
         },
         addPaper(e) {
             e.newPaper.IdForPaperTable = this.paperCounter;
@@ -258,19 +338,21 @@ export default {
 
             this.showPaperModal = false;
         },
-        editPaperInModal() {
-
+        editPaperInModal(paper) {
+            this.editedPaper = paper;
+            this.showPaperModal = true;
         },
-        removePaper() {
-
+        removePaper(id) {
+            this.orderItemPapers = this.orderItemPapers.filter(item => item.IdForPaperTable !== id);
         },
-
-
+        closePaperModal() {
+            this.showPaperModal = false;
+            this.editedPaper = null;
+        },
         addService(e) {
             e.newService.IdForServiceTable = this.serviceCounter;
             this.orderItemService.push(e.newService);
             this.serviceCounter++;
-            this.showServiceModal = false;
         },
         editService(e) {
             for(const obj of this.orderItemService){
@@ -282,42 +364,85 @@ export default {
 
             this.showServiceModal = false;
         },
-        editServiceInModal() {
-
+        editServiceInModal(service) {
+            this.editedService = service;
+            this.showServiceModal = true;
         },
-        removeService() {
-
+        removeService(id) {
+            this.orderItemService = this.orderItemService.filter(item => item.IdForServiceTable !== id);
+        },
+        closeServiceModal() {
+            this.showServiceModal=false;
+            this.editedService = null;
         },
 	},
-    mounted() {
+    async mounted() {
         if(this.orderItem === null) {
             this.buttonMessage = "Dodaj przedmiot zamówienia";
-            this.orderItemName = "",
-            this.comments = "",
-            this.insideFormat = "",
-            this.coverFormat = "",
-            this.capacity = null,
-            this.circulation = 0,
-            this.orderItemTypes = [],
-            this.selectedOrderItemType = null,
-            this.deliveryTypes = [],
-            this.selectedDeliveryType = null,
-            this.bindingTypes = [],
-            this.selectedBindingTypes = null,
+            this.orderItemName = "";
+            this.comments = "";
+            this.insideFormat = "";
+            this.coverFormat = "";
+            this.capacity = 0;
+            this.circulation = 1;
+            this.completionDate = null;
+            this.expectedCompletionDate = null;
+            this.selectedOrderItemType = "";
+            this.selectedDeliveryType = "";
+            this.selectedBindingTypes = "Bez szycia";
             this.IdForOrderItemTable = null;
+            this.orderItemColors = [];
+            this.orderItemPapers = [];
+            this.orderItemService = [];
+            this.editedService = null;
+            this.editedPaper = null;
+            this.editedColor = null;
         }else {
             this.buttonMessage = "Edytuj przedmiot zamówienia";
-            this.orderItemName = this.newOrderItem.name,
-            this.comments = this.newOrderItem.comments,
-            this.insideFormat = this.newOrderItem.insideFormat,
-            this.coverFormat = this.newOrderItem.coverFormat,
-            this.capacity = this.newOrderItem.capacity,
-            this.circulation = this.newOrderItem.circulation,
-            this.selectedOrderItemType = this.newOrderItem.selectedOrderItemType,
-            this.selectedDeliveryType = this.newOrderItem.selectedDeliveryType,
-            this.selectedBindingTypes = this.newOrderItem.selectedBindingTypes,
+            this.orderItemName = this.newOrderItem.name;
+            this.comments = this.newOrderItem.comments;
+            this.insideFormat = this.newOrderItem.insideFormat;
+            this.coverFormat = this.newOrderItem.coverFormat;
+            this.capacity = this.newOrderItem.capacity;
+            this.circulation = this.newOrderItem.circulation;
+            this.selectedOrderItemType = this.newOrderItem.selectedOrderItemType;
+            this.selectedDeliveryType = this.newOrderItem.selectedDeliveryType;
+            this.selectedBindingTypes = this.newOrderItem.selectedBindingTypes;
             this.IdForOrderItemTable = this.newOrderItem.IdForOrderItemTable;
+            this.orderItemColors = this.newOrderItem.orderItemColors;
+            this.orderItemPapers = this.newOrderItem.orderItemPapers;
+            this.orderItemService = this.newOrderItem.orderItemService;
+            this.editedService = null;
+            this.editedPaper = null;
+            this.editedColor = null;
         }
+
+        let callPath = "/BindingType/getBindingTypes";
+        this.rawBindingTypes = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+
+        callPath = "/DeliveryType/getDeliveryTypes";
+        this.rawDeliveryTypes = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+
+        callPath = "/OrderItemType/getOrderItemsTypes";
+        this.rawOrderItemTypes = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
     }
 }
 </script>

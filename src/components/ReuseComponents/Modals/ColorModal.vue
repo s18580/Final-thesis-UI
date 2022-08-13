@@ -10,6 +10,7 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="colorName"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 11 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa koloru"
                 />
@@ -54,7 +55,7 @@ export default {
                 } else {
                     this.$emit('createColor', data);
                 }
-                this.closeFileModal();
+                this.closeColorModal();
             }
 		},
         validateForm() {
@@ -74,7 +75,7 @@ export default {
         }else {
             this.buttonMessage = "Edytuj kolorystykę";
             this.colorName = this.color.name;
-            this.IdForColorTable = this.file.IdForColorTable;
+            this.IdForColorTable = this.color.IdForColorTable;
         }
     }
 }

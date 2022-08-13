@@ -10,18 +10,21 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="paperName"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="paperKind"
+                    :rules="[(v) => v.length < 51 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Rodzaj"
                     placeholder="Rodzaj papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="sheetFormat"
+                    :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Format arkusza"
                     placeholder="Format arkusza"
                 />
@@ -35,20 +38,20 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="paperOpacity"
-                    label="Grubość"
-                    placeholder="Grubość papieru"
+                    :rules="[ (v) => v >= 0 || `Grubość nie może być ujemna.`]"
+                    label="Grubość papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="paperQuantity"
-                    label="Nakład"
-                    placeholder="Nazwa papieru"
+                    :rules="[ (v) => v >= 0 || `Nakład nie może być ujemny.`]"
+                    label="Nakład papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="pricePerKilogram"
-                    label="Cena"
-                    placeholder="Cena za kilogram"
+                    :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.`]"
+                    label="Cena za kilogram"
                 />
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
@@ -75,8 +78,8 @@ export default {
             paperName: "",
             paperKind: "",
             sheetFormat: "",
-            fiberDirections: [],
-            selectedFiberDirection: null,
+            fiberDirections: ["Pionowy", "Poziomy"],
+            selectedFiberDirection: "Pionowy",
             paperOpacity: 0,
             paperQuantity: 0,
             pricePerKilogram: 0.0,
@@ -118,18 +121,17 @@ export default {
 	},
     mounted() {
         if(this.paper === null) {
-            this.buttonMessage = "Dodaj plik";
+            this.buttonMessage = "Dodaj papier";
             this.paperName = "",
             this.paperKind = "",
             this.sheetFormat = "",
-            this.fiberDirections = [],
-            this.selectedFiberDirection = null,
+            this.selectedFiberDirection = "Pionowy",
             this.paperOpacity = 0,
             this.paperQuantity = 0,
             this.pricePerKilogram = 0.0,
             this.IdForPaperTable = null;
         }else {
-            this.buttonMessage = "Edytuj plik";
+            this.buttonMessage = "Edytuj papier";
             this.paperName = this.paper.name,
             this.paperKind = this.paper.kind,
             this.sheetFormat = this.paper.sheetFormat,

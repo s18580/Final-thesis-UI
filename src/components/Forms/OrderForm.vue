@@ -59,7 +59,7 @@
                 class="mb-4 some-space"
                 v-model="orderNote"
                 type="textarea"
-                :rules="[ (v) => v.length < 255 || `Pole notatka przekroczyło limit znaków.`]"
+                :rules="[(v) => v.length < 256 || `Pole notatka przekroczyło limit znaków.`]"
                 label="Notatka (opcjonalnie)"
             />
             <va-divider inset />
@@ -69,7 +69,7 @@
 					<div class="objects-card">
 						<div v-for="worker in assignmentWorkers" :key="worker.IdForWorkerTable" class="card-items">
                             <div>
-                                {{ worker.name + ' ' + worker.lastName }}
+                                {{ worker.name }}
                             </div>
                             <div class="card-icons">
                                 <svg @click="editWorkerInModal(worker)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -133,7 +133,7 @@
                     <va-button @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
                     <OrderItemModal :orderItem="editedOrderItem" v-if="showOrderItemModal" @close="closeOrderItemModal()" @createOrderItem="addOrderItem($event)" @editOrderItem="editOrderItem($event)"/>
 				</div>
-            <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+            <va-button @click="submitForm()" color="info" gradient class="my-3">Dodaj</va-button>
 		</va-form>
 	</div>
 </template>
@@ -225,7 +225,7 @@ export default {
             return result;
         },
         async getRepresentativesData(clientName) {
-            let callPath = "/Representative/getRepresentativesByCustomer?id=" + this.getRepresentativeIdByName(clientName);
+            let callPath = "/Representative/getRepresentativesByCustomer?id=" + this.getClientIdByName(clientName);
             this.rawReprsentatives = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
@@ -247,21 +247,20 @@ export default {
                 });
                 let orderItemsAPI = this.orderItems.map(function(item) {
                     let result = {
-                        Circulation: item[""],
-                        Capacity: item[""],
-                        Name: item[""],
-                        Comments: item[""],
-                        ExpectedCompletionDate: item[""],
-                        CompletionDate: item[""],
-                        phoneNumber: item[""],
-                        InsideFormat: item[""],
-                        CoverFormat: item[""],
-                        IdDeliveryType: item[""],
-                        IdBindingType: item[""],
-                        IdOrderItemType: item[""],
-                        //Colors? : item[""],
-                        //Services? : item[""],
-                        //Paper? : item[""],
+                        Circulation: item["circulation"],
+                        Capacity: item["capacity"],
+                        Name: item["name"],
+                        Comments: item["comments"],
+                        ExpectedCompletionDate: item["expectedCompletionDate"],
+                        CompletionDate: item["completionDate"],
+                        InsideFormat: item["insideFormat"],
+                        CoverFormat: item["coverFormat"],
+                        IdDeliveryType: item["selectedDeliveryType"],
+                        IdBindingType: item["selectedBindingTypes"],
+                        IdOrderItemType: item["selectedOrderItemType"],
+                        Colors : item["colors"],
+                        Services : item["services"],
+                        Papers : item["papers"],
                     }
 
                     return result;
@@ -280,20 +279,20 @@ export default {
                     return result;
                 });
 
-                let callPath = "/Order/createrOrderWithData";
+                let callPath = "/Order/createOrderWithData";
                 let body = {
-                    name: this.orderName,
+                    Name: this.orderName,
                     OrderSubmissionDate: this.orderSubmissionDate,
                     Note: this.orderNote,
                     IsAuction: this.isAuction,
                     ExpectedDeliveryDate: this.expectedDeliveryDate,
                     OfferValidityDate: this.offerValidityDate,
-                    IdRepresentative: this.getClientIdByName(this.selectedRepresentative),
-                    IdStatus: this.getClientIdByName(this.selectedOrderStatus),
+                    IdRepresentative: this.getRepresentativeIdByName(this.selectedRepresentative),
+                    IdStatus: this.getOrderStatusIdByName(this.selectedOrderStatus),
                     IdCustomer: this.getClientIdByName(this.selectedClient),
-                    workers: assignedWorkersAPI,
-                    addresses: deliveryAddressesAPI,
-                    orderItems: orderItemsAPI,
+                    WorkersToAssign: assignedWorkersAPI,
+                    DeliveryAddresses: deliveryAddressesAPI,
+                    OrderItems: orderItemsAPI,
                 };
 
                 await CallAPI.post(callPath, body)
@@ -335,7 +334,7 @@ export default {
             return this.isFormValidate;
         },
         getClientIdByName(name){
-            return this.rawClients.find(element => element.name == name).idCustomer;
+            return this.rawClients.find(element => element.companyName == name).idCustomer;
         },
         getOrderStatusIdByName(name){
             return this.rawOrderStatuses.find(element => element.name == name).idStatus;
@@ -375,7 +374,7 @@ export default {
         },
         addAddress(e) {
             e.newAddress.IdForAddressTable = this.addressCounter;
-            this.assignmentWorkers.push(e.newAddress);
+            this.deliveryAddresses.push(e.newAddress);
             this.addressCounter++;
         },
         editAddress(e) {
