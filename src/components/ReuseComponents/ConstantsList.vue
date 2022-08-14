@@ -8,6 +8,9 @@
             <div v-else id="listCo">
                 <p> {{ this.listLabel }} </p>
                 <va-data-table :items="myArray" :columns="columns" striped :hoverable="true" :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+                    <template #cell(chipColor)="{ rowIndex }">
+                        <va-icon :color="getChipColor(rowIndex)" class="material-icons">palette</va-icon>
+                    </template>
                     <template #cell(actions)="{ rowIndex }">
                         <va-button flat icon="edit" @click="openEditModal(rowIndex)" />
                         <va-button flat icon="delete" @click="openDeleteModal(rowIndex)" />
@@ -81,6 +84,7 @@ export default {
             selectedConstant: null,
             serviceNameType: false,
             priceListType: false,
+            orderStatusType: false,
         }
     },
     computed: {
@@ -95,6 +99,7 @@ export default {
         this.currentPage = 1;
         this.serviceNameType = this.constantType === 'Usługa';
         this.priceListType = this.constantType === 'Cennik';
+        this.orderStatusType = this.constantType === 'Status zamówienia';
 
         if(this.serviceNameType) {
             this.columns = [
@@ -104,11 +109,16 @@ export default {
                 { key: 'minimumCirculation', label:"Nakład minimalny", sortable: true, tdAlign: 'center', thAlign: 'center' },
                 { key: 'actions', label:"Akcje", width: 80 },
             ];
-        }
-        else if(this.priceListType) {
+        } else if(this.priceListType) {
             this.columns = [
                 { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
                 { key: 'price', label:"Cena", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'actions', label:"Akcje", width: 80 },
+            ];
+        } else if(this.orderStatusType) {
+            this.columns = [
+                { key: 'name', label:"Nazwa", sortable: true, tdAlign: 'center', thAlign: 'center' },
+                { key: 'chipColor', label:"Kolor w tabeli" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ];
         } else {
@@ -117,6 +127,7 @@ export default {
                 { key: 'actions', label:"Akcje", width: 80 },
             ];
         }
+
     },
     methods: {
         openAddModal() {
@@ -149,6 +160,9 @@ export default {
             this.closeEditModal();
             this.$emit('editConstant', e);
         },
+        getChipColor(row){
+            return this.myArray[row].chipColor;
+        }
     }
 }
 </script>
