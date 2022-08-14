@@ -102,10 +102,11 @@ const children = [
     meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
-    path: '/workerForm',
+    path: '/workerForm:id?',
     name: 'WorkerForm',
     component: WorkerForm,
-    meta: { requiresAuth: true, authorize: ['Admin'] }
+    meta: { requiresAuth: true, authorize: ['Admin'] },
+    props: true,
   },
   {
     path: '/supplierSearch',

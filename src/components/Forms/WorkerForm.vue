@@ -1,7 +1,7 @@
 <template>
   <div id="background">
         <div id="headerCo">
-            <h1>Dodaj konto użytkownika</h1>
+            <h1>{{ titleName }}</h1>
             <va-divider />
         </div>
         <div id="mainCoOuter">
@@ -48,7 +48,7 @@
                 <va-input
                     class="gridFirstC gridThirdR inputWidth"
                     v-model="passwordOne"
-                    :rules="[(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == passwordTwo || `Hasła nie są takie same.`]"
+                    :rules="passwordRules"
                     label="Hasło"
                     placeholder="Hasło pracownika"
                 />
@@ -60,7 +60,7 @@
                     placeholder="Powtórz hasło pracownika"
                 />
                 <div id="submitButtonContainer">
-                    <va-button id="submitButton" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+                    <va-button id="submitButton" type="submit" color="info" gradient class="my-3">{{ buttonName }}</va-button>
                 </div>
             </va-form>
         </div>
@@ -96,8 +96,17 @@ import RoleModal from '@/components/ReuseComponents/Modals/RoleModal.vue';
 
 export default {
   name: 'AddWorker',
+    props: {
+        id: {
+            type: String,
+            required: false,
+        }
+    },
 	data() {
 		return {
+            titleName: "",
+            buttonName: "",
+            idWorker: null,
 			workerName: "",
             workerLastName: "",
             workerEmail: "",
@@ -109,13 +118,46 @@ export default {
             selectedWorksite: "Bez stanowiska",
             rawWorksites: [],
             showModal: false,
+            passwordRules: [],
 		}
 	},
     components: { RoleModal },
     async mounted() {
-        this.isFormValidate = false;
-        this.selectedWorksite = "Bez stanowiska";
-        this.showModal = false;
+        if(this.id == "" || this.id == undefined){
+            this.isFormValidate = false;
+            this.selectedWorksite = "Bez stanowiska";
+            this.titleName = "Dodaj konto użytkownika";
+            this.buttonName = "Dodaj";
+            this.showModal = false;
+            this.passwordRules = [(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == this.passwordTwo || `Hasła nie są takie same.`];
+        } else {
+            let callPath = "/Worker/getWorker?id=" + this.id;
+            let editedWorker = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+            this.idWorker = editedWorker.idWorker;
+            this.workerName = editedWorker.name;
+            this.workerLastName = editedWorker.lastName;
+            this.workerEmail = editedWorker.emailAddres;
+			this.workerPhone = editedWorker.phoneNumber;
+            this.workerRoles = this.getRoles(editedWorker.roleAssignments);
+
+            if(editedWorker.worksite != null) {
+                this.selectedWorksite = editedWorker.worksite.name;
+            } else {
+                this.selectedWorksite = null;
+            }
+
+            this.titleName = "Edytuj konto użytkownika";
+            this.buttonName = "Edytuj";
+            this.passwordRules = [(v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == this.passwordTwo || `Hasła nie są takie same.`];
+            this.isFormValidate = false;
+            this.showModal = false;
+        }
 
         let callPath = "/Worksite/getWorksites";
         this.rawWorksites = await CallAPI.get(callPath)
@@ -138,32 +180,62 @@ export default {
 	methods: {
 		async submitForm() {
             if(this.validateForm()) {
-                let callPath = "/User/registerWithRoles";
-                let body = {
-                    name: this.workerName,
-                    lastName: this.workerLastName,
-                    phoneNumber: this.workerPhone,
-                    emailAddres: this.workerEmail,
-                    password: this.passwordOne,
-                    idWorksite: this.getWorksiteByName(this.selectedWorksite),
-                    userRoles: this.workerRoles,
-                };
+                if(this.id == "" || this.id == undefined) {
+                    let callPath = "/User/registerWithRoles";
+                    let body = {
+                        name: this.workerName,
+                        lastName: this.workerLastName,
+                        phoneNumber: this.workerPhone,
+                        emailAddres: this.workerEmail,
+                        password: this.passwordOne,
+                        idWorksite: this.getWorksiteByName(this.selectedWorksite),
+                        userRoles: this.workerRoles,
+                    };
 
-                await CallAPI.post(callPath, body)
-                .then(res => {
-                    this.resetData();
-                    this.$vaToast.init({ message: 'Konto zostało dodane.', color: 'success', duration: 3000 });
-                    return res.data;
-                })
-                .catch(err => {
-                    if(err.message.includes("422")) {
-                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
-                    }else{
-                        this.$vaToast.init({ message: 'Błąd dodawania konta.', color: 'danger', duration: 3000 })
-                    }
+                    await CallAPI.post(callPath, body)
+                    .then(res => {
+                        this.resetData();
+                        this.$vaToast.init({ message: 'Konto zostało dodane.', color: 'success', duration: 3000 });
+                        return res.data;
+                    })
+                    .catch(err => {
+                        if(err.message.includes("422")) {
+                            this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                        }else{
+                            this.$vaToast.init({ message: 'Błąd dodawania konta.', color: 'danger', duration: 3000 })
+                        }
 
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
+                        CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    });
+                } else {
+                    let callPath = "/Worker/updateWorker";
+                    let body = {
+                        id: this.idWorker,
+                        name: this.workerName,
+                        lastName: this.workerLastName,
+                        phoneNumber: this.workerPhone,
+                        emailAddres: this.workerEmail,
+                        newPassword: this.passwordOne,
+                        idWorksite: this.getWorksiteByName(this.selectedWorksite),
+                        userRoles: this.workerRoles,
+                    };
+
+                    await CallAPI.post(callPath, body)
+                    .then(res => {
+                        this.$vaToast.init({ message: 'Konto zostało edytowane.', color: 'success', duration: 3000 });
+                        this.$router.push({ name: "UserMenegment" });
+                        return res.data;
+                    })
+                    .catch(err => {
+                        if(err.message.includes("422")) {
+                            this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                        }else{
+                            this.$vaToast.init({ message: 'Błąd edycji konta.', color: 'danger', duration: 3000 })
+                        }
+
+                        CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                    });
+                }
             }
 		},
         getWorksiteByName(worksiteName){
@@ -172,7 +244,14 @@ export default {
             } else {
                 return this.rawWorksites.find(element => element.name == worksiteName).idWorksite;
             }
-        },  
+        },
+        getRoles(rolesAssignments) {
+            let resultArr = rolesAssignments.map(function(item) {
+                return item["role"];
+            });
+
+            return resultArr;
+        },
         validateForm() {
             this.$refs.form.validate();
             if(this.workerRoles.length == 0) {

@@ -20,17 +20,27 @@
 
                     <va-list-item-section>
                         <va-list-item-label>
-                            {{ user.Name }}
+                            {{ user.name + " " + user.lastName }}
                         </va-list-item-label>
 
                         <va-list-item-label caption>
-                            {{ user.WorksiteName }}
+                            {{ this.getWorksite(user) }}
                         </va-list-item-label>
                     </va-list-item-section>
 
                     <va-list-item-section icon>
-                        <va-button flat icon="edit" @click="showDetailsModal(user)" />
-                        <va-button flat icon="delete" @click="openDeleteModal(user)" />
+                        <va-popover message="Edytuj uzytkownika">
+                            <va-button flat icon="edit" @click="editWorker(user)" />
+                        </va-popover>
+                        <va-popover message="Dezaktywuj użytkownika">
+                            <va-button v-if="!user.isDisabled" flat icon="person_off" @click="disableWorker(user)" />
+                        </va-popover>
+                        <va-popover message="Aktywuj użytkownika">
+                            <va-button v-if="user.isDisabled" flat icon="person" @click="disableWorker(user)" />
+                        </va-popover>
+                        <va-popover message="Usuń użytkownika">
+                            <va-button flat icon="delete" @click="openDeleteModal(user)" />
+                        </va-popover>
                     </va-list-item-section>
                 </va-list-item>
             </va-list>
@@ -50,6 +60,8 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
 import UserDetails from '@/components/ReuseComponents/Modals/UserDetails.vue';
 
 export default {
@@ -63,11 +75,27 @@ export default {
 		}
 	},
     components: { UserDetails },
-    mounted() {
-        //api calls for an arrays
-        this.users = [];
+    async mounted() {
+        await this.updateUserList();
     },
     methods: {
+        async updateUserList() {
+            let callPath = "/Worker/getWorkers";
+            this.users = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        },
+        getWorksite(user) {
+            if(user.worksite != null){
+                return user.worksite.name;
+            }else{
+                return "Brak stanowiska";
+            }
+        },
         showDetailsModal(user) {
             this.selectedWorker = user;
             this.showModal = true;
@@ -75,8 +103,8 @@ export default {
         closeDetailsModal() {
             this.showModal = false;
         },
-        editWorker() {
-            //edit
+        editWorker(user) {
+            this.$router.push({ name: "WorkerForm", params: { id: user.idWorker }});
         },
         openDeleteModal(user) {
             this.selectedWorker = user;
@@ -85,8 +113,34 @@ export default {
         closeDeleteModal() {
             this.showDeleteModal = false;
         },
-        deleteWorker() {
-            //delete
+        async deleteWorker() {
+            let callPath = "/Worker/deleteWorker";
+            console.log(this.selectedWorker);
+            let body = { data: { Id: this.selectedWorker.idWorker} };
+
+            await CallAPI.delete(callPath, body)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+            
+            await this.updateUserList();
+        },
+        async disableWorker(user) {
+            let callPath = "/Worker/disableWorker";
+            let body = { Id: user.idWorker, IsDisabled: !user.isDisabled };
+
+            await CallAPI.post(callPath, body)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            await this.updateUserList();
         }
     }
 }
