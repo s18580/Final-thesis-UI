@@ -3,12 +3,12 @@
         <va-data-table :items="myArray" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
             <template #cell(statusName)="{ value }"><va-chip size="small" :color="chipColor(value)">{{ value }}</va-chip></template>
             <template #cell(isAuction)="{ value }">
-                <va-icon v-if="value" color="success" class="material-icons">done</va-icon>
-                <va-icon v-if="!value" color="danger" class="material-icons">close</va-icon>
+                <va-icon v-if="!value" color="success" class="material-icons">done</va-icon>
+                <va-icon v-if="value" color="danger" class="material-icons">close</va-icon>
             </template>
             <template #cell(actions)="{ rowIndex }">
-                <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
-                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
+                <va-button flat icon="visibility" @click="viewItem(rowIndex, 'read')" />
+                <va-button flat icon="edit" @click="viewItem(rowIndex, 'edit')" />
             </template>
             <template #bodyAppend>
                 <tr><td colspan="8" class="table-pagination">
@@ -48,6 +48,8 @@ export default {
             myArray: [],
 			perPage: 20,
             currentPage: 1,
+            editedItem: null,
+            editedItemId: null,
 		}
 	},
     computed: {
@@ -65,6 +67,9 @@ export default {
             case "closest":
                 this.myArray = await this.getClosestOrders(); 
             break;
+            case "onGoing":
+                this.myArray = await this.getOnGoingOrders(); 
+            break;
         }
     },
     methods: {
@@ -75,11 +80,17 @@ export default {
                 return "red";  
             }
         },
-        viewItemById() {
-            //open view
-        },
-        editItemById() {
-            //open edit view
+        viewItem(row, mode){
+            let id = this.myArray[row].idOrder;
+            switch(mode){
+                case "read":
+                    console.log(id);
+                    // redirect to details page with read-only mode and properId
+                break;
+                case "edit":
+                    // redirect to details page with edit mode and properId
+                break;
+            }
         },
         async getWorkersOrders() {
             const userStore = useUserStore();
@@ -107,7 +118,20 @@ export default {
             });
 
             return orders;
-        }
+        },
+        async getOnGoingOrders() {
+            let callPath = '/Order/getOnGoingOrdersList';
+
+            var orders = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            return orders;
+        },
     },
 }
 </script>

@@ -5,7 +5,7 @@
             <va-divider />
         </div>
         <div id="mainCo">
-            <OrdersTable />
+            <OrdersTable :columns="onGoingColumns" dataType="onGoing"/>
         </div>
     </div>
 </template>
@@ -17,7 +17,15 @@ export default {
     name: 'OngoingOrders',
 	data() {
 		return {
-			
+			onGoingColumns: [
+                { key: 'identifier', label: "Identyfikator", sortable: true },
+                { key: 'name', label: "Nazwa", sortable: true },
+                { key: 'expectedDeliveryDate', label: "Przewidywany termin", sortable: true },
+                { key: 'orderItemsNames', label: "Przedmioty zamówienia" },
+                { key: 'statusName', label: "Status" },
+                { key: 'isAuction', label: "Przetarg" },
+                { key: 'actions', label: "Akcje", width: 80 },
+            ]
 		}
 	},
     components: { OrdersTable },
