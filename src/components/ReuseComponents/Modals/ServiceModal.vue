@@ -17,6 +17,7 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="servicePrice"
+                    :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.`]"
                     label="Cena"
                     placeholder="Cena usługi"
                 />
@@ -27,6 +28,9 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'ServiceModal',
   props: {
@@ -43,17 +47,27 @@ export default {
             isServiceFormValidate: false,
             showServiceModal: true,
             servicePrice: 0.0,
-            services: [],
-            selectedService: null,
+            rawServices: [],
+            selectedService: "",
             IdForServiceTable: null,
 		}
 	},
+    computed: {
+        services(){
+            let resultArr = this.rawServices.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        }
+    },
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
                     newService: {
-                        selectedService: this.selectedService,
+                        idServiceName: this.getServiceIdByName(this.selectedService),
+                        name: this.selectedService,
                         price: this.servicePrice,
                     }
                 };
@@ -69,18 +83,23 @@ export default {
 		},
         validateForm() {
             this.$refs.modalServiceForm.validate();
-
+            if(this.selectedService === "") {
+                this.isServiceFormValidate = false;
+                this.$vaToast.init({ message: 'Wybierz nazwę usługi.', color: 'danger', duration: 2000 })
+            }
             return this.isServiceFormValidate;
         },
         closeServiceModal() {
             this.$emit('close');
+        },
+        getServiceIdByName(serviceName) {
+            return this.rawServices.find(element => element.name == serviceName).idServiceName;
         }
 	},
-    mounted() {
-        if(this.file === null) {
+    async mounted() {
+        if(this.service === null) {
             this.buttonMessage = "Dodaj usługę";
-            this.selectedService = null;
-            this.services = [];
+            this.selectedService = "";
             this.servicePrice = 0.0;
             this.IdForFileTable = null;
         }else {
@@ -89,13 +108,22 @@ export default {
             this.selectedService = this.newService.selectedService;
             this.IdForServiceTable = this.newService.IdForServiceTable;
         }
+
+        let callPath = "/ServiceName/getServiceNames";
+        this.rawServices = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
     }
 }
 </script>
 
 <style scoped>
 #modalServiceForm {
-    min-width: 600px;
+    min-width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;

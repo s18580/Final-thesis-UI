@@ -1,93 +1,101 @@
 <template>
   <div id="mainCo">
-        <h1>Dodaj nowego dostawcę</h1>
-		<va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
-            <va-input
-                class="some-space mb-4"
-                v-model="supplierName"
-                :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
-                label="Nazwa"
-                placeholder="Nazwa dostawcy"
-            />
-            <va-input
-                class="some-space mb-4"
-                v-model="supplierEmail"
-                :rules="[(v) => v.length > 0 || `Pole email nie może być puste`, (v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
-                label="Email"
-                placeholder="Email dostawcy"
-            />
-            <va-input
-                class="some-space mb-4"
-                v-model="supplierPhone"
-                :rules="[(v) => v.length > 8 || `Pole telefon jest nieprawidłowe.`, (v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
-                label="Telefon"
-                placeholder="Telefon dostawcy"
-            />
-            <va-divider inset />
-			<div id="card-container">
-				<div class="objects-card-wrapper">
-					<h6>Osoby kontaktowe dostawcy:</h6>
+        <div id="headerCo">
+            <h1>Dodaj nowego dostawcę</h1>
+            <va-divider />
+        </div>
+        <div id="mainCoOuter">
+            <h3>Dane dostawcy</h3>
+            <va-divider />
+            <div id="mainCoInner">
+                <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
+                    <va-input
+                        class="gridFirstC gridFirstR inputWidth"
+                        v-model="supplierName"
+                        :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                        label="Nazwa"
+                        placeholder="Nazwa dostawcy"
+                    />
+                    <va-input
+                        class="gridFirstC gridSecondR inputWidth"
+                        v-model="supplierEmail"
+                        :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
+                        label="Email (opcjonalnie)"
+                        placeholder="Email dostawcy"
+                    />
+                    <va-input
+                        class="gridFirstC gridThirdR inputWidth"
+                        v-model="supplierPhone"
+                        :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
+                        label="Telefon (opcjonalnie)"
+                        placeholder="Telefon dostawcy"
+                    />
+                    <va-input
+                        class="gridSecondC gridSpreadR inputWidth"
+                        v-model="supplierDescription"
+                        type="textarea"
+                        :rules="[ (v) => v.length < 255 || `Pole opis przekroczyło limit znaków.`]"
+                        label="Opis (opcjonalnie)"
+                        :min-rows="7"
+                    />
+                    <div id="submitButtonContainer">
+                        <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+                    </div>
+                </va-form>
+            </div>
+        </div>
+        <div id="representativesCoOuter">
+            <h3>Osoby kontaktowe dostawcy</h3>
+            <va-divider />
+            <div id="representativesCoInner">
+                <div class="objects-card-wrapper">
+					<h6>Lista osób kontaktowych:</h6>
 					<div class="objects-card">
 						<div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
-                            <div>
+                            <div class="my-1">
                                 {{ person.name + ' ' + person.lastName }}
                             </div>
                             <div class="card-icons">
-                                <svg @click="editContactInModal(person)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                </svg>
-
-                                <svg @click="removeContact(person.IdForRepresentativeTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
+                                <va-icon @click="editContactInModal(person)" color="#1b63b1" class="material-icons">edit</va-icon>
+                                <va-icon @click="removeContact(person.IdForRepresentativeTable)" color="#1b63b1" class="material-icons">delete</va-icon>
                             </div>
 						</div>
 					</div>
                     <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
                     <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
 				</div>
-                <va-divider vertical />
-				<div class="objects-card-wrapper">
-					<h6>Adresy dostawcy:</h6>
+            </div>
+        </div>
+        <div id="adressesCoOuter">
+            <h3>Adresy dostawcy</h3>
+            <va-divider />
+            <div id="adressesCoInner">
+                <div class="objects-card-wrapper">
+					<h6>Lista adresów:</h6>
 					<div class="objects-card">
 						<div v-for="address in suplierAddresses" :key="address.IdForAddressTable" class="card-items">
-                            <div>
+                            <div class="my-1">
                                 {{ address.name }}
                             </div>
                             <div class="card-icons">
-                                <svg @click="editAddressInModal(address)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                </svg>
-
-                                <svg @click="removeAddress(address.IdForAddressTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
+                                <va-icon @click="editAddressInModal(address)" color="#1b63b1" class="material-icons">edit</va-icon>
+                                <va-icon @click="removeAddress(address.IdForAddressTable)" color="#1b63b1" class="material-icons">delete</va-icon>
                             </div>
 						</div>
 					</div>
                     <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
                     <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
 				</div>
-			</div>
-            <va-input
-                class="mb-4 some-top-space"
-                v-model="supplierDescription"
-                type="textarea"
-                :rules="[ (v) => v.length < 255 || `Pole opis przekroczyło limit znaków.`]"
-                label="Opis (opcjonalnie)"
-            />
-            <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
-		</va-form>
+            </div>
+        </div>
 	</div>
 </template>
 
 <script>
-import CallAPI from '../../axios/axios-connection.js';
-import CallSeq from '../../logging/seq-logger.js';
-import AddressModal from '../ReuseComponents/AddressModal.vue';
-import RepresentativeModal from '../ReuseComponents/RepresentativeModal.vue';
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+import AddressModal from '@/components/ReuseComponents/Modals/AddressModal.vue';
+import RepresentativeModal from '@/components/ReuseComponents/Modals/RepresentativeModal.vue';
 
 export default {
   name: 'AddSupplier',
@@ -108,25 +116,67 @@ export default {
             editedContact: null,
 		}
 	},
-    components: {AddressModal, RepresentativeModal},
+    components: { AddressModal, RepresentativeModal },
 	methods: {
 		async submitForm() {
             if(this.validateForm()) {
-                // delete ids before sent -> delete address.IdForAddressTable;
+                let contactPeopleAPI = this.contactPepole.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        lastName: item["lastName"],
+                        phoneNumber: item["phoneNumber"],
+                        emailAddress: item["addressEmail"]
+                    }
 
-                await CallAPI.get(`/Address/getAddresses`)
+                    return result;
+                });
+                let suplierAddressesAPI = this.suplierAddresses.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        country: item["country"],
+                        city: item["city"],
+                        postCode: item["postCode"],
+                        streetName: item["streetName"],
+                        streetNumber: item["streetNumber"],
+                        apartmentNumber: item["apartmentNumber"]
+                    }
+
+                    return result;
+                });
+
+                let callPath = "/Supplier/createSupplierWithData";
+                let body = {
+                    name: this.supplierName,
+                    emailAddress: this.supplierEmail,
+                    phoneNumber: this.supplierPhone,
+                    description: this.supplierDescription,
+                    representatives: contactPeopleAPI,
+                    addresses: suplierAddressesAPI
+                };
+
+                await CallAPI.post(callPath, body)
                 .then(res => {
-                    console.log(res); // switch that on the toast message
-                    this.$router.push('home');
+                    this.resetData();
+                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 })
+                    return res.data;
                 })
                 .catch(err => {
+                    if(err.message.includes("422")) {
+                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                    }else{
+                        this.$vaToast.init({ message: 'Błąd dodawania dostawcy.', color: 'danger', duration: 3000 })
+                    }
+
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                 });
             }
 		},
         validateForm() {
             this.$refs.form.validate();
-
+            if(this.contactPepole.length === 0){
+                this.isFormValidate = false;
+                this.$vaToast.init({ message: 'Potrzebna jest minimum jedna osoba kontaktowa.', color: 'danger', duration: 3000 })
+            }
             return this.isFormValidate;
         },
         closeAddressModal() {
@@ -186,74 +236,124 @@ export default {
         removeContact(id) {
             this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
         },
+        resetData() {
+            window.location.reload(true);
+        },
 	},
 }
 </script>
 
 <style scoped>
 #mainCo {
-	margin-right: 100px;
-	margin-left: 100px;
-	padding: 40px;
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr 1fr 1fr 100px;
+    grid-template-rows: auto;
+    grid-template-areas: 
+    ". header header header header ."
+    ". main main sidebarA sidebarB .";
+    grid-gap: 30px;
+}
+
+#headerCo {
+    padding: 20px;
+    grid-area: header;
+    background: white;
+	border-radius: 25px;
+}
+
+#mainCoOuter {
+    grid-area: main;
+}
+
+#mainCoInner {
+	padding-top: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
 	background: white;
 	border-radius: 25px;
 }
 
-h1 {
-    margin-bottom: 50px;
+#representativesCoOuter {
+    grid-area: sidebarA;
 }
 
-.some-space {
-    padding-bottom: 20px;
+#representativesCoInner {
+    padding-top: 5px;
+    background: white;
+	border-radius: 25px;
 }
 
-.some-top-space {
-    padding-top: 20px;
+#adressesCoOuter {
+    grid-area: sidebarB;
+}
+
+#adressesCoInner {
+    padding-top: 5px;
+    background: white;
+	border-radius: 25px;
 }
 
 #form {
-	padding-right: 150px;
-	padding-left: 150px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    height: 360px;
 }
 
-.input-box {
-	padding-top: 50px;
+.gridSpreadC {
+    grid-column-start: 1;
+    grid-column-end: end;
 }
 
-.input-box input,
-.input-box textarea {
-	text-align: center;
-	margin-top: 10px;
-	margin-bottom: 10px;
-    border-radius: 25px;
+.gridSpreadR {
+    grid-row-start: 1;
+    grid-row-end: 4;
 }
 
-.error-message {
-	text-align: left;
-	color: red;
+.gridFirstC {
+    grid-column-start: 1;
+    grid-column-end: 1;
 }
 
-.error-box {
-	display: flex;
-	justify-content: center;
+.gridFirstR {
+    grid-row-start: 1;
+    grid-row-end: 1;
 }
 
-.error-icon {
-	margin-right: 5px;
-	color: red;
+.gridSecondC {
+    grid-column-start: 2;
+    grid-column-end: 2;
 }
 
-#card-container {
-	display: flex;
-	justify-content: space-around;
+.gridSecondR {
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.gridThirdR {
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+#submitButtonContainer {
+    grid-column-start: 1;
+    grid-column-end: end;
+    grid-row-start: 4;
+    grid-row-end: 4;
+}
+
+.inputWidth {
+    width: 250px;
 }
 
 .objects-card-wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin-top: 60px;
-	margin-bottom: 60px;
+	margin-top: 20px;
+	padding-bottom: 20px;
 }
 
 .objects-card {
@@ -272,37 +372,39 @@ h1 {
 }
 
 .card-items {
-    background: #ffcc80;
-    padding: 5px;
+    background: #d3e5f8;
+    padding-bottom: 10px;
+    padding-top: 10px;
     margin: 5px;
-    width: 100%;
+    width: 240px;
     border-radius: 50px;
-    border-color:burlywood;
-    border-style: solid;
-    border-width: 3px;
-    display: flex;
-    justify-content: space-between;
+    border: solid 1px #1b63b1;
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    grid-template-rows: 1fr;
 }
 
 .card-icons svg{
     margin-left: 5px;
+    cursor: pointer;
 }
 
 .objects-card::-webkit-scrollbar {
-  width: 0.25rem;
+    width: 0.25rem;
 }
 
 .objects-card::-webkit-scrollbar-thumb {
-  background: burlywood;
-  border-radius: 100vw;
+    background: #1b63b1;
+    border-radius: 100vw;
 }
 
 .objects-card::-webkit-scrollbar-thumb:hover {
-  background: rgb(214, 145, 54);
+    background: #217cde;
 }
 
 .background-modal {
     min-height: 600px;
     min-width: 600px;
 }
+
 </style>

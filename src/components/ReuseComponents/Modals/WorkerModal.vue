@@ -17,13 +17,9 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="hoursWorked"
+                    :rules="[ (v) => v >= 0 || `Godziny nie mogą być ujemne.`]"
                     label="Przepracowane godziny przy zamówieniu"
                     placeholder="Przepracowane godziny przy zamówieniu"
-                />
-                <va-checkbox
-                    class="mb-4 some-top-space"
-                    label="Prowadzący zamówienie"
-                    v-model="idLeader"
                 />
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
@@ -32,6 +28,9 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'WorkerModal',
   props: {
@@ -48,20 +47,27 @@ export default {
             isWorkerFormValidate: false,
             showWorkerModal: true,
             hoursWorked: 0,
-            idLeader: false,
-            workers: [],
-            selectedWorker: null,
+            rawWorkers: [],
+            selectedWorker: "",
             IdForWorkerTable: null,
 		}
 	},
+    computed: {
+        workers() {
+            let resultArr = this.rawWorkers.map(function(item) {
+                return item["name"] + " " + item["lastName"];
+            });
+
+            return resultArr;
+        }
+    },
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
                     newWorker: {
-                        worker: this.selectedWorker,
+                        name: this.selectedWorker,
                         hoursWorker: this.hoursWorked,
-                        isLeader: this.idLeader,
                     }
                 };
 
@@ -76,6 +82,10 @@ export default {
 		},
         validateForm() {
             this.$refs.modalWorkerForm.validate();
+            if(this.selectedWorker === "") {
+                this.isWorkerFormValidate = false;
+                this.$vaToast.init({ message: 'Wybierz pracownika.', color: 'danger', duration: 2000 })
+            }
 
             return this.isWorkerFormValidate;
         },
@@ -83,26 +93,33 @@ export default {
             this.$emit('close');
         }
 	},
-    mounted() {
+    async mounted() {
         if(this.worker === null) {
             this.buttonMessage = "Przydziel pracownika";
-            this.idLeader = false;
             this.hoursWorked = 0;
-            this.selectedWorker = null;
+            this.selectedWorker = "";
         }else {
             this.buttonMessage = "Edytuj przydział";
-            this.selectedWorker = this.worker.worker;
+            this.selectedWorker = this.worker.name;
             this.hoursWorker = this.worker.hoursWorker;
-            this.isLeader = this.worker.isLeader;
             this.IdForWorkerTable = this.worker.IdForWorkerTable;
         }
+
+        let callPath = "/Worker/getWorkers";
+        this.rawWorkers = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
     }
 }
 </script>
 
 <style scoped>
 #modalWorkerForm {
-    min-width: 600px;
+    min-width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;

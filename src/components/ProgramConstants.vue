@@ -38,9 +38,9 @@
 </template>
 
 <script>
-import CallAPI from '../axios/axios-connection.js';
-import CallSeq from '../logging/seq-logger.js';
-import ConstantsList from './ReuseComponents/ConstantsList.vue';
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+import ConstantsList from '@/components/ReuseComponents/ConstantsList.vue';
 
 export default {
     name: 'ProgramConstants',

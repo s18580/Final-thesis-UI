@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import CallAPI from '../../axios/axios-connection.js';
-import CallSeq from '../../logging/seq-logger.js';
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
 import { useUserStore } from '@/stores/UserStore';
 
 export default {
@@ -69,8 +69,6 @@ export default {
                         token: res.data.userToken,
                         roles: res.data.userRoles,
                     })
-
-                    CallAPI.defaults.headers.common['Authorization'] = "bearer " + userStore.token;
 
                     this.$router.push({ name: 'home' });
                 })
