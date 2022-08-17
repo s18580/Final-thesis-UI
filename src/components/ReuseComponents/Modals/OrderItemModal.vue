@@ -175,6 +175,7 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
+            orderItemId: null,
             orderItemColors: [],
             showColorModal: false,
             colorCounter: 0,
@@ -237,6 +238,7 @@ export default {
 
                 let data = {
                     newOrderItem: {
+                        idOrderItem: this.idOrderItem,
                         name: this.orderItemName,
                         comments: this.comments,
                         insideFormat: this.insideFormat,
@@ -255,7 +257,7 @@ export default {
                 };
 
                 if(this.IdForOrderItemTable !== null) {
-                    data.newFile.IdForOrderItemTable = this.IdForOrderItemTable;
+                    data.newOrderItem.IdForOrderItemTable = this.IdForOrderItemTable;
                     this.$emit('editOrderItem', data);
                 } else {
                     this.$emit('createOrderItem', data);
@@ -263,6 +265,9 @@ export default {
                 this.closeOrderItemModal();
             }
 		},
+        getNameById(){
+
+        },
         getIdByName(what, objName){
             switch(what) {
                 case "orderItemType":
@@ -397,24 +402,29 @@ export default {
             this.editedService = null;
             this.editedPaper = null;
             this.editedColor = null;
+            this.orderItemId = null;
         }else {
+            console.log(this.orderItem);
             this.buttonMessage = "Edytuj przedmiot zamówienia";
-            this.orderItemName = this.newOrderItem.name;
-            this.comments = this.newOrderItem.comments;
-            this.insideFormat = this.newOrderItem.insideFormat;
-            this.coverFormat = this.newOrderItem.coverFormat;
-            this.capacity = this.newOrderItem.capacity;
-            this.circulation = this.newOrderItem.circulation;
-            this.selectedOrderItemType = this.newOrderItem.selectedOrderItemType;
-            this.selectedDeliveryType = this.newOrderItem.selectedDeliveryType;
-            this.selectedBindingTypes = this.newOrderItem.selectedBindingTypes;
-            this.IdForOrderItemTable = this.newOrderItem.IdForOrderItemTable;
-            this.orderItemColors = this.newOrderItem.orderItemColors;
-            this.orderItemPapers = this.newOrderItem.orderItemPapers;
-            this.orderItemService = this.newOrderItem.orderItemService;
-            this.editedService = null;
-            this.editedPaper = null;
-            this.editedColor = null;
+            if(this.orderItem.idOrderItem != undefined && this.orderItem.idOrderItem != null) {
+                this.orderItemId = this.orderItem.idOrderItem;
+            }
+            this.orderItemName = this.orderItem.name;
+            this.comments = this.orderItem.comments;
+            this.insideFormat = this.orderItem.insideFormat;
+            this.coverFormat = this.orderItem.coverFormat;
+            this.capacity = this.orderItem.capacity;
+            this.circulation = this.orderItem.circulation;
+            this.selectedOrderItemType = this.orderItem.selectedOrderItemType;
+            this.selectedDeliveryType = this.orderItem.selectedDeliveryType;
+            this.selectedBindingTypes = this.orderItem.selectedBindingTypes;
+            this.IdForOrderItemTable = this.orderItem.IdForOrderItemTable;
+            this.orderItemColors = this.orderItem.orderItemColors;
+            this.orderItemPapers = this.orderItem.orderItemPapers;
+            this.orderItemService = this.orderItem.orderItemService;
+            this.editedService = this.orderItem.services;
+            this.editedPaper = this.orderItem.papers;
+            this.editedColor = this.orderItem.colors;
         }
 
         let callPath = "/BindingType/getBindingTypes";

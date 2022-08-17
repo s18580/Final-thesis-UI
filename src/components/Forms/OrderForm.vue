@@ -147,7 +147,7 @@ import OrderItemModal from '@/components/ReuseComponents/Modals/OrderItemModal.v
 
 export default {
   name: 'OrderForm',
-  components: {AddressModal, WorkerModal, OrderItemModal},
+  components: { AddressModal, WorkerModal, OrderItemModal },
   data() {
 		return {
             isAuction: false,
@@ -238,8 +238,8 @@ export default {
             if(this.validateForm()) {
                 let assignedWorkersAPI = this.assignmentWorkers.map(function(item) {
                     let result = {
-                        IdWorker: item["worker"],
-                        orderLeader: false,
+                        IdWorker: item["idWorker"],
+                        orderLeader: item["isLeader"],
                         hoursWorked: item["hoursWorker"],
                     }
 
@@ -354,9 +354,22 @@ export default {
         editOrderItem(e) {
             for(const obj of this.orderItems){
                 if (obj.IdForOrderItemTable === e.newOrderItem.IdForOrderItemTable) {
-                    obj.name = e.newOrderItem.fileName;
-                    obj.fileType = e.newOrderItem.selectedFileType;
-                    obj.fileStatus = e.newOrderItem.selectedFileStatus;
+                    obj.name = e.newOrderItem.name;
+                    obj.comments = e.newOrderItem.comments;
+                    obj.insideFormat = e.newOrderItem.insideFormat;
+                    obj.coverFormat = e.newOrderItem.coverFormat;
+                    obj.capacity = e.newOrderItem.capacity;
+                    obj.circulation = e.newOrderItem.circulation;
+                    obj.selectedOrderItemType = e.newOrderItem.selectedOrderItemType;
+                    obj.selectedDeliveryType = e.newOrderItem.selectedDeliveryType;
+                    obj.selectedBindingTypes = e.newOrderItem.selectedBindingTypes;
+                    obj.IdForOrderItemTable = e.newOrderItem.IdForOrderItemTable;
+                    obj.orderItemColors = e.newOrderItem.orderItemColors;
+                    obj.orderItemPapers = e.newOrderItem.orderItemPapers;
+                    obj.orderItemService = e.newOrderItem.orderItemService;
+                    obj.services = e.newOrderItem.services;
+                    obj.papers = e.newOrderItem.papers;
+                    obj.colors = e.newOrderItem.colors;
                     break;
                 }
             }
