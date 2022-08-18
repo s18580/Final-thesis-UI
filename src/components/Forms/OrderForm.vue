@@ -90,24 +90,19 @@
 				<div class="objects-card-wrapper">
 					<h6>Adresy dostawy zamówienia:</h6>
 					<div class="objects-card">
-						<div v-for="address in deliveryAddresses" :key="address.IdForAddressTable" class="card-items">
+						<div v-for="address in deliveryAddresses" :key="address.IdAddress" class="card-items">
                             <div>
                                 {{ address.name }}
                             </div>
                             <div class="card-icons">
-                                <svg @click="editAddressInModal(address)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                </svg>
-
-                                <svg @click="removeAddress(address.IdForAddressTable)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <svg @click="removeAddress(address.IdAddress)" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                     <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
                                 </svg>
                             </div>
 						</div>
 					</div>
-                    <va-button @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres klienta</va-button>
-                    <AddressModal :addr="editedDeliveryAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+                    <va-button @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres dostawy</va-button>
+                    <DeliveryAddress :idCustomer="getClientIdByName(this.selectedClient)" v-if="showAddressModal" @createDeliveryAddress="addAddress($event)" @close="closeAddressModal()" />
 				</div>
 			</div>
             <va-divider inset />
@@ -141,13 +136,13 @@
 <script>
 import CallAPI from '@/axios/axios-connection.js';
 import CallSeq from '@/logging/seq-logger.js';
-import AddressModal from '@/components/ReuseComponents/Modals/AddressModal.vue';
+import DeliveryAddress from '@/components/ReuseComponents/Modals/DeliveryAddress.vue';
 import WorkerModal from '@/components/ReuseComponents/Modals/WorkerModal.vue';
 import OrderItemModal from '@/components/ReuseComponents/Modals/OrderItemModal.vue';
 
 export default {
   name: 'OrderForm',
-  components: { AddressModal, WorkerModal, OrderItemModal },
+  components: { WorkerModal, OrderItemModal, DeliveryAddress },
   data() {
 		return {
             isAuction: false,
@@ -267,13 +262,9 @@ export default {
                 });
                 let deliveryAddressesAPI = this.deliveryAddresses.map(function(item) {
                     let result = {
-                        name: item["name"],
-                        country: item["country"],
-                        city: item["city"],
-                        postCode: item["postCode"], 
-                        streetName: item["streetName"],
-                        streetNumber: item["streetNumber"],
-                        apartmentNumber: item["apartmentNumber"]
+                        IdAddress: item["IdAddress"],
+                        IdOrder: null,
+                        IdSupply: null
                     }
 
                     return result;
@@ -297,7 +288,7 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.resetData();
+                    //this.resetData();
                     this.$vaToast.init({ message: 'Zamówienie zostało dodane.', color: 'success', duration: 3000 })
                     return res.data;
                 })
@@ -386,30 +377,11 @@ export default {
             this.editedDeliveryAddress = null;
         },
         addAddress(e) {
-            e.newAddress.IdForAddressTable = this.addressCounter;
-            this.deliveryAddresses.push(e.newAddress);
-            this.addressCounter++;
-        },
-        editAddress(e) {
-            for(const obj of this.deliveryAddresses){
-                if (obj.IdForAddressTable === e.newAddress.IdForAddressTable) {
-                    obj.name = e.newAddress.name;
-                    obj.country = e.newAddress.country;
-                    obj.city = e.newAddress.city;
-                    obj.postCode = e.newAddress.postCode;
-                    obj.streetName = e.newAddress.streetName;
-                    obj.streetNumber = e.newAddress.streetNumber;
-                    obj.apartmentNumber = e.newAddress.apartmentNumber;
-                    break;
-                }
-            }
-        },
-        editAddressInModal(address) {
-            this.editedDeliveryAddress = address;
-            this.showAddressModal = true;
+            console.log(e);
+            this.deliveryAddresses.push(e);
         },
         removeAddress(id) {
-            this.deliveryAddresses = this.deliveryAddresses.filter(item => item.IdForAddressTable !== id);
+            this.deliveryAddresses = this.deliveryAddresses.filter(item => item.IdAddress !== id);
         },
         closeWorkerModal() {
             this.showWorkerModal = false;

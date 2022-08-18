@@ -53,7 +53,8 @@ export default {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    IdAddress: this.getIdByName(this.selectedAddress)
+                    IdAddress: this.getIdByName(this.selectedAddress),
+                    name: this.selectedAddress,
                 };
 
                 this.$emit('createDeliveryAddress', data);

@@ -233,7 +233,7 @@
                                 </va-list-item-label>
 
                                 <va-list-item-label caption>
-                                    {{ assignment.worker.worksite.name }}
+                                    {{ getWorksiteName(assignment) }}
                                 </va-list-item-label>
                             </va-list-item-section>
 
@@ -353,10 +353,10 @@ export default {
             offerValidityDate: null,
             submissionDate: null,
             selectedRepresentative: "",
-            representatives: [],
+            rawRepresentatives: [],
             idCustomer: null,
             selectedStatus: "",
-            orderStatuses: [],
+            rawOrderStatuses: [],
             isFormValidate: false,
 
             showDeleteAddressModal: false,
@@ -380,6 +380,22 @@ export default {
             editedFile: null,
             fileCounter: 0,
         }
+    },
+    computed: {
+        orderStatuses() {
+            let resultArr = this.rawOrderStatuses.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        representatives() {
+            let resultArr = this.rawRepresentatives.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
     },
     async mounted() {
         let callPath = "/Order/getOrder?id=" + this.id;
@@ -413,7 +429,39 @@ export default {
         this.updateOrderItemList();
         this.updateAssignmentList();
         this.updateAddressList();
-        this.getSelectListData();
+        await this.getSelectListData();
+
+        this.isAuction = orderData.isAuction;
+        this.orderName = orderData.name;
+        this.orderIdentifier = orderData.identifier;
+        this.orderNote = orderData.note;
+        if(orderData.creationDate != null) {
+            this.creationDate = new Date(Date.parse(orderData.creationDate));
+        } else{
+            this.creationDate = null;
+        }
+        if(orderData.expectedDeliveryDate != null) {
+            this.expectedDeliveryDate = new Date(Date.parse(orderData.expectedDeliveryDate));
+        } else{
+            this.expectedDeliveryDate = null;
+        }
+        if(orderData.deliveryDate != null) {
+            this.deliveryDate = new Date(Date.parse(orderData.deliveryDate));
+        } else{
+            this.deliveryDate = null;
+        }
+        if(orderData.offerValidityDate != null) {
+            this.offerValidityDate = new Date(Date.parse(orderData.offerValidityDate));
+        } else{
+            this.offerValidityDate = null;
+        }
+        if(orderData.submissionDate != null) {
+            this.submissionDate = new Date(Date.parse(orderData.orderSubmissionDate));
+        } else{
+            this.submissionDate = null;
+        }
+        this.selectedRepresentative = this.getNameById('representative', orderData.idRepresentative);
+        this.selectedStatus = this.getNameById('status', orderData.idStatus);
     },
     methods: {
         submitForm() {
@@ -435,17 +483,23 @@ export default {
 
             return this.isFormValidate;
         },
+        getWorksiteName(assignment) {
+            if(assignment.worker.worksite != null) {
+                return assignment.worker.worksite.name;
+            } else {
+                return "Bez stanowiska";
+            }
+        },
+        getNameById(what, id) {
+            switch(what) {
+                case "status":
+                    return this.rawOrderStatuses.find(element => element.idStatus == id).name;
+                case "representative":
+                    return this.rawRepresentatives.find(element => element.idRepresentative == id).name;
+            }
+        },
         async getSelectListData() {
-            let callPath = "/Customer/getCustomers";
-            this.rawClients = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
-
-            callPath = "/OrderStatus/getOrderStatuses";
+            let callPath = "/OrderStatus/getOrderStatuses";
             this.rawOrderStatuses = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
@@ -456,6 +510,15 @@ export default {
 
             callPath = "/Worker/getWorkers";
             this.workers = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            callPath = "/Representative/getRepresentativesByCustomer?id=" + this.idCustomer;
+            this.rawRepresentatives = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
             })
