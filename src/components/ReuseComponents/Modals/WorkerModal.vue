@@ -13,6 +13,7 @@
                     :options="workers"
                     label="Pracownik"
                     noOptionsText="Brak pracowniów do wybrania"
+                    :readonly = "isReadOnly"
                  />
                 <va-input
                     class="some-space mb-4"
@@ -21,6 +22,12 @@
                     label="Przepracowane godziny przy zamówieniu"
                     placeholder="Przepracowane godziny przy zamówieniu"
                 />
+                <div class="search-input-box">
+                        <label>Pracownik jest liderem zamówienia:</label>
+                        <div id="isAuctionCo">
+                            <input v-model="isLeader" type="checkbox"/>
+                        </div> 
+                    </div>
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
@@ -47,9 +54,11 @@ export default {
             isWorkerFormValidate: false,
             showWorkerModal: true,
             hoursWorked: 0,
+            isLeader: false,
             rawWorkers: [],
             selectedWorker: "",
             IdForWorkerTable: null,
+            isReadOnly: false,
 		}
 	},
     computed: {
@@ -66,8 +75,10 @@ export default {
             if(this.validateForm()) {
                 let data = {
                     newWorker: {
+                        idWorker: this.getIdByName(this.selectedWorker),
                         name: this.selectedWorker,
                         hoursWorker: this.hoursWorked,
+                        isLeader: this.isLeader
                     }
                 };
 
@@ -89,19 +100,26 @@ export default {
 
             return this.isWorkerFormValidate;
         },
+        getIdByName(workerName) {
+            return this.rawWorkers.find(element => (element.name + " " + element.lastName) == workerName).idWorker;
+        },
         closeWorkerModal() {
             this.$emit('close');
         }
 	},
     async mounted() {
         if(this.worker === null) {
+            this.isReadOnly = false;
             this.buttonMessage = "Przydziel pracownika";
             this.hoursWorked = 0;
+            this.isLeader = false;
             this.selectedWorker = "";
         }else {
             this.buttonMessage = "Edytuj przydział";
-            this.selectedWorker = this.worker.name;
-            this.hoursWorker = this.worker.hoursWorker;
+            this.isReadOnly = true;
+            this.selectedWorker = this.worker.worker.name + " " + this.worker.worker.lastName;
+            this.hoursWorker = this.worker.hoursWorked;
+            this.isLeader = this.worker.orderLeader;
             this.IdForWorkerTable = this.worker.IdForWorkerTable;
         }
 

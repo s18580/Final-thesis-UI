@@ -11,6 +11,14 @@
                 v-model="constantNewName"
                 label="Nowa nazwa"
             />
+            <div v-if="orderStatusType">
+                <h3 id="paletteTitle">Kolor w tabeli</h3>
+                <va-color-palette
+                    class="mb-3"
+                    v-model="pickedColor"
+                    :palette="['#3366ff','#00ffff','#00ff00','#006600','#9999ff', '#ffff66', '#ff6600', '#ff0000', '#ff3399', '#9900cc', '#ccff66']"
+                />
+            </div>
             <va-input
                 class="mb-3"
                 v-if="priceListType"
@@ -69,8 +77,10 @@ export default {
             constantDefaultPrice: "",
             constantMinPrice: "",
             constantMinCirculation: "",
+            pickedColor: "",
             serviceNameType: false,
             priceListType: false,
+            orderStatusType: false,
             showModal: true,
 		}
 	},
@@ -80,15 +90,16 @@ export default {
         },
         editConstant() {
             if(this.constantValue !== null) {
-                this.$emit('editConstant', { Constant: this.constantValue, NewValues: { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation }});
+                this.$emit('editConstant', { Constant: this.constantValue, NewValues: { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation, ChipColor: this.pickedColor }});
             } else {
-                this.$emit('addConstant', { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation });
+                this.$emit('addConstant', { Name: this.constantNewName, Price: this.constantPrice, DefaultPrice: this.constantDefaultPrice, MinPrice: this.constantMinPrice, MinCirculation: this.constantMinCirculation, ChipColor: this.pickedColor });
             }
         },
 	},
     beforeUpdate() {
         this.serviceNameType = this.constantType === 'Usługa';
         this.priceListType = this.constantType === 'Cennik';
+        this.orderStatusType = this.constantType === 'Status zamówienia';
 
         if(this.constantValue !== null){
             this.titleMessage = "Edytuj stałą";
@@ -98,6 +109,7 @@ export default {
             this.constantDefaultPrice = this.constantValue.defaultPrice;
             this.constantMinPrice = this.constantValue.minimumPrice;
             this.constantMinCirculation = this.constantValue.minimumCirculation;
+            this.pickedColor = this.constantValue.chipColor;
         }else{
             this.titleMessage = "Dodaj stałą";
             this.buttonMessage = "Dodaj";
@@ -106,6 +118,7 @@ export default {
             this.constantDefaultPrice = "";
             this.constantMinPrice = "";
             this.constantMinCirculation = "";
+            this.pickedColor = "";
         }
     }
 }
@@ -124,6 +137,10 @@ export default {
     justify-content: center;
     align-items: center;
     align-content: center;
+}
+
+#paletteTitle {
+    color: #2C82E0;
 }
 </style>
 

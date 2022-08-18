@@ -115,7 +115,6 @@ export default {
         },
         async deleteWorker() {
             let callPath = "/Worker/deleteWorker";
-            console.log(this.selectedWorker);
             let body = { data: { Id: this.selectedWorker.idWorker} };
 
             await CallAPI.delete(callPath, body)

@@ -238,7 +238,7 @@ export default {
                     await this.callApiForAction('/DeliveryType/updateDeliveryType', 'edit', { idDeliveryType: e.Constant.idDeliveryType, name: e.NewValues.Name });
                     break;
                 case 'Status zamówienia':
-                    await this.callApiForAction('/OrderStatus/updateOrderStatus', 'edit', { idOrderStatus: e.Constant.idStatus, name: e.NewValues.Name });
+                    await this.callApiForAction('/OrderStatus/updateOrderStatus', 'edit', { idOrderStatus: e.Constant.idStatus, name: e.NewValues.Name, chipColor: e.NewValues.ChipColor });
                     break;
                 case 'Stanowisko pracy':
                     await this.callApiForAction('/Worksite/updateWorksite', 'edit', { idWorksite: e.Constant.idWorksite, name: e.NewValues.NewValues.Name });
@@ -277,7 +277,7 @@ export default {
                     await this.callApiForAction('/DeliveryType/createDeliveryType', 'add', { name: e.Name });
                     break;
                 case 'Status zamówienia':
-                    await this.callApiForAction('/OrderStatus/createOrderStatus', 'add', { name: e.Name });
+                    await this.callApiForAction('/OrderStatus/createOrderStatus', 'add', { name: e.Name, chipColor: e.ChipColor });
                     break;
                 case 'Stanowisko pracy':
                     await this.callApiForAction('/Worksite/createWorksite', 'add', { name: e.Name });
