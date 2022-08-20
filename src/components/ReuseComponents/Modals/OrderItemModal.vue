@@ -265,8 +265,19 @@ export default {
                 this.closeOrderItemModal();
             }
 		},
-        getNameById(){
-
+        getNameById(what, id){
+            switch(what) {
+                case "orderItemType":
+                    return this.rawOrderItemTypes.find(element => element.idOrderItemType == id).name;
+                case "deliveryType":
+                    return this.rawDeliveryTypes.find(element => element.idDeliveryType == id).name;
+                case "bindingType":
+                    if(id  === null) {
+                        return "Bez szycia";
+                    } else {
+                        return this.rawBindingTypes.find(element => element.idBindingType == id).name;
+                    }
+            }
         },
         getIdByName(what, objName){
             switch(what) {
@@ -382,51 +393,6 @@ export default {
         },
 	},
     async mounted() {
-        if(this.orderItem === null) {
-            this.buttonMessage = "Dodaj przedmiot zamówienia";
-            this.orderItemName = "";
-            this.comments = "";
-            this.insideFormat = "";
-            this.coverFormat = "";
-            this.capacity = 0;
-            this.circulation = 1;
-            this.completionDate = null;
-            this.expectedCompletionDate = null;
-            this.selectedOrderItemType = "";
-            this.selectedDeliveryType = "";
-            this.selectedBindingTypes = "Bez szycia";
-            this.IdForOrderItemTable = null;
-            this.orderItemColors = [];
-            this.orderItemPapers = [];
-            this.orderItemService = [];
-            this.editedService = null;
-            this.editedPaper = null;
-            this.editedColor = null;
-            this.orderItemId = null;
-        }else {
-            console.log(this.orderItem);
-            this.buttonMessage = "Edytuj przedmiot zamówienia";
-            if(this.orderItem.idOrderItem != undefined && this.orderItem.idOrderItem != null) {
-                this.orderItemId = this.orderItem.idOrderItem;
-            }
-            this.orderItemName = this.orderItem.name;
-            this.comments = this.orderItem.comments;
-            this.insideFormat = this.orderItem.insideFormat;
-            this.coverFormat = this.orderItem.coverFormat;
-            this.capacity = this.orderItem.capacity;
-            this.circulation = this.orderItem.circulation;
-            this.selectedOrderItemType = this.orderItem.selectedOrderItemType;
-            this.selectedDeliveryType = this.orderItem.selectedDeliveryType;
-            this.selectedBindingTypes = this.orderItem.selectedBindingTypes;
-            this.IdForOrderItemTable = this.orderItem.IdForOrderItemTable;
-            this.orderItemColors = this.orderItem.orderItemColors;
-            this.orderItemPapers = this.orderItem.orderItemPapers;
-            this.orderItemService = this.orderItem.orderItemService;
-            this.editedService = this.orderItem.services;
-            this.editedPaper = this.orderItem.papers;
-            this.editedColor = this.orderItem.colors;
-        }
-
         let callPath = "/BindingType/getBindingTypes";
         this.rawBindingTypes = await CallAPI.get(callPath)
         .then(res => {
@@ -453,6 +419,61 @@ export default {
         .catch(err => {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
+
+        if(this.orderItem === null) {
+            this.buttonMessage = "Dodaj przedmiot zamówienia";
+            this.orderItemName = "";
+            this.comments = "";
+            this.insideFormat = "";
+            this.coverFormat = "";
+            this.capacity = 0;
+            this.circulation = 1;
+            this.completionDate = null;
+            this.expectedCompletionDate = null;
+            this.selectedOrderItemType = "";
+            this.selectedDeliveryType = "";
+            this.selectedBindingTypes = "Bez szycia";
+            this.IdForOrderItemTable = null;
+            this.orderItemColors = [];
+            this.orderItemPapers = [];
+            this.orderItemService = [];
+            this.editedService = null;
+            this.editedPaper = null;
+            this.editedColor = null;
+            this.orderItemId = null;
+        }else {
+            this.buttonMessage = "Edytuj przedmiot zamówienia";
+            if(this.orderItem.idOrderItem != undefined && this.orderItem.idOrderItem != null) {
+                this.orderItemId = this.orderItem.idOrderItem;
+            }
+            this.orderItemName = this.orderItem.name;
+            this.comments = this.orderItem.comments;
+            this.insideFormat = this.orderItem.insideFormat;
+            this.coverFormat = this.orderItem.coverFormat;
+            this.capacity = this.orderItem.capacity;
+            this.circulation = this.orderItem.circulation;    
+            this.selectedOrderItemType = this.getNameById("orderItemType", this.orderItem.idOrderItemType);
+            this.selectedDeliveryType = this.getNameById("deliveryType", this.orderItem.idDeliveryType);
+            this.selectedBindingTypes = this.getNameById("bindingType", this.orderItem.idBindingType);
+            this.IdForOrderItemTable = this.orderItem.IdForOrderItemTable;
+            this.orderItemColors = this.orderItem.colors;
+            this.orderItemPapers = this.orderItem.papers;
+            this.orderItemService = this.orderItem.services;
+            this.editedService = null;
+            this.editedPaper = null;
+            this.editedColor = null;
+
+            if(this.orderItem.completionDate != null) {
+                this.completionDate = new Date(Date.parse(this.orderItem.completionDate));
+            } else{
+                this.completionDate = null;
+            }
+            if(this.orderItem.expectedCompletionDate != null) {
+                this.expectedCompletionDate = new Date(Date.parse(this.orderItem.expectedCompletionDate));
+            } else{
+                this.expectedCompletionDate = null;
+            }
+        }
     }
 }
 </script>

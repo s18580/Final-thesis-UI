@@ -14,7 +14,7 @@
                         <div id="isAuctionCo">
                             <va-icon v-if="!isAuction" color="success" class="material-icons">done</va-icon>
                             <va-icon v-if="isAuction" color="danger" class="material-icons">close</va-icon>
-                            <va-icon @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
+                            <va-icon v-if="!readOnlyMode" @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
                         </div> 
                     </div>
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
@@ -59,7 +59,7 @@
                             class="some-space mb-4"
                             v-model="creationDate"
                             label="Data stworzenia zamówienia"
-                            :readonly = "readOnlyMode"
+                            readonly
                         />
                         <va-date-input
                             class="some-space mb-4"
@@ -91,6 +91,7 @@
                             noOptionsText="Brak statusów do wybrania"
                             :readonly = "readOnlyMode"
                         />
+                        <va-button v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
                     </va-form>
                 </div>
             </div>
@@ -121,7 +122,7 @@
                                 </va-list-item-label>
                             </va-list-item-section>
 
-                            <va-list-item-section icon>
+                            <va-list-item-section icon v-if="!readOnlyMode">
                                 <va-popover message="Edytuj przemiot zamówienia">
                                     <va-button flat icon="edit" @click="openEditOrderItem(item)" />
                                 </va-popover>
@@ -131,7 +132,7 @@
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
-                    <va-button @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
+                    <va-button v-if="!readOnlyMode" @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
                     <OrderItemModal :orderItem="selectedOrderItem" v-if="showOrderItemModal" @close="closeEditOrderItem()" @editOrderItem="editOrderItem($event)" @createOrderItem="addOrderItem($event)" />
                     <va-modal
                         v-model="showDeleteOrderItemModal"
@@ -151,7 +152,8 @@
                 <va-divider />
                 <div id="filesCoInner" class="file-container-wrapper">
 					<div class="file-container">
-						<div v-for="file in files" :key="file.IdForFileTable" class="file-item">
+						<div v-for="file in files" :key="file.Key" class="file-item">
+                            <va-icon v-if="!readOnlyMode" color="danger" name="close" id="deleteFile" @click="deleteFile(file)"/>
                             <div class="file-icons-wrapper">
                                 <div class="file-icons">
                                     <svg v-if="file.fileIcon==='none'" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-file-earmark" viewBox="0 0 16 16">
@@ -187,7 +189,7 @@
                                     <svg v-if="file.fileIcon==='xlsx'" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-filetype-xlsx" viewBox="0 0 16 16">
                                         <path fill-rule="evenodd" d="M14 4.5V11h-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM7.86 14.841a1.13 1.13 0 0 0 .401.823c.13.108.29.192.479.252.19.061.411.091.665.091.338 0 .624-.053.858-.158.237-.105.416-.252.54-.44a1.17 1.17 0 0 0 .187-.656c0-.224-.045-.41-.135-.56a1.002 1.002 0 0 0-.375-.357 2.028 2.028 0 0 0-.565-.21l-.621-.144a.97.97 0 0 1-.405-.176.37.37 0 0 1-.143-.299c0-.156.061-.284.184-.384.125-.101.296-.152.513-.152.143 0 .266.023.37.068a.624.624 0 0 1 .245.181.56.56 0 0 1 .12.258h.75a1.093 1.093 0 0 0-.199-.566 1.21 1.21 0 0 0-.5-.41 1.813 1.813 0 0 0-.78-.152c-.293 0-.552.05-.777.15-.224.099-.4.24-.527.421-.127.182-.19.395-.19.639 0 .201.04.376.123.524.082.149.199.27.351.367.153.095.332.167.54.213l.618.144c.207.049.36.113.462.193a.387.387 0 0 1 .153.326.512.512 0 0 1-.085.29.558.558 0 0 1-.255.193c-.111.047-.25.07-.413.07-.117 0-.224-.013-.32-.04a.837.837 0 0 1-.249-.115.578.578 0 0 1-.255-.384h-.764Zm-3.726-2.909h.893l-1.274 2.007 1.254 1.992h-.908l-.85-1.415h-.035l-.853 1.415H1.5l1.24-2.016-1.228-1.983h.931l.832 1.438h.036l.823-1.438Zm1.923 3.325h1.697v.674H5.266v-3.999h.791v3.325Zm7.636-3.325h.893l-1.274 2.007 1.254 1.992h-.908l-.85-1.415h-.035l-.853 1.415h-.861l1.24-2.016-1.228-1.983h.931l.832 1.438h.036l.823-1.438Z"/>
                                     </svg>
-                                    <svg v-if="file.fileIcon==='png'" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-filetype-png" viewBox="0 0 16 16">
+                                    <svg v-if="file.Key.endsWith('png')" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-filetype-png" viewBox="0 0 16 16">
                                         <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2v-1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5Zm-3.76 8.132c.076.153.123.317.14.492h-.776a.797.797 0 0 0-.097-.249.689.689 0 0 0-.17-.19.707.707 0 0 0-.237-.126.96.96 0 0 0-.299-.044c-.285 0-.506.1-.665.302-.156.201-.234.484-.234.85v.498c0 .234.032.439.097.615a.881.881 0 0 0 .304.413.87.87 0 0 0 .519.146.967.967 0 0 0 .457-.096.67.67 0 0 0 .272-.264c.06-.11.091-.23.091-.363v-.255H8.82v-.59h1.576v.798c0 .193-.032.377-.097.55a1.29 1.29 0 0 1-.293.458 1.37 1.37 0 0 1-.495.313c-.197.074-.43.111-.697.111a1.98 1.98 0 0 1-.753-.132 1.447 1.447 0 0 1-.533-.377 1.58 1.58 0 0 1-.32-.58 2.482 2.482 0 0 1-.105-.745v-.506c0-.362.067-.678.2-.95.134-.271.328-.482.582-.633.256-.152.565-.228.926-.228.238 0 .45.033.636.1.187.066.348.158.48.275.133.117.238.253.314.407Zm-8.64-.706H0v4h.791v-1.343h.803c.287 0 .531-.057.732-.172.203-.118.358-.276.463-.475a1.42 1.42 0 0 0 .161-.677c0-.25-.053-.475-.158-.677a1.176 1.176 0 0 0-.46-.477c-.2-.12-.443-.179-.732-.179Zm.545 1.333a.795.795 0 0 1-.085.381.574.574 0 0 1-.238.24.794.794 0 0 1-.375.082H.788v-1.406h.66c.218 0 .389.06.512.182.123.12.185.295.185.521Zm1.964 2.666V13.25h.032l1.761 2.675h.656v-3.999h-.75v2.66h-.032l-1.752-2.66h-.662v4h.747Z"/>
                                     </svg>
                                     <svg v-if="file.fileIcon==='pdf'" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-filetype-pdf" viewBox="0 0 16 16">
@@ -201,13 +203,13 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    {{ file.name }}
+                                    {{ removeExtension(file.Key) }}
                                 </div>
                             </div>
 						</div>
 					</div>
                     <va-button v-if="!readOnlyMode" @click="showFileModal=true" type="button" color="success" gradient>Dodaj plik</va-button>
-                    <FileModal :file="editedFile" v-if="showFileModal" @close="closeFileModal()" @createFile="addFile($event)" @editFile="editFile($event)"/>
+                    <FileModal v-if="showFileModal" @close="closeFileModal()" @createFile="addFile($event)"/>
 				</div>
             </div>
             <div id="workersCo">
@@ -237,7 +239,7 @@
                                 </va-list-item-label>
                             </va-list-item-section>
 
-                            <va-list-item-section icon>
+                            <va-list-item-section icon v-if="!readOnlyMode">
                                 <va-popover message="Edytuj przypisanie">
                                     <va-button flat icon="edit" @click="openEditAssignment(assignment)" />
                                 </va-popover>
@@ -289,14 +291,14 @@
                                 </va-list-item-label>
                             </va-list-item-section>
 
-                            <va-list-item-section icon>
+                            <va-list-item-section icon v-if="!readOnlyMode">
                                 <va-popover message="Usuń adres">
                                     <va-button flat icon="delete" @click="openDeleteAddressModal(address)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
-                    <va-button @click="showAddressesModal=true" type="button" color="success" gradient>Przydziel adres dostawy</va-button>
+                    <va-button v-if="!readOnlyMode" @click="showAddressesModal=true" type="button" color="success" gradient>Przydziel adres dostawy</va-button>
                     <DeliveryAddress :idCustomer="idCustomer" v-if="showAddressesModal" @createDeliveryAddress="addAddress($event)" @close="closeAddressModal()" />
                     <va-modal
                         v-model="showDeleteAddressModal"
@@ -322,6 +324,7 @@ import DeliveryAddress from '@/components/ReuseComponents/Modals/DeliveryAddress
 import FileModal from '@/components/ReuseComponents/Modals/FileModal.vue';
 import WorkerModal from '@/components/ReuseComponents/Modals/WorkerModal.vue';
 import OrderItemModal from '@/components/ReuseComponents/Modals/OrderItemModal.vue';
+import { S3Client, ListObjectsCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 
 export default {
     name: "OrderDetails",
@@ -347,7 +350,7 @@ export default {
             orderName: "",
             orderIdentifier: "",
             orderNote: "",
-            creationDate: null,
+            creationDate: null, // to delete
             expectedDeliveryDate: null,
             deliveryDate: null,
             offerValidityDate: null,
@@ -377,8 +380,7 @@ export default {
 
             showFileModal: false,
             files: [],
-            editedFile: null,
-            fileCounter: 0,
+            albumBucketName: "printingsystemfiles"
         }
     },
     computed: {
@@ -429,6 +431,7 @@ export default {
         this.updateOrderItemList();
         this.updateAssignmentList();
         this.updateAddressList();
+        this.updateFileList();
         await this.getSelectListData();
 
         this.isAuction = orderData.isAuction;
@@ -464,9 +467,35 @@ export default {
         this.selectedStatus = this.getNameById('status', orderData.idStatus);
     },
     methods: {
-        submitForm() {
+        async submitForm() {
             if(this.validateForm) {
-                //
+                let callPath = "/Order/updateOrder"
+                let body = {
+                    IdOrder: this.id,
+                    Name: this.orderName,
+                    OrderSubmissionDate: this.submissionDate,
+                    Note: this.orderNote,
+                    IsAuction: this.isAuction,
+                    ExpectedDeliveryDate: this.expectedDeliveryDate,
+                    DeliveryDate: this.deliveryDate,
+                    OfferValidityDate: this.offerValidityDate,
+                    IdRepresentative: this.getIdByName("representative", this.selectedRepresentative),
+                    IdStatus: this.getIdByName("status", this.selectedStatus),
+                };
+                
+                await CallAPI.post(callPath, body)
+                .then(res => {
+                    this.$vaToast.init({ message: 'Dane zostały edytowane.', color: 'success', duration: 3000 })
+                    return res.data;
+                })
+                .catch(err => {
+                    if(err.message.includes("422")) {
+                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                    }else{
+                        this.$vaToast.init({ message: 'Błąd edycji danych.', color: 'danger', duration: 3000 })
+                    }
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
             }
         },
         validateForm() {
@@ -479,6 +508,9 @@ export default {
             if(this.selectedRepresentative  == "") {
                 this.isFormValidate = false;
                 this.$vaToast.init({ message: 'Zamówienie musi mieć wybranego reprezentanta.', color: 'danger', duration: 2000 })
+            }
+            if(this.readOnlyMode){
+                this.isFormValidate = false;
             }
 
             return this.isFormValidate;
@@ -496,6 +528,14 @@ export default {
                     return this.rawOrderStatuses.find(element => element.idStatus == id).name;
                 case "representative":
                     return this.rawRepresentatives.find(element => element.idRepresentative == id).name;
+            }
+        },
+        getIdByName(what, selectedName) {
+            switch(what) {
+                case "status":
+                    return this.rawOrderStatuses.find(element => element.name == selectedName).idStatus;
+                case "representative":
+                    return this.rawRepresentatives.find(element => element.name == selectedName).idRepresentative;
             }
         },
         async getSelectListData() {
@@ -824,7 +864,99 @@ export default {
         closeDeleteOrderItemModal() {
             this.selectedOrderItem = null;
             this.showDeleteOrderItemModal = false;
-        }
+        },
+
+        async addFile(e) {
+            let callPath = "/File/createFile";
+            let body = {
+                Name: e.newFile.name,
+                IdFileType: e.newFile.fileType,
+                IdFileStatus: e.newFile.fileStatus,
+                IdValuation: null,
+                IdOrderItem: null,
+                IdOrder: this.id,
+            };
+
+            await CallAPI.post(callPath, body)
+            .then(res => {
+                this.$vaToast.init({ message: 'Plik został dodany.', color: 'success', duration: 3000 })
+                return res.data;
+            })
+            .catch(err => {
+                if(err.message.includes("422")) {
+                    this.$vaToast.init({ message: 'Niepoprawne dane.', color: 'danger', duration: 3000 })
+                }else{
+                    this.$vaToast.init({ message: 'Błąd dodawania pliku.', color: 'danger', duration: 3000 })
+                }
+
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            this.updateFileList();
+        },
+        async updateFileList() {
+            // setup data
+            const REGION = "eu-west-2";
+            const secretAccessKey = "ESrtU64dJv7DWCFdvKZ0kSokRNfnV5LbdRDbVN/h"
+            const accessKeyId = "AKIAQC42EGU5WCMUZBHR"
+
+            // create s3 object
+            const awsClient = new S3Client({
+                region: REGION,
+                credentials: {
+                    accessKeyId: accessKeyId,
+                    secretAccessKey: secretAccessKey
+                }
+            });
+
+            // create params and command
+            const params = { Bucket: this.albumBucketName };
+            const command = new ListObjectsCommand(params);
+
+            // send command and handle it correctly
+            try{
+                var resultData = await awsClient.send(command);
+                this.files = resultData.Contents;
+            }catch(err) {
+                console.log("Error appeared");
+                console.log(err);
+            }
+        },
+        async deleteFile(file) {
+            // setup data
+            const REGION = "eu-west-2";
+            const secretAccessKey = "ESrtU64dJv7DWCFdvKZ0kSokRNfnV5LbdRDbVN/h"
+            const accessKeyId = "AKIAQC42EGU5WCMUZBHR"
+
+            // create s3 object
+            const awsClient = new S3Client({
+                region: REGION,
+                credentials: {
+                    accessKeyId: accessKeyId,
+                    secretAccessKey: secretAccessKey
+                }
+            });
+
+            // create params and command
+            const params = { Bucket: this.albumBucketName, Delete: { Objects: [ { Key: file.Key } ] }, Quiet: true };
+            const command = new DeleteObjectsCommand(params);
+
+            // send command and handle it correctly
+            try{
+                await awsClient.send(command);
+            }catch(err) {
+                console.log("Error appeared");
+                console.log(err);
+            }
+
+            this.updateFileList();
+        },  
+        closeFileModal(){
+            this.showFileModal = false;
+        },
+        removeExtension(filename) {
+            return filename.substring(0, filename.lastIndexOf('.')) || filename;
+        },
     }
 }
 </script>
@@ -912,7 +1044,21 @@ export default {
 
 
 
+#deleteFile {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 99999;
+    border-radius: 25px;
+}
 
+#deleteFile:hover {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 99999;
+    border: solid 1px red;
+}
 
 .file-container-wrapper {
 	display: flex;
