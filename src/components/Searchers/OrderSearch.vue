@@ -10,8 +10,8 @@
         </div>
         <div class="search-box">
             <div class="search-input-box">
-                <label>Data stworzenia:</label>
-                <input @click="showThatPicker('createDatePicker')" v-model="creationDate" class="form-control" type="date" id="createDatePicker">
+                <label>Identyfikator:</label>
+                <input v-model="identifier" class="form-control" type="text">
             </div>
         </div>
         <div class="search-box">
@@ -96,6 +96,12 @@
       <div class="result-table">
           <p v-if="results.length==0"> {{ resultMessage }} </p>
           <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
+            <template #cell(isAuction)="{ is }">
+                <div id="isAuctionCo">
+                    <va-icon v-if="is" color="success" class="material-icons">done</va-icon>
+                    <va-icon v-if="!is" color="danger" class="material-icons">close</va-icon>
+                </div> 
+            </template>
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
                 <va-button flat icon="edit" @click="editItemById(rowIndex)" />
@@ -116,43 +122,92 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'OrderSearch',
 	data() {
 		return {
             orderName: "",
-            creationDate: null,
-            deliveryDate: null,
+            identifier: "",
+            deliveryDate: "",
             isAuction: false,
-            selectedStatus: null,
-            statuses: [],
-            selectedOrderItemType: null,
-            orderItemTypes: [],
-            selectedCustomerRep: null,
-            customerRep: [],
-            selectedSupplierRep: null,
-            supplierRep: [],
-            selectedWorker: null,
-            workers: [],
+            selectedStatus: "",
+            rawStatuses: [],
+            selectedOrderItemType: "",
+            rawOrderItemTypes: [],
+            selectedCustomerRep: "",
+            rawCustomerRep: [],
+            selectedSupplierRep: "",
+            rawSupplierRep: [],
+            selectedWorker: "",
+            rawWorkers: [],
             largeMode: false,
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'Name', label:"Nazwa", sortable: true },
-                { key: 'CreationDate', label:"Data stworzenia", sortable: true },
-                { key: 'DeliveryDate', label:"Data dostawy", sortable: true },
-                { key: 'OrderStatus', label:"Status zamówienia", sortable: true },
-                { key: 'RepresentativeName', label:"Reprezentant klienta" },
-                { key: 'Workers', label:"Przydzieleni pracownicy" },
-                { key: 'OrderItemType', label:"Typ przedmiotu zamówienia" },
-                { key: 'IsAuction', label:"Przetarg" },
+                { key: 'name', label:"Nazwa", sortable: true },
+                { key: 'identifier', label:"identyfikator", sortable: true },
+                { key: 'deliveryDate', label:"Przewidywana data dostawy", sortable: true },
+                { key: 'orderStatus', label:"Status zamówienia", sortable: true },
+                { key: 'representativeName', label:"Reprezentant klienta" },
+                { key: 'workers', label:"Przydzieleni pracownicy" },
+                { key: 'orderItemTypes', label:"Typ przedmiotu zamówienia" },
+                { key: 'isAuction', label:"Przetarg" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
             currentPage: 1,
 		}
 	},
+    async mounted() {
+        let callPath = "/OrderItemType/getOrderItemsTypes";
+        this.rawOrderItemTypes = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        callPath = "/Worker/getWorkers";
+        this.rawWorkers = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        callPath = "/OrderStatus/getOrderStatuses";
+        this.rawStatuses = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        callPath = "/Representative/getCustomerRepresentatives";
+        this.rawSupplierRep = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        callPath = "/Representative/getSupplierRepresentatives";
+        this.rawCustomerRep = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+    },
     computed: {
         pages() {
             let c = parseInt(this.results.length/10, 10);
@@ -164,11 +219,57 @@ export default {
         changeMode() {
             this.largeMode = !this.largeMode;
         },
-        searchForResults() {
+        async searchForResults() {
             this.largeMode = false;
+
+            let orderName = null;
+            let identifier = null;
+            let deliveryDate = null;
+			let selectedStatus = null;
+            let selectedOrderItemType = null;
+            let selectedCustomerRep = null;
+            let selectedSupplierRep = null;
+            let selectedWorker = null;
+
+            if(this.orderName !== "") {
+                orderName = this.orderName;
+            }
+            if(this.identifier !== "") {
+                identifier = this.identifier;
+            }
+            if(this.deliveryDate !== "") {
+                deliveryDate = this.deliveryDate;
+            }
+            if(this.selectedStatus !== "") {
+                selectedStatus = this.selectedStatus;
+            }
+            if(this.selectedOrderItemType !== "") {
+                selectedOrderItemType = this.selectedOrderItemType;
+            }
+            if(this.selectedCustomerRep !== "") {
+                selectedCustomerRep = this.selectedCustomerRep;
+            }
+            if(this.selectedSupplierRep !== "") {
+                selectedSupplierRep = this.selectedSupplierRep;
+            }
+            if(this.selectedWorker !== "") {
+                selectedWorker = this.selectedWorker;
+            }
+
+            let callPath = "/Order/getSearchOrders?isAuction=" + this.isAuction + "&name=" + orderName + "&identifier=" + identifier + "&expectedDeliveryDate=" + deliveryDate + "&status=" + selectedStatus + "&customerRepresentativeName=" + selectedCustomerRep + "&supplierRepresentativeName=" + selectedSupplierRep + "&workerName=" + selectedWorker + "&orderItemType=" + selectedOrderItemType;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            //API call
-            //set result message or show table
         },
         showThatPicker(id) {
             const dateInput = document.getElementById(id);
