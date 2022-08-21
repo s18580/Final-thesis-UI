@@ -22,13 +22,13 @@
         </div>
         <div v-if="largeMode" class="search-box">
                 <div class="search-input-box">
-                    <label>Imię:</label>
+                    <label>Imię osoby kontaktowej:</label>
                     <input v-model="concactName" class="form-control" type="text">
                 </div>
         </div>
         <div v-if="largeMode" class="search-box">
                 <div class="search-input-box">
-                    <label>Nazwisko:</label>
+                    <label>Nazwisko osoby kontaktowej:</label>
                     <input v-model="concactSurrname" class="form-control" type="text">
                 </div>
         </div>
@@ -94,6 +94,9 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'SupplierSearch',
 	data() {
@@ -112,13 +115,11 @@ export default {
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'Name', label:"Nazwa", sortable: true },
-                { key: 'PhoneNumber', label:"Telefon", sortable: true },
-                { key: 'EmailAddress', label:"Email", sortable: true },
-                { key: 'RepresentativeName', label:"Reprezentant dostawcy", sortable: true },
-                { key: 'AddressName', label:"Nazwa adresu", sortable: true },
-                { key: 'Street', label:"Ulica", sortable: true },
-                { key: 'City', label:"Miasto", sortable: true },
+                { key: 'name', label:"Nazwa", sortable: true },
+                { key: 'phoneNumber', label:"Telefon", sortable: true },
+                { key: 'emailAddress', label:"Email", sortable: true },
+                { key: 'representativeName', label:"Reprezentanci dostawcy", sortable: true },
+                { key: 'addressName', label:"Nazwy adresów", sortable: true },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
@@ -136,12 +137,61 @@ export default {
         changeMode() {
             this.largeMode = !this.largeMode;
         },
-        searchForResults() {
+        async searchForResults() {
             this.largeMode = false;
+            
+            let supplierName = null;
+            let supplierEmail = null;
+            let supplierPhone = null;
+			let supplierDescription = null;
+            let concactName = null;
+            let concactSurrname = null;
+            let addressName = null;
+            let addressStreet = null;
+            let addressCity = null;
+
+            if(this.supplierName !== "") {
+                supplierName = this.supplierName;
+            }
+            if(this.supplierEmail !== "") {
+                supplierEmail = this.supplierEmail;
+            }
+            if(this.supplierPhone !== "") {
+                supplierPhone = this.supplierPhone;
+            }
+            if(this.supplierDescription !== "") {
+                supplierDescription = this.supplierDescription;
+            }
+            if(this.concactName !== "") {
+                concactName = this.concactName;
+            }
+            if(this.concactSurrname !== "") {
+                concactSurrname = this.concactSurrname;
+            }
+            if(this.addressName !== "") {
+                addressName = this.addressName;
+            }
+            if(this.addressStreet !== "") {
+                addressStreet = this.addressStreet;
+            }
+            if(this.addressCity !== "") {
+                addressCity = this.addressCity;
+            }
+
+            let callPath = "/Supplier/getSearchSuppliers?supplierName="+ supplierName + "&phoneNumber=" + supplierPhone + "&emailAddress=" + supplierEmail + "&addressName=" + addressName + "&street=" + addressStreet + "&city=" + addressCity + "&description=" + supplierDescription + "&representativeName=" + concactName + "&representativeLastName=" + concactSurrname;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            //API call
-            //set result message or show table
-            this.resultMessage = "Brak wyników do wyświetlenia";
         }
 	}
 }
