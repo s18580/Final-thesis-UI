@@ -94,22 +94,22 @@ export default {
 			supplyDate: "",
             largeMode: false,
             showResults: false,
-            selectedSupplyItemType: null,
+            selectedSupplyItemType: "",
             supplyItemTypes: [],
-            seledtedSupplier: null,
+            seledtedSupplier: "",
             suppliers: [],
-            selectedRepresentative: null,
+            selectedRepresentative: "",
             representatives: [],
             supplyReceived: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'SupplyDate', label:"Data dostawy", sortable: true },
-                { key: 'OrderName', label:"Nazwa zamówienia", sortable: true },
-                { key: 'EmailAddress', label:"Typ", sortable: true },
-                { key: 'IsReceived', label:"Odebrana" },
-                { key: 'SupplierName', label:"Dostawca" },
-                { key: 'RepresentativeName', label:"Reprezentant" },
+                { key: 'supplyDate', label:"Data dostawy", sortable: true },
+                { key: 'orderName', label:"Nazwa zamówienia", sortable: true },
+                { key: 'supplyType', label:"Typ", sortable: true },
+                { key: 'isReceived', label:"Odebrana" },
+                { key: 'supplierName', label:"Dostawca" },
+                { key: 'representativeName', label:"Reprezentant" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
@@ -130,10 +130,37 @@ export default {
         async searchForResults() {
             this.largeMode = false;
 
-            //API call
-            //set result message or show table
+            let supplyDate = null;
+            let selectedSupplyItemType = null;
+            let seledtedSupplier = null;
+            let selectedRepresentative = null;
+            if(this.selectedRepresentative !== "") {
+                selectedRepresentative = this.selectedRepresentative;
+            }
+            if(this.selectedSupplyItemType !== "") {
+                selectedSupplyItemType = this.selectedSupplyItemType;
+            }
+            if(this.seledtedSupplier !== "") {
+                seledtedSupplier = this.seledtedSupplier;
+            }
+            if(this.supplyDate !== "") {
+                supplyDate = this.supplyDate;
+            }
+
+            let callPath = "/Supply/getSearchSupplies?supplyItemTypeName=" + selectedSupplyItemType + "&representativeName=" + selectedRepresentative + "&supplierName=" + seledtedSupplier + "&isReceived=" + this.supplyReceived + "&supplyDate=" + supplyDate;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            this.resultMessage = "Brak wyników do wyświetlenia";
         },
         showThatPicker(id) {
             const dateInput = document.getElementById(id);
@@ -144,7 +171,7 @@ export default {
             }
         }
 	},
-    async created() {
+    async mounted() {
         let dictionaryData = [
             CallAPI.get(`SupplyItemType/getSupplyItemsTypes`)
             .then(res => {
