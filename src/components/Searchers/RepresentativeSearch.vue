@@ -84,6 +84,9 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'RepresentativeSearch',
 	data() {
@@ -93,25 +96,44 @@ export default {
             representativePhone: "",
             representativeEmail: "",
             seledtedSupplier: "",
-            suppliers: [],
+            rawSuppliers: [],
             selectedCustomer: "",
-            customers: [],
+            rawCustomers: [],
             largeMode: false,
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'Name', label:"Imię", sortable: true },
-                { key: 'LastName', label:"Nazwisko", sortable: true },
-                { key: 'PhoneNumber', label:"Telefon", sortable: true },
-                { key: 'EmailAddress', label:"Email", sortable: true },
-                { key: 'RepresentativeName', label:"Klient/Dostawca" },
+                { key: 'name', label:"Imię", sortable: true },
+                { key: 'lastName', label:"Nazwisko", sortable: true },
+                { key: 'phoneNumber', label:"Telefon", sortable: true },
+                { key: 'emailAddress', label:"Email", sortable: true },
+                { key: 'representativeName', label:"Klient/Dostawca" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
             currentPage: 1,
 		}
 	},
+    async mounted() {
+        let callPath = "/Supplier/getSuppliers";
+        this.rawSuppliers = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+
+        callPath = "/Customer/getCustomers";
+        this.rawCustomers = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+    },
     computed: {
         pages() {
             let c = parseInt(this.results.length/10, 10);
@@ -123,11 +145,49 @@ export default {
         changeMode() {
             this.largeMode = !this.largeMode;
         },
-        searchForResults() {
+        async searchForResults() {
             this.largeMode = false;
+            
+            let representativeName = null;
+            let representativeLastName = null;
+            let representativePhone = null;
+            let representativeEmail = null;
+            let seledtedSupplier = null;
+            let selectedCustomer = null;
+            if(this.representativeName !== "") {
+                representativeName = this.representativeName;
+            }
+            if(this.representativeLastName !== "") {
+                representativeLastName = this.representativeLastName;
+            }
+            if(this.representativePhone !== "") {
+                representativePhone = this.representativePhone;
+            }
+            if(this.representativeEmail !== "") {
+                representativeEmail = this.representativeEmail;
+            }
+            if(this.seledtedSupplier !== "") {
+                seledtedSupplier = this.seledtedSupplier;
+            }
+            if(this.selectedCustomer !== "") {
+                selectedCustomer = this.selectedCustomer;
+            }
+
+            let callPath = "/Representative/getSearchRepresentatives?name=" + representativeName + "&lastName=" + representativeLastName + "&email=" + representativeEmail + "&phone=" + representativePhone + "&customer=" + selectedCustomer + "&supplier=" + seledtedSupplier;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            //API call
-            //set result message or show table
         }
 	}
 }

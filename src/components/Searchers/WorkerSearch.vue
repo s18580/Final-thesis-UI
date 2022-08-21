@@ -73,14 +73,14 @@ export default {
 	},
     async mounted() {
         let callPath = "/Worksite/getWorksites";
-            this.worksites = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                this.resultMessage = "Brak wyników do wyświetlenia";
-            });
+        this.worksites = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            this.resultMessage = "Brak wyników do wyświetlenia";
+        });
     },
     computed: {
         pages() {
