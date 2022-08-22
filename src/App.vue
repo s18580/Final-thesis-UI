@@ -16,7 +16,19 @@ export default {
       }
       return config;
     }, function (error) {
-      // Do something with request error
+      return Promise.reject(error);
+    });
+
+    CallAPI.interceptors.response.use(function (response) {
+      return response;
+    }, function (error) {
+      if(error.response.status == 401) {
+        // reset user data and go to login page
+        const userStore = useUserStore();
+        userStore.resetUserData();
+        window.location = '/login';
+        return Promise.resolve();
+      }
       return Promise.reject(error);
     });
   }
