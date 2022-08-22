@@ -2,60 +2,66 @@
   <div id="mainCo">
       <h4>Wyszukaj dostawcę</h4>
       <div id="search-params">
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwa:</label>
-                    <input v-model="supplierName" class="form-control" type="text">
-                </div>
-        </div>
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Email:</label>
-                    <input v-model="supplierEmail" class="form-control" type="text">
-                </div>
-        </div>
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Telefon:</label>
-                    <input v-model="supplierPhone" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Imię osoby kontaktowej:</label>
-                    <input v-model="concactName" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwisko osoby kontaktowej:</label>
-                    <input v-model="concactSurrname" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwa adresu:</label>
-                    <input v-model="addressName" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Ulica:</label>
-                    <input v-model="addressStreet" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Miasto:</label>
-                    <input v-model="addressCity" class="form-control" type="text">
-                </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-                <div class="search-input-box">
-                    <label>Fragment z opisu:</label>
-                    <textarea v-model="supplierDescription" class="form-control"></textarea>
-                </div>
-        </div>
+        <va-input
+            class="search-box"
+            v-model="supplierName"
+            label="Nazwa:"
+            placeholder="Nazwa"
+        />
+        <va-input
+            class="search-box"
+            v-model="supplierEmail"
+            label="Email:"
+            placeholder="Email"
+        />
+        <va-input
+            class="search-box"
+            v-model="supplierPhone"
+            label="Telefon:"
+            placeholder="Telefon"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="concactName"
+            label="Imię osoby kontaktowej:"
+            placeholder="Imię"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="concactSurrname"
+            label="Nazwisko osoby kontaktowej:"
+            placeholder="Nazwisko"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="addressName"
+            label="Nazwa adresu:"
+            placeholder="Nazwa adresu"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="addressStreet"
+            label="Ulica:"
+            placeholder="Ulica"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="addressCity"
+            label="Miasto:"
+            placeholder="Miasto"
+        />
+        <va-input
+            v-if="largeMode"
+            type="textarea"
+            class="search-box"
+            v-model="supplierDescription"
+            label="Fragment z opisu:"
+        />
       </div>
       <div id="show-more">
             <div @click="changeMode()" id="inner-show-more">

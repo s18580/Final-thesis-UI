@@ -2,42 +2,33 @@
   <div id="mainCo">
       <h4>Wyszukaj dostawę</h4>
       <div id="search-params">
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Data dostawy:</label>
-                    <input @click="showThatPicker('deliveryDatePicker')" v-model="supplyDate" class="form-control" type="date" id="deliveryDatePicker">
-                </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Typ przedmiotu dostawy:</label>
-                <select v-model="selectedSupplyItemType" class="form-control">
-                    <option v-for="itemType in supplyItemTypes" :key="itemType.Id">
-                        {{ itemType.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Dostawca:</label>
-                <select v-model="seledtedSupplier" class="form-control">
-                    <option v-for="supplier in suppliers" :key="supplier.Id">
-                        {{ supplier.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Reprezentant:</label>
-                <select v-model="selectedRepresentative" class="form-control">
-                    <option v-for="representative in representatives" :key="representative.Id">
-                        {{ representative.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
+        <va-date-input
+            class="search-box"
+            v-model="supplyDate"
+            label="Data dostawy:"
+            placeholder="Data dostawy"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedSupplyItemType"
+            :options="supplyItemTypes"
+            label="Typ przedmiotu dostawy:"
+            noOptionsText="Brak typów do wybrania"
+        />
+        <va-select
+            class="search-box"
+            v-model="seledtedSupplier"
+            :options="suppliers"
+            label="Dostawca:"
+            noOptionsText="Brak dostawców do wybrania"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedRepresentative"
+            :options="representatives"
+            label="Reprezentant:"
+            noOptionsText="Brak osób do wybrania"
+        />
         <div v-if="largeMode" class="search-box">
             <div class="search-input-box">
                 <label>Dostawa odebrana:</label>
@@ -95,11 +86,11 @@ export default {
             largeMode: false,
             showResults: false,
             selectedSupplyItemType: "",
-            supplyItemTypes: [],
+            rawSupplyItemTypes: [],
             seledtedSupplier: "",
-            suppliers: [],
+            rawSuppliers: [],
             selectedRepresentative: "",
-            representatives: [],
+            rawRepresentatives: [],
             supplyReceived: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
@@ -121,7 +112,28 @@ export default {
             let c = parseInt(this.results.length/10, 10);
             if(this.results.length%10 > 0) c+=1;
             return c;
-        }
+        },
+        supplyItemTypes() {
+            let resultArr = this.rawSupplyItemTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        suppliers() {
+            let resultArr = this.rawSuppliers.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        representatives() {
+            let resultArr = this.rawRepresentatives.map(function(item) {
+                return item["name"] + " " + item["lastName"];
+            });
+
+            return resultArr;
+        },
     },
 	methods: {
         changeMode() {
@@ -175,7 +187,7 @@ export default {
         let dictionaryData = [
             CallAPI.get(`SupplyItemType/getSupplyItemsTypes`)
             .then(res => {
-                this.supplyItemTypes = res.data;
+                this.rawSupplyItemTypes = res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
@@ -183,7 +195,7 @@ export default {
             
             CallAPI.get(`Supplier/getSuppliers`)
             .then(res => {
-                this.suppliers = res.data;
+                this.rawSuppliers = res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull suppliers: { err.message }", "Properties": { error: err }}]})
@@ -191,7 +203,7 @@ export default {
             
             CallAPI.get(`Representative/getRepresentatives`)
             .then(res => {
-                this.representatives = res.data;
+                this.rawRepresentatives = res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull representatives: { err.message }", "Properties": { error: err }}]})

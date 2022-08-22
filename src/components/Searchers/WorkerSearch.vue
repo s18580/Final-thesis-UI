@@ -2,28 +2,25 @@
   <div id="mainCo">
       <h4>Wyszukaj pracownika</h4>
       <div id="search-params">
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Imie:</label>
-                    <input v-model="workerName" class="form-control" type="text">
-                </div>
-        </div>
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwisko:</label>
-                    <input v-model="workerLastName" class="form-control" type="text">
-                </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Stanowisko:</label>
-                <select v-model="selectedWorksite" class="form-control">
-                    <option v-for="worksite in worksites" :key="worksite.idWorksite">
-                        {{ worksite.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
+        <va-input
+            class="search-box"
+            v-model="workerName"
+            label="Imie:"
+            placeholder="Imie"
+        />
+        <va-input
+            class="search-box"
+            v-model="workerLastName"
+            label="Nazwisko:"
+            placeholder="Nazwisko"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedWorksite"
+            :options="worksites"
+            label="Stanowisko:"
+            noOptionsText="Brak stanowisk do wybrania"
+        />
       </div>
       <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
@@ -56,7 +53,7 @@ export default {
 			workerName: "",
             workerLastName: "",
             selectedWorksite: "",
-            worksites: [],
+            rawWorksites: [],
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
@@ -73,7 +70,7 @@ export default {
 	},
     async mounted() {
         let callPath = "/Worksite/getWorksites";
-        this.worksites = await CallAPI.get(callPath)
+        this.rawWorksites = await CallAPI.get(callPath)
         .then(res => {
             return res.data;
         })
@@ -88,6 +85,13 @@ export default {
             if(this.results.length%10 > 0) c+=1;
             return c;
         },
+        worksites() {
+            let resultArr = this.rawWorksites.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        }
     },
 	methods: {
         async searchForResults() {

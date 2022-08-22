@@ -2,50 +2,46 @@
   <div id="mainCo">
       <h4>Wyszukaj osoby kontaktowej</h4>
       <div id="search-params">
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Imie:</label>
-                <input v-model="representativeName" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Nazwisko:</label>
-                <input v-model="representativeLastName" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Telefon:</label>
-                <input v-model="representativePhone" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Email:</label>
-                <input v-model="representativeEmail" class="form-control" type="text">
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Klient:</label>
-                <select v-model="selectedCustomer" class="form-control">
-                    <option v-for="customer in customers" :key="customer.Id">
-                        {{ customer.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Dostawca:</label>
-                <select v-model="seledtedSupplier" class="form-control">
-                    <option v-for="supplier in suppliers" :key="supplier.Id">
-                        {{ supplier.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
+        <va-input
+            class="search-box"
+            v-model="representativeName"
+            label="Imie:"
+            placeholder="Imie"
+        />
+        <va-input
+            class="search-box"
+            v-model="representativeLastName"
+            label="Nazwisko:"
+            placeholder="Nazwisko"
+        />
+        <va-input
+            class="search-box"
+            v-model="representativePhone"
+            label="Telefon:"
+            placeholder="Telefon"
+        />
+        <va-input
+            class="search-box"
+            v-model="representativeEmail"
+            label="Email:"
+            placeholder="Email"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="selectedCustomer"
+            :options="customers"
+            label="Klient:"
+            noOptionsText="Brak klientów do wybrania"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="seledtedSupplier"
+            :options="suppliers"
+            label="Dostawca:"
+            noOptionsText="Brak dostawców do wybrania"
+        />
       </div>
       <div id="show-more">
             <div @click="changeMode()" id="inner-show-more">
@@ -139,6 +135,20 @@ export default {
             let c = parseInt(this.results.length/10, 10);
             if(this.results.length%10 > 0) c+=1;
             return c;
+        },
+        customers(){
+            let resultArr = this.rawCustomers.map(function(item) {
+                return item["companyName"];
+            });
+
+            return resultArr;
+        },
+        suppliers() {
+            let resultArr = this.rawSuppliers.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
         }
     },
 	methods: {
