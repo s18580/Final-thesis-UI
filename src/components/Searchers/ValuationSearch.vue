@@ -2,90 +2,71 @@
   <div id="mainCo">
       <h4>Wyszukaj wycenę</h4>
       <div id="search-params">
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Data stworzenia:</label>
-                <input @click="showThatPicker('createDatePicker')" v-model="creationDate" class="form-control" type="date" id="createDatePicker">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Nazwa wyceny:</label>
-                <input v-model="valuationName" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Autor:</label>
-                <select v-model="selectedAuthor" class="form-control">
-                    <option v-for="author in authors" :key="author.Id">
-                        {{ author.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Papier:</label>
-                <input v-model="valuationPaper" class="form-control" type="text">
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Kolorystyka:</label>
-                <input v-model="valuationColor" class="form-control" type="text">
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Usługa:</label>
-                <select v-model="selectedService" class="form-control">
-                    <option v-for="valService in valuationServices" :key="valService.Id">
-                        {{ valService.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Rodzaj szycia:</label>
-                <select v-model="selectedBindingTypes" class="form-control">
-                    <option v-for="bindingType in valuationBindingTypes" :key="bindingType.Id">
-                        {{ bindingType.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Typ przedmiotu zamówienia:</label>
-                <select v-model="selectedOrderItemType" class="form-control">
-                    <option v-for="type in orderItemTypes" :key="type.Id">
-                        {{ type.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Zamówienie:</label>
-                <select v-model="selectedOrder" class="form-control">
-                    <option v-for="order in orders" :key="order.Id">
-                        {{ order.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Przedmiot wybranego zamówienia:</label>
-                <select v-model="selectedOrderItem" class="form-control">
-                    <option v-for="orderItem in orderItems" :key="orderItem.Id">
-                        {{ orderItem.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
+        <va-input
+            class="search-box"
+            v-model="valuationName"
+            label="Nazwa wyceny:"
+            placeholder="Nazwa wyceny"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedAuthor"
+            :options="authors"
+            label="Autor:"
+            noOptionsText="Brak osób do wybrania"
+        />
+        <va-date-input
+            class="search-box"
+            v-model="creationDate"
+            label="Data stworzenia:"
+            placeholder="Data stworzenia"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="valuationPaper"
+            label="Papier:"
+            placeholder="Papier"
+        />
+        <va-input
+            v-if="largeMode"
+            class="search-box"
+            v-model="valuationColor"
+            label="Kolorystyka:"
+            placeholder="Kolorystyka"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="selectedService"
+            :options="valuationServices"
+            label="Nazwa usługi:"
+            noOptionsText="Brak usług do wybrania"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="selectedBindingTypes"
+            :options="valuationBindingTypes"
+            label="Rodzaj szycia:"
+            noOptionsText="Brak rodzaji do wybrania"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="selectedOrderItemType"
+            :options="orderItemTypes"
+            label="Typ przedmiotu zamówienia:"
+            noOptionsText="Brak typów do wybrania"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="selectedOrder"
+            :options="orders"
+            label="Zamówienie:"
+            noOptionsText="Brak zamówień do wybrania"
+        />
       </div>
       <div id="show-more">
           <div @click="changeMode()" id="inner-show-more">
@@ -124,6 +105,9 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'ValuationSearch',
 	data() {
@@ -132,56 +116,180 @@ export default {
             creationDate: "",
             valuationColor: "",
             valuationPaper: "",
-            selectedService: null,
-            valuationServices: [],
-            selectedBindingTypes: null,
-            valuationBindingTypes: [],
-            selectedOrder: null,
-            orders: [],
-            selectedOrderItem: null,
-            orderItems: [],
-            selectedAuthor: null,
-            authors: [],
-            selectedOrderItemType: null,
-            orderItemTypes: [],
+            selectedService: "",
+            rawValuationServices: [],
+            selectedBindingTypes: "",
+            rawValuationBindingTypes: [],
+            selectedOrder: "",
+            rawOrders: [],
+            selectedOrderItem: "",
+            rawOrderItems: [],
+            selectedAuthor: "",
+            rawAuthors: [],
+            selectedOrderItemType: "",
+            rawOrderItemTypes: [],
             largeMode: false,
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'Name', label:"Nazwa", sortable: true },
-                { key: 'Author', label:"Autor", sortable: true },
-                { key: 'CreationDate', label:"Data stworzenia" },
-                { key: 'Paper', label:"Papier", sortable: true },
-                { key: 'Color', label:"Kolorystyka" },
-                { key: 'Service', label:"Usługi" },
-                { key: 'BindingType', label:"Rodzaj szycia" },
-                { key: 'OrderItemType', label:"Typ przedmiotu zamówienia" },
-                { key: 'Order', label:"Zamówienie" },
-                { key: 'OrderItem', label:"Przedmioty zamówienia" },
+                { key: 'name', label:"Nazwa", sortable: true },
+                { key: 'author', label:"Autor", sortable: true },
+                { key: 'printPrice', label:"Cena" },
+                { key: 'order', label:"Zamówienie" },
+                { key: 'orderItemType', label:"Typ przedmiotu zamówienia" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
             currentPage: 1,
 		}
 	},
+    async mounted() {
+        this.rawOrderItemTypes = await CallAPI.get(`OrderItemType/getOrderItemsTypes`)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        this.rawAuthors = await CallAPI.get(`Worker/getWorkers`)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        this.rawOrders = await CallAPI.get(`Order/getOrders`)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        this.rawValuationBindingTypes = await CallAPI.get(`BindingType/getBindingTypes`)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+
+        this.rawValuationServices = await CallAPI.get(`ServiceName/getServiceNames`)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+        });
+    },
     computed: {
         pages() {
             let c = parseInt(this.results.length/10, 10);
             if(this.results.length%10 > 0) c+=1;
             return c;
-        }
+        },
+        valuationServices() {
+            let resultArr = this.rawValuationServices.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        valuationBindingTypes() {
+            let resultArr = this.rawValuationBindingTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        orders() {
+            let resultArr = this.rawOrders.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        authors() {
+            let resultArr = this.rawAuthors.map(function(item) {
+                return item["name"] + " " + item["lastName"];
+            });
+
+            return resultArr;
+        },
+        orderItemTypes() {
+            let resultArr = this.rawOrderItemTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
     },
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
         },
-        searchForResults() {
+        async searchForResults() {
             this.largeMode = false;
+            
+            let valuationName = null;
+            let creationDate = null;
+            let valuationColor = null;
+			let valuationPaper = null;
+            let selectedService = null;
+            let selectedBindingTypes = null;
+            let selectedOrder = null;
+            let selectedOrderItem = null;
+            let selectedAuthor = null;
+            let selectedOrderItemType = null;
+
+            if(this.valuationName !== "") {
+                valuationName = this.valuationName;
+            }
+            if(this.creationDate !== "") {
+                creationDate = this.creationDate;
+            }
+            if(this.valuationColor !== "") {
+                valuationColor = this.valuationColor;
+            }
+            if(this.valuationPaper !== "") {
+                valuationPaper = this.valuationPaper;
+            }
+            if(this.selectedService !== "") {
+                selectedService = this.selectedService;
+            }
+            if(this.selectedBindingTypes !== "") {
+                selectedBindingTypes = this.selectedBindingTypes;
+            }
+            if(this.selectedOrder !== "") {
+                selectedOrder = this.selectedOrder;
+            }
+            if(this.selectedOrderItem !== "") {
+                selectedOrderItem = this.selectedOrderItem;
+            }
+            if(this.selectedAuthor !== "") {
+                selectedAuthor = this.selectedAuthor;
+            }
+            if(this.selectedOrderItemType !== "") {
+                selectedOrderItemType = this.selectedOrderItemType;
+            }
+
+            let callPath = "/Valuation/getSearchValuations?valuationName=" + valuationName + "&author=" + selectedAuthor + "&paper=" + valuationPaper + "&color=" + valuationColor + "&serviceName=" + selectedService + "&bindingType=" + selectedBindingTypes + "&orderName=" + selectedOrder + "&orderItemType=" + selectedOrderItemType + "&orderItem=" + selectedOrderItem + "&creationDate=" + creationDate;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            //API call
-            //set result message or show table
-            this.resultMessage = "Brak wyników do wyświetlenia";
         },
         showThatPicker(id) {
             const dateInput = document.getElementById(id);
@@ -219,35 +327,6 @@ export default {
 .search-box {
     flex-grow: 4;
 	padding: 20px;
-}
-
-.search-input-box input,
-.search-input-box select {
-	text-align: center;
-    margin-top: 10px;
-	margin-bottom: 10px;
-    border-radius: 100vw;
-    min-width: 250px;
-    background: #f4f8fa;
-}
-
-.search-input-box select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-position-x: 100%;
-    background-position-y: 5px;
-    background-repeat: no-repeat;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-}
-
-select option {
-  background: #f4f8fa;
-  color: #2C82E0;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
-}
-
-.search-input-box label {
-	color: #2C82E0;
 }
 
 #show-more {

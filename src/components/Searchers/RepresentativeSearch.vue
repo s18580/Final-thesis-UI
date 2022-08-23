@@ -2,50 +2,46 @@
   <div id="mainCo">
       <h4>Wyszukaj osoby kontaktowej</h4>
       <div id="search-params">
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Imie:</label>
-                <input v-model="representativeName" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Nazwisko:</label>
-                <input v-model="representativeLastName" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Telefon:</label>
-                <input v-model="representativePhone" class="form-control" type="text">
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Email:</label>
-                <input v-model="representativeEmail" class="form-control" type="text">
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Klient:</label>
-                <select v-model="selectedCustomer" class="form-control">
-                    <option v-for="customer in customers" :key="customer.Id">
-                        {{ customer.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Dostawca:</label>
-                <select v-model="seledtedSupplier" class="form-control">
-                    <option v-for="supplier in suppliers" :key="supplier.Id">
-                        {{ supplier.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
+        <va-input
+            class="search-box"
+            v-model="representativeName"
+            label="Imie:"
+            placeholder="Imie"
+        />
+        <va-input
+            class="search-box"
+            v-model="representativeLastName"
+            label="Nazwisko:"
+            placeholder="Nazwisko"
+        />
+        <va-input
+            class="search-box"
+            v-model="representativePhone"
+            label="Telefon:"
+            placeholder="Telefon"
+        />
+        <va-input
+            class="search-box"
+            v-model="representativeEmail"
+            label="Email:"
+            placeholder="Email"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="selectedCustomer"
+            :options="customers"
+            label="Klient:"
+            noOptionsText="Brak klientów do wybrania"
+        />
+        <va-select
+            v-if="largeMode"
+            class="search-box"
+            v-model="seledtedSupplier"
+            :options="suppliers"
+            label="Dostawca:"
+            noOptionsText="Brak dostawców do wybrania"
+        />
       </div>
       <div id="show-more">
             <div @click="changeMode()" id="inner-show-more">
@@ -84,6 +80,9 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'RepresentativeSearch',
 	data() {
@@ -93,41 +92,112 @@ export default {
             representativePhone: "",
             representativeEmail: "",
             seledtedSupplier: "",
-            suppliers: [],
+            rawSuppliers: [],
             selectedCustomer: "",
-            customers: [],
+            rawCustomers: [],
             largeMode: false,
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'Name', label:"Imię", sortable: true },
-                { key: 'LastName', label:"Nazwisko", sortable: true },
-                { key: 'PhoneNumber', label:"Telefon", sortable: true },
-                { key: 'EmailAddress', label:"Email", sortable: true },
-                { key: 'RepresentativeName', label:"Klient/Dostawca" },
+                { key: 'name', label:"Imię", sortable: true },
+                { key: 'lastName', label:"Nazwisko", sortable: true },
+                { key: 'phoneNumber', label:"Telefon", sortable: true },
+                { key: 'emailAddress', label:"Email", sortable: true },
+                { key: 'representativeName', label:"Klient/Dostawca" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
             currentPage: 1,
 		}
 	},
+    async mounted() {
+        let callPath = "/Supplier/getSuppliers";
+        this.rawSuppliers = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+
+        callPath = "/Customer/getCustomers";
+        this.rawCustomers = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+    },
     computed: {
         pages() {
             let c = parseInt(this.results.length/10, 10);
             if(this.results.length%10 > 0) c+=1;
             return c;
+        },
+        customers(){
+            let resultArr = this.rawCustomers.map(function(item) {
+                return item["companyName"];
+            });
+
+            return resultArr;
+        },
+        suppliers() {
+            let resultArr = this.rawSuppliers.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
         }
     },
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
         },
-        searchForResults() {
+        async searchForResults() {
             this.largeMode = false;
+            
+            let representativeName = null;
+            let representativeLastName = null;
+            let representativePhone = null;
+            let representativeEmail = null;
+            let seledtedSupplier = null;
+            let selectedCustomer = null;
+            if(this.representativeName !== "") {
+                representativeName = this.representativeName;
+            }
+            if(this.representativeLastName !== "") {
+                representativeLastName = this.representativeLastName;
+            }
+            if(this.representativePhone !== "") {
+                representativePhone = this.representativePhone;
+            }
+            if(this.representativeEmail !== "") {
+                representativeEmail = this.representativeEmail;
+            }
+            if(this.seledtedSupplier !== "") {
+                seledtedSupplier = this.seledtedSupplier;
+            }
+            if(this.selectedCustomer !== "") {
+                selectedCustomer = this.selectedCustomer;
+            }
+
+            let callPath = "/Representative/getSearchRepresentatives?name=" + representativeName + "&lastName=" + representativeLastName + "&email=" + representativeEmail + "&phone=" + representativePhone + "&customer=" + selectedCustomer + "&supplier=" + seledtedSupplier;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            //API call
-            //set result message or show table
         }
 	}
 }

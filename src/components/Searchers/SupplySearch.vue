@@ -2,42 +2,33 @@
   <div id="mainCo">
       <h4>Wyszukaj dostawę</h4>
       <div id="search-params">
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Data dostawy:</label>
-                    <input @click="showThatPicker('deliveryDatePicker')" v-model="supplyDate" class="form-control" type="date" id="deliveryDatePicker">
-                </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Typ przedmiotu dostawy:</label>
-                <select v-model="selectedSupplyItemType" class="form-control">
-                    <option v-for="itemType in supplyItemTypes" :key="itemType.Id">
-                        {{ itemType.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Dostawca:</label>
-                <select v-model="seledtedSupplier" class="form-control">
-                    <option v-for="supplier in suppliers" :key="supplier.Id">
-                        {{ supplier.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Reprezentant:</label>
-                <select v-model="selectedRepresentative" class="form-control">
-                    <option v-for="representative in representatives" :key="representative.Id">
-                        {{ representative.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
+        <va-date-input
+            class="search-box"
+            v-model="supplyDate"
+            label="Data dostawy:"
+            placeholder="Data dostawy"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedSupplyItemType"
+            :options="supplyItemTypes"
+            label="Typ przedmiotu dostawy:"
+            noOptionsText="Brak typów do wybrania"
+        />
+        <va-select
+            class="search-box"
+            v-model="seledtedSupplier"
+            :options="suppliers"
+            label="Dostawca:"
+            noOptionsText="Brak dostawców do wybrania"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedRepresentative"
+            :options="representatives"
+            label="Reprezentant:"
+            noOptionsText="Brak osób do wybrania"
+        />
         <div v-if="largeMode" class="search-box">
             <div class="search-input-box">
                 <label>Dostawa odebrana:</label>
@@ -94,22 +85,22 @@ export default {
 			supplyDate: "",
             largeMode: false,
             showResults: false,
-            selectedSupplyItemType: null,
-            supplyItemTypes: [],
-            seledtedSupplier: null,
-            suppliers: [],
-            selectedRepresentative: null,
-            representatives: [],
+            selectedSupplyItemType: "",
+            rawSupplyItemTypes: [],
+            seledtedSupplier: "",
+            rawSuppliers: [],
+            selectedRepresentative: "",
+            rawRepresentatives: [],
             supplyReceived: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'SupplyDate', label:"Data dostawy", sortable: true },
-                { key: 'OrderName', label:"Nazwa zamówienia", sortable: true },
-                { key: 'EmailAddress', label:"Typ", sortable: true },
-                { key: 'IsReceived', label:"Odebrana" },
-                { key: 'SupplierName', label:"Dostawca" },
-                { key: 'RepresentativeName', label:"Reprezentant" },
+                { key: 'supplyDate', label:"Data dostawy", sortable: true },
+                { key: 'orderName', label:"Nazwa zamówienia", sortable: true },
+                { key: 'supplyType', label:"Typ", sortable: true },
+                { key: 'isReceived', label:"Odebrana" },
+                { key: 'supplierName', label:"Dostawca" },
+                { key: 'representativeName', label:"Reprezentant" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
             perPage: 10,
@@ -121,7 +112,28 @@ export default {
             let c = parseInt(this.results.length/10, 10);
             if(this.results.length%10 > 0) c+=1;
             return c;
-        }
+        },
+        supplyItemTypes() {
+            let resultArr = this.rawSupplyItemTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        suppliers() {
+            let resultArr = this.rawSuppliers.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        },
+        representatives() {
+            let resultArr = this.rawRepresentatives.map(function(item) {
+                return item["name"] + " " + item["lastName"];
+            });
+
+            return resultArr;
+        },
     },
 	methods: {
         changeMode() {
@@ -130,10 +142,37 @@ export default {
         async searchForResults() {
             this.largeMode = false;
 
-            //API call
-            //set result message or show table
+            let supplyDate = null;
+            let selectedSupplyItemType = null;
+            let seledtedSupplier = null;
+            let selectedRepresentative = null;
+            if(this.selectedRepresentative !== "") {
+                selectedRepresentative = this.selectedRepresentative;
+            }
+            if(this.selectedSupplyItemType !== "") {
+                selectedSupplyItemType = this.selectedSupplyItemType;
+            }
+            if(this.seledtedSupplier !== "") {
+                seledtedSupplier = this.seledtedSupplier;
+            }
+            if(this.supplyDate !== "") {
+                supplyDate = this.supplyDate;
+            }
+
+            let callPath = "/Supply/getSearchSupplies?supplyItemTypeName=" + selectedSupplyItemType + "&representativeName=" + selectedRepresentative + "&supplierName=" + seledtedSupplier + "&isReceived=" + this.supplyReceived + "&supplyDate=" + supplyDate;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            this.resultMessage = "Brak wyników do wyświetlenia";
         },
         showThatPicker(id) {
             const dateInput = document.getElementById(id);
@@ -144,11 +183,11 @@ export default {
             }
         }
 	},
-    async created() {
+    async mounted() {
         let dictionaryData = [
             CallAPI.get(`SupplyItemType/getSupplyItemsTypes`)
             .then(res => {
-                this.supplyItemTypes = res.data;
+                this.rawSupplyItemTypes = res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull supply items types: { err.message }", "Properties": { error: err }}]})
@@ -156,7 +195,7 @@ export default {
             
             CallAPI.get(`Supplier/getSuppliers`)
             .then(res => {
-                this.suppliers = res.data;
+                this.rawSuppliers = res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull suppliers: { err.message }", "Properties": { error: err }}]})
@@ -164,7 +203,7 @@ export default {
             
             CallAPI.get(`Representative/getRepresentatives`)
             .then(res => {
-                this.representatives = res.data;
+                this.rawRepresentatives = res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": "Failed to pull representatives: { err.message }", "Properties": { error: err }}]})

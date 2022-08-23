@@ -37,7 +37,7 @@
                     label="Telefon (opcjonalnie)"
                     placeholder="Telefon pracownika"
                 />
-                <div class="gridSpreadC gridFourthR inputWidth">
+                <div class="gridSpreadC gridFifthR inputWidth">
                     <va-select
                         v-model="selectedWorksite"
                         :options="worksites"
@@ -58,6 +58,20 @@
                     :rules="[(v) => v == passwordOne || `Hasła nie są takie same.`]"
                     label="Powtórz hasło"
                     placeholder="Powtórz hasło pracownika"
+                />
+                <va-input
+                    class="gridFirstC gridFourthR inputWidth"
+                    v-model="accessKeyAWS"
+                    :rules="[(v) => v.length < 51 || `Pole przekroczyło limit znaków.`]"
+                    label="AWS: Access Key Id"
+                    placeholder="Access Key Id"
+                />
+                <va-input
+                    class="gridSecondC gridFourthR inputWidth"
+                    v-model="secretKeyAWS"
+                    :rules="[(v) => v.length < 51 || `Pole przekroczyło limit znaków.`]"
+                    label="AWS: Secret Access Key"
+                    placeholder="Secret Access Key"
                 />
                 <div id="submitButtonContainer">
                     <va-button id="submitButton" type="submit" color="info" gradient class="my-3">{{ buttonName }}</va-button>
@@ -113,6 +127,8 @@ export default {
 			workerPhone: "",
             passwordOne: "",
             passwordTwo: "",
+            accessKeyAWS: "",
+            secretKeyAWS: "",
             workerRoles: [],
             isFormValidate: false,
             selectedWorksite: "Bez stanowiska",
@@ -139,6 +155,18 @@ export default {
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
+
+            callPath = "/Worker/getAWS?id=" + this.id;
+            let awsData = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            this.accessKeyAWS = awsData.accessKeyAWS;
+            this.secretKeyAWS = awsData.secretKeyAWS;
             this.idWorker = editedWorker.idWorker;
             this.workerName = editedWorker.name;
             this.workerLastName = editedWorker.lastName;
@@ -188,6 +216,8 @@ export default {
                         phoneNumber: this.workerPhone,
                         emailAddres: this.workerEmail,
                         password: this.passwordOne,
+                        accessKey: this.accessKeyAWS,
+                        secretKey: this.secretKeyAWS,
                         idWorksite: this.getWorksiteByName(this.selectedWorksite),
                         userRoles: this.workerRoles,
                     };
@@ -216,6 +246,8 @@ export default {
                         phoneNumber: this.workerPhone,
                         emailAddres: this.workerEmail,
                         newPassword: this.passwordOne,
+                        newAccessKey: this.accessKeyAWS,
+                        newSecretKey: this.secretKeyAWS,
                         idWorksite: this.getWorksiteByName(this.selectedWorksite),
                         userRoles: this.workerRoles,
                     };
@@ -287,7 +319,7 @@ export default {
 #form {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
 }
@@ -327,11 +359,16 @@ export default {
     grid-row-end: 4;
 }
 
+.gridFifthR { 
+    grid-row-start: 5;
+    grid-row-end: 5;
+}
+
 #submitButtonContainer {
     grid-column-start: 1;
     grid-column-end: end;
-    grid-row-start: 5;
-    grid-row-end: 5;
+    grid-row-start: 6;
+    grid-row-end: 6;
 }
 
 #background {

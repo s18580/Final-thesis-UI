@@ -67,6 +67,7 @@ export default {
                 let data = {
                     newService: {
                         idServiceName: this.getServiceIdByName(this.selectedService),
+                        serviceName : { name: this.selectedService },
                         name: this.selectedService,
                         price: this.servicePrice,
                     }

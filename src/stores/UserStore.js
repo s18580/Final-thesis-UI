@@ -37,6 +37,13 @@ export const useUserStore = defineStore('UserStore', {
         doesUserHasRole(role) {
             return this.roles.includes(role);
         },
+        resetUserData() {
+            this.id = null;
+            this.name = "";
+            this.token = "";
+            this.refreshToken = "";
+            this.roles = [];
+        }
     },
     persist: true,
   })

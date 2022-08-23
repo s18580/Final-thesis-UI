@@ -2,49 +2,25 @@
   <div id="mainCo">
       <h4>Wyszukaj pracownika</h4>
       <div id="search-params">
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Imie:</label>
-                    <input v-model="workerName" class="form-control" type="text">
-                </div>
-        </div>
-        <div class="search-box">
-                <div class="search-input-box">
-                    <label>Nazwisko:</label>
-                    <input v-model="workerLastName" class="form-control" type="text">
-                </div>
-        </div>
-        <div class="search-box">
-            <div class="search-input-box">
-                <label>Stanowisko:</label>
-                <select v-model="selectedWorksite" class="form-control">
-                    <option v-for="worksite in worksites" :key="worksite.Id">
-                        {{ worksite.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div v-if="largeMode" class="search-box">
-            <div class="search-input-box">
-                <label>Klient:</label>
-                <select v-model="selectedCustomer" class="form-control">
-                    <option v-for="customer in customers" :key="customer.Id">
-                        {{ customer.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-      </div>
-      <div id="show-more">
-            <div @click="changeMode()" id="inner-show-more">
-                Pokaż więcej filtrów
-                <svg v-if="!largeMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-                </svg>
-                <svg v-if="largeMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
-                </svg>
-            </div>
+        <va-input
+            class="search-box"
+            v-model="workerName"
+            label="Imie:"
+            placeholder="Imie"
+        />
+        <va-input
+            class="search-box"
+            v-model="workerLastName"
+            label="Nazwisko:"
+            placeholder="Nazwisko"
+        />
+        <va-select
+            class="search-box"
+            v-model="selectedWorksite"
+            :options="worksites"
+            label="Stanowisko:"
+            noOptionsText="Brak stanowisk do wybrania"
+        />
       </div>
       <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
@@ -52,17 +28,12 @@
       <div class="result-table">
           <p v-if="results.length==0"> {{ resultMessage }} </p>
           <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
-            <template #cell(actions)="{ rowIndex }">
-                <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
-                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
-                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
-            </template>
             <template #bodyAppend>
                 <tr><td colspan="8" class="table-pagination">
                     <va-pagination
-                    v-model="currentPage"
-                    input
-                    :pages="pages"
+                        v-model="currentPage"
+                        input
+                        :pages="pages"
                     />
                 </td></tr>
             </template>
@@ -72,48 +43,86 @@
 </template>
 
 <script>
+import CallAPI from '@/axios/axios-connection.js';
+import CallSeq from '@/logging/seq-logger.js';
+
 export default {
   name: 'WorkerSearch',
 	data() {
 		return {
 			workerName: "",
             workerLastName: "",
-            selectedCustomer: "",
-            customers: [],
             selectedWorksite: "",
-            worksites: [],
-            largeMode: false,
+            rawWorksites: [],
             showResults: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
-                { key: 'Name', label:"Imię", sortable: true },
-                { key: 'LastName', label:"Nazwisko", sortable: true },
-                { key: 'Worksite', label:"Stanowisko", sortable: true },
-                { key: 'Customer', label:"Klient", sortable: true },
-                { key: 'actions', label:"Akcje", width: 80 },
+                { key: 'name', label:"Imię", sortable: true },
+                { key: 'lastName', label:"Nazwisko", sortable: true },
+                { key: 'phoneNumber', label:"Telefon", sortable: true },
+                { key: 'emailAddres', label:"Email", sortable: true },
+                { key: 'worksiteName', label:"Stanowisko", sortable: true },
             ],
             perPage: 10,
             currentPage: 1,
 		}
 	},
+    async mounted() {
+        let callPath = "/Worksite/getWorksites";
+        this.rawWorksites = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            this.resultMessage = "Brak wyników do wyświetlenia";
+        });
+    },
     computed: {
         pages() {
             let c = parseInt(this.results.length/10, 10);
             if(this.results.length%10 > 0) c+=1;
             return c;
+        },
+        worksites() {
+            let resultArr = this.rawWorksites.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
         }
     },
 	methods: {
-        changeMode() {
-            this.largeMode = !this.largeMode;
-        },
-        searchForResults() {
-            this.largeMode = false;
+        async searchForResults() {
+            let workerName = null;
+            let workerLastName = null;
+            let selectedWorksite = null;
+            if(this.workerName !== "") {
+                workerName = this.workerName;
+            }
+            if(this.workerLastName !== "") {
+                workerLastName = this.workerLastName;
+            }
+            if(this.selectedWorksite !== "") {
+                selectedWorksite = this.selectedWorksite;
+            }
+
+            let callPath = "/Worker/getSearchWorkers?name=" + workerName + "&lastName=" + workerLastName + "&worksite=" + selectedWorksite;
+            this.results = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            });
+
+            if(this.results == []) {
+                this.resultMessage = "Brak wyników do wyświetlenia";
+            }
+
             this.showResults = true;
-            //API call
-            //set result message or show table
-            this.resultMessage = "Brak wyników do wyświetlenia";
         }
 	}
 }

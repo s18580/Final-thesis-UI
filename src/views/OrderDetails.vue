@@ -350,7 +350,7 @@ export default {
             orderName: "",
             orderIdentifier: "",
             orderNote: "",
-            creationDate: null, // to delete
+            creationDate: null,
             expectedDeliveryDate: null,
             deliveryDate: null,
             offerValidityDate: null,

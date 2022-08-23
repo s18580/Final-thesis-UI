@@ -17,12 +17,6 @@
             />
             <va-date-input
                 class="some-space mb-4"
-                v-model="orderSubmissionDate"
-                label="Data złożenia"
-                placeholder="Data złożenia zamówienia"
-            />
-            <va-date-input
-                class="some-space mb-4"
                 v-model="expectedDeliveryDate"
                 label="Przewidywana data dostawy"
                 placeholder="Pożądana data dostawy"
@@ -153,7 +147,6 @@ export default {
             rawReprsentatives: [],
             selectedRepresentative: "",
             orderName: "",
-            orderSubmissionDate: new Date(),
             expectedDeliveryDate: new Date(),
             offerValidityDate: this.addDays(new Date(), 7),
             showWorkerModal: false,
@@ -273,7 +266,6 @@ export default {
                 let callPath = "/Order/createOrderWithData";
                 let body = {
                     Name: this.orderName,
-                    OrderSubmissionDate: this.orderSubmissionDate,
                     Note: this.orderNote,
                     IsAuction: this.isAuction,
                     ExpectedDeliveryDate: this.expectedDeliveryDate,
