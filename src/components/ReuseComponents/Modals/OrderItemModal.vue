@@ -138,7 +138,7 @@
                         <div class="objects-card">
                             <div v-for="service in orderItemService" :key="service.IdForServiceTable" class="card-items">
                                 <div class="my-1">
-                                    {{ service.name }}
+                                    {{ service.serviceName.name }}
                                 </div>
                                 <div class="card-icons">
                                     <va-icon @click="editServiceInModal(service)" color="#1b63b1" class="material-icons">edit</va-icon>
@@ -339,15 +339,30 @@ export default {
             this.editedColor = null;
         },
         addPaper(e) {
-            e.newPaper.IdForPaperTable = this.paperCounter;
-            this.orderItemPapers.push(e.newPaper);
+            let newPaper = {
+                IdForPaperTable: this.paperCounter,
+                idPaper: e.newPaper.IdPaper,
+                name: e.newPaper.name,
+                kind: e.newPaper.kind,
+                sheetFormat: e.newPaper.sheetFormat,
+                fiberDirection: e.newPaper.fiberDirection,
+                opacity: e.newPaper.opacity,
+                pricePerKilogram: e.newPaper.pricePerKilogram,
+                quantity: e.newPaper.quantity
+            };
+            this.orderItemPapers.push(newPaper);
             this.paperCounter++;
-            this.showPaperModal = false;
         },
         editPaper(e) {
             for(const obj of this.orderItemPapers){
                 if (obj.IdForPaperTable === e.newPaper.IdForPaperTable) {
                     obj.name = e.newPaper.name;
+                    obj.kind = e.newPaper.kind;
+                    obj.sheetFormat = e.newPaper.sheetFormat;
+                    obj.fiberDirection = e.newPaper.fiberDirection;
+                    obj.opacity = e.newPaper.opacity;
+                    obj.pricePerKilogram = e.newPaper.pricePerKilogram;
+                    obj.quantity = e.newPaper.quantity;
                     break;
                 }
             }
@@ -366,13 +381,21 @@ export default {
             this.editedPaper = null;
         },
         addService(e) {
-            e.newService.IdForServiceTable = this.serviceCounter;
-            this.orderItemService.push(e.newService);
+            let newService = {
+                IdForServiceTable: this.serviceCounter,
+                idServiceName: e.newService.idServiceName,
+                serviceName: e.newService.serviceName,
+                name: e.newService.name,
+                price: e.newService.price,
+            };
+            this.orderItemService.push(newService);
             this.serviceCounter++;
         },
         editService(e) {
             for(const obj of this.orderItemService){
                 if (obj.IdForServiceTable === e.newService.IdForServiceTable) {
+                    obj.serviceName = e.newService.serviceName;
+                    obj.price = e.newService.price;
                     obj.name = e.newService.name;
                     break;
                 }
@@ -393,6 +416,7 @@ export default {
         },
 	},
     async mounted() {
+        console.log(this.orderItem); 
         let callPath = "/BindingType/getBindingTypes";
         this.rawBindingTypes = await CallAPI.get(callPath)
         .then(res => {
