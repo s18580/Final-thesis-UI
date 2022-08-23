@@ -99,9 +99,9 @@
             <template #bodyAppend>
                 <tr><td colspan="12" class="table-pagination">
                     <va-pagination
-                    v-model="currentPage"
-                    input
-                    :pages="pages"
+                        v-model="currentPage"
+                        input
+                        :pages="pages"
                     />
                 </td></tr>
             </template>
@@ -302,7 +302,16 @@ export default {
             } catch (error) {
                 //do nothing
             }
-        }
+        },
+        viewItemById(row) {
+            this.$router.push({ name: "OrderDetails", params: { id: this.results[row].idOrder, mode: 'read' } });
+        },
+        editItemById(row) {
+            this.$router.push({ name: "OrderDetails", params: { id: this.results[row].idOrder, mode: 'edit' } });
+        },
+        deleteItemById() {
+            // to call delete
+        },
 	}
 }
 </script>

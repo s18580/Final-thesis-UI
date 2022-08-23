@@ -22,6 +22,7 @@ import CustomerSearch from '@/components/Searchers/CustomerSearch.vue';
 import OrderSearch from '@/components/Searchers/OrderSearch.vue';
 import ValuationSearch from '@/components/Searchers/ValuationSearch.vue';
 import OrderDetails from '@/views/OrderDetails.vue';
+import RepresentativeDetails from '@/views/RepresentativeDetails.vue'
 
 import { useUserStore } from '@/stores/UserStore';
 
@@ -155,6 +156,13 @@ const children = [
     path: '/orderDetails:id',
     name: 'OrderDetails',
     component: OrderDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/representativeDetails:id',
+    name: 'RepresentativeDetails',
+    component: RepresentativeDetails,
     meta: { requiresAuth: true, authorize: ['Basic'] },
     props: true,
   },

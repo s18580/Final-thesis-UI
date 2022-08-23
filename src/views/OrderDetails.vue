@@ -336,7 +336,7 @@ export default {
         mode: {
             type: String,
             required: false,
-            default: "edit"
+            default: "read"
         },
     },
     components: { FileModal, WorkerModal, DeliveryAddress, OrderItemModal },

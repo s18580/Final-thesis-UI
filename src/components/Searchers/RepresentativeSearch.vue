@@ -198,7 +198,16 @@ export default {
             }
 
             this.showResults = true;
-        }
+        },
+        viewItemById(row) {
+            this.$router.push({ name: "RepresentativeDetails", params: { id: this.results[row].idRepresentative, mode: 'read' } });
+        },
+        editItemById(row) {
+            this.$router.push({ name: "RepresentativeDetails", params: { id: this.results[row].idRepresentative, mode: 'edit' } });
+        },
+        deleteItemById() {
+            // to call delete
+        },
 	}
 }
 </script>
