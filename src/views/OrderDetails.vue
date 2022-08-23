@@ -19,7 +19,6 @@
                     </div>
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
-                            class="some-space mb-4"
                             v-model="orderName"
                             :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
                             label="Nazwa"
@@ -27,14 +26,12 @@
                             :readonly = "readOnlyMode"
                         />
                         <va-input
-                            class="some-space mb-4"
                             v-model="orderIdentifier"
                             label="Identyfikator"
                             placeholder="Identyfikator zamówienia"
                             readonly
                         />
                         <va-input
-                            class="mb-4 some-space"
                             v-model="orderNote"
                             type="textarea"
                             :rules="[(v) => v.length < 256 || `Pole notatka przekroczyło limit znaków.`]"
@@ -42,41 +39,35 @@
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
-                            class="some-space mb-4"
                             v-model="expectedDeliveryDate"
                             label="Przewidywana data dostawy"
                             placeholder="Pożądana data dostawy"
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
-                            class="some-space mb-4"
                             v-model="deliveryDate"
                             label="Data dostawy"
                             placeholder="Data dostawy"
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
-                            class="some-space mb-4"
                             v-model="creationDate"
                             label="Data stworzenia zamówienia"
                             readonly
                         />
                         <va-date-input
-                            class="some-space mb-4"
                             v-model="offerValidityDate"
                             label="Termin ważności oferty"
                             placeholder="Termin ważności oferty"
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
-                            class="some-space mb-4"
                             v-model="submissionDate"
                             label="Data złożenia zamówienia"
                             placeholder="Data złożenia zamówienia"
                             :readonly = "readOnlyMode"
                         />
                         <va-select
-                            class="mb-4 some-space"
                             v-model="selectedRepresentative"
                             :options="representatives"
                             label="Osoba kontaktowa"
@@ -84,7 +75,6 @@
                             :readonly = "readOnlyMode"
                         />
                         <va-select
-                            class="mb-4 some-space"
                             v-model="selectedStatus"
                             :options="orderStatuses"
                             label="Status zamówienia"
@@ -419,8 +409,6 @@ export default {
         });
 
         this.idCustomer = representativeData.idCustomer;
-
-        console.log(orderData);
 
         if(this.mode === "read") {
             this.readOnlyMode = true;

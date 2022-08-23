@@ -11,21 +11,18 @@
                 <div id="representativeDetailsCoInner">
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
-                            class="some-space mb-4"
                             v-model="repName"
                             :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
                             label="Imię"
                             :readonly="readOnlyMode"
                         />
                         <va-input
-                            class="some-space mb-4"
                             v-model="repLastName"
                             :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
                             label="Nazwisko"
                             :readonly="readOnlyMode"
                         />
                         <va-input
-                            class="mb-4 some-space"
                             v-model="repEmail"
                             :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
                             label="Adres email"
@@ -33,7 +30,6 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
-                            class="mb-4 some-space"
                             v-model="repPhone"
                             :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
                             label="Telefon"
@@ -49,20 +45,17 @@
                 <va-divider />
                 <div id="ownerDetailsCoInner">
                     <va-input
-                        class="some-space mb-4"
                         v-model="ownerName"
                         :label="ownerNameLabel"
                         readonly
                     />
                     <va-input
-                        class="mb-4 some-space"
                         v-model="ownerEmail"
                         :label="ownerEmailLabel"
                         :placeholder="ownerEmailLabel"
                         readonly
                     />
                     <va-input
-                        class="mb-4 some-space"
                         v-model="ownerPhone"
                         :label="ownerPhoneLabel"
                         :placeholder="ownerPhoneLabel"
@@ -97,11 +90,11 @@
                                 </va-list-item-label>
                             </va-list-item-section>
 
-                            <va-list-item-section icon v-if="!readOnlyMode">
+                            <va-list-item-section icon>
                                 <va-popover message="Zobacz dane zamówienia">
                                     <va-button flat icon="visibility" @click="openOrder(item.idOrder)" />
                                 </va-popover>
-                                <va-popover message="Edytuj dane zamówienia">
+                                <va-popover message="Edytuj dane zamówienia" v-if="!readOnlyMode">
                                     <va-button flat icon="edit" @click="openEditOrder(item.idOrder)" />
                                 </va-popover>
                             </va-list-item-section>
@@ -130,11 +123,11 @@
                                 </va-list-item-label>
                             </va-list-item-section>
 
-                            <va-list-item-section icon v-if="!readOnlyMode">
+                            <va-list-item-section icon>
                                 <va-popover message="Zobacz dane zamówienia">
                                     <va-button flat icon="visibility" @click="openOrder(item.idOrder)" />
                                 </va-popover>
-                                <va-popover message="Edytuj dane zamówienia">
+                                <va-popover message="Edytuj dane zamówienia" v-if="!readOnlyMode">
                                     <va-button flat icon="edit" @click="openEditOrder(item.idOrder)" />
                                 </va-popover>
                             </va-list-item-section>
@@ -186,6 +179,12 @@ export default {
         }
     },
     async mounted() {
+        if(this.mode === "read") {
+            this.readOnlyMode = true;
+        } else if(this.mode === "edit") {
+            this.readOnlyMode = false;
+        }
+
         let callPath = "/Representative/getRepresentative?id=" + this.id;
         let representativeData = await CallAPI.get(callPath)
         .then(res => {
