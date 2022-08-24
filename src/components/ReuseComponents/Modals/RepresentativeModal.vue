@@ -62,6 +62,7 @@ export default {
             representativePhone: "",
             representativeEmail: "",
             IdForRepresentativeTable: null,
+            IdRepresentative: null,
 		}
 	},
 	methods: {
@@ -69,10 +70,11 @@ export default {
             if(this.validateForm()) {
                 let data = {
                     newRepresentative: {
+                        idRepresentative: this.IdRepresentative,
                         name: this.representativeName,
                         lastName: this.representativeLastName,
                         phoneNumber: this.representativePhone,
-                        addressEmail: this.representativeEmail,
+                        emailAddress: this.representativeEmail,
                     }
                 };
 
@@ -101,13 +103,15 @@ export default {
             this.representativeLastName = "";
             this.representativePhone = "";
             this.representativeEmail = "";
+            this.IdRepresentative = null;
         }else {
             this.buttonMessage = "Edytuj osobę kontaktową";
             this.representativeName = this.person.name;
             this.representativeLastName = this.person.lastName;
             this.representativePhone = this.person.phoneNumber;
-            this.representativeEmail = this.person.addressEmail;
+            this.representativeEmail = this.person.emailAddress;
             this.IdForRepresentativeTable = this.person.IdForRepresentativeTable;
+            this.IdRepresentative = this.person.idRepresentative;
         }
     }
 }

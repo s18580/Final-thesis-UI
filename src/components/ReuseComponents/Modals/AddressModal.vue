@@ -86,6 +86,7 @@ export default {
             addressStreetNumber: "",
             addressApartmentNumber: "",
             IdForAddressTable: null,
+            IdAddress: null,
 		}
 	},
 	methods: {
@@ -93,6 +94,7 @@ export default {
             if(this.validateForm()) {
                 let data = {
                     newAddress: {
+                        idAddress: this.IdAddress,
                         name: this.addressName,
                         country: this.addressCountry,
                         city: this.addressCity,
@@ -131,6 +133,7 @@ export default {
             this.addressStreet = "";
             this.addressStreetNumber = "";
             this.addressApartmentNumber = "";
+            this.IdAddress = null;
         }else {
             this.buttonMessage = "Edytuj adres";
             this.addressName = this.addr.name;
@@ -140,7 +143,8 @@ export default {
             this.addressStreet = this.addr.streetName;
             this.addressStreetNumber = this.addr.streetNumber;
             this.addressApartmentNumber = this.addr.apartmentNumber;
-            this.IdForAddressTable = this.addr.IdForAddressTable;
+            this.IdForAddressTable = this.addr.idForAddressTable;
+            this.IdAddress = this.addr.idAddress;
         }
     }
 }
