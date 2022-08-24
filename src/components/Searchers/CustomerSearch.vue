@@ -228,7 +228,16 @@ export default {
             }
 
             this.showResults = true;
-        }
+        },
+        viewItemById(row) {
+            this.$router.push({ name: "CustomerDetails", params: { id: this.results[row].idCustomer, mode: 'read' } });
+        },
+        editItemById(row) {
+            this.$router.push({ name: "CustomerDetails", params: { id: this.results[row].idCustomer, mode: 'edit' } });
+        },
+        deleteItemById() {
+            // to call delete
+        },
 	}
 }
 </script>
