@@ -264,18 +264,13 @@ export default {
     methods: {
         async submitForm() {
             if(this.validateForm) {
-                let callPath = "/Order/updateOrder"
+                let callPath = "/Representative/updateRepresentative"
                 let body = {
-                    IdOrder: this.id,
-                    Name: this.orderName,
-                    OrderSubmissionDate: this.submissionDate,
-                    Note: this.orderNote,
-                    IsAuction: this.isAuction,
-                    ExpectedDeliveryDate: this.expectedDeliveryDate,
-                    DeliveryDate: this.deliveryDate,
-                    OfferValidityDate: this.offerValidityDate,
-                    IdRepresentative: this.getIdByName("representative", this.selectedRepresentative),
-                    IdStatus: this.getIdByName("status", this.selectedStatus),
+                    IdRepresentative: this.id,
+                    Name: this.repName,
+                    LastName: this.repLastName,
+                    PhoneNumber: this.repPhone,
+                    EmailAddress: this.repEmail,
                 };
                 
                 await CallAPI.post(callPath, body)
