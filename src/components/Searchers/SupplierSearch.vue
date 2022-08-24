@@ -198,7 +198,16 @@ export default {
             }
 
             this.showResults = true;
-        }
+        },
+        viewItemById(row) {
+            this.$router.push({ name: "SupplierDetails", params: { id: this.results[row].idSupplier, mode: 'read' } });
+        },
+        editItemById(row) {
+            this.$router.push({ name: "SupplierDetails", params: { id: this.results[row].idSupplier, mode: 'edit' } });
+        },
+        deleteItemById() {
+            // to call delete
+        },
 	}
 }
 </script>

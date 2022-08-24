@@ -24,6 +24,7 @@ import ValuationSearch from '@/components/Searchers/ValuationSearch.vue';
 import OrderDetails from '@/views/OrderDetails.vue';
 import RepresentativeDetails from '@/views/RepresentativeDetails.vue';
 import CustomerDetails from '@/views/CustomerDetails.vue';
+import SupplierDetails from '@/views/SupplierDetails.vue';
 
 import { useUserStore } from '@/stores/UserStore';
 
@@ -171,6 +172,13 @@ const children = [
     path: '/customerDetails:id',
     name: 'CustomerDetails',
     component: CustomerDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/supplierDetails:id',
+    name: 'SupplierDetails',
+    component: SupplierDetails,
     meta: { requiresAuth: true, authorize: ['Basic'] },
     props: true,
   },
