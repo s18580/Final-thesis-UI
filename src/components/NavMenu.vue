@@ -224,7 +224,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Menedzer')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Manager')">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseStats" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
