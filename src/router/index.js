@@ -13,6 +13,7 @@ import OngoingOrders from '@/components/OngoingOrders.vue';
 import SupplierForm from '@/components/Forms/SupplierForm.vue';
 import SupplyForm from '@/components/Forms/SupplyForm.vue';
 import OrderForm from '@/components/Forms/OrderForm.vue';
+import ValuationForm from '@/components/Forms/ValuationForm.vue';
 import CustomerForm from '@/components/Forms/CustomerForm.vue';
 import WorkerForm from '@/components/Forms/WorkerForm.vue';
 import SupplierSearch from '@/components/Searchers/SupplierSearch.vue';
@@ -27,6 +28,7 @@ import RepresentativeDetails from '@/views/RepresentativeDetails.vue';
 import CustomerDetails from '@/views/CustomerDetails.vue';
 import SupplierDetails from '@/views/SupplierDetails.vue';
 import SupplyDetails from '@/views/SupplyDetails.vue';
+import ValuationDetails from '@/views/ValuationDetails.vue';
 
 import { useUserStore } from '@/stores/UserStore';
 
@@ -108,6 +110,12 @@ const children = [
     meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
+    path: '/valuationForm',
+    name: 'ValuationForm',
+    component: ValuationForm,
+    meta: { requiresAuth: true, authorize: ['Basic'] }
+  },
+  {
     path: '/workerForm:id?',
     name: 'WorkerForm',
     component: WorkerForm,
@@ -166,6 +174,13 @@ const children = [
     path: '/orderDetails:id',
     name: 'OrderDetails',
     component: OrderDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/valuationDetails:id',
+    name: 'ValuationDetails',
+    component: ValuationDetails,
     meta: { requiresAuth: true, authorize: ['Basic'] },
     props: true,
   },

@@ -191,7 +191,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseValuation">
-          <router-link :to="{ name: 'home'}">
+          <router-link :to="{ name: 'ValuationForm'}">
           <div class="px-2 py-3 item-content inner">
             Stwórz wycenę
           </div>
