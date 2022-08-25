@@ -11,6 +11,7 @@ import ProgramConstants from '@/components/ProgramConstants.vue';
 import UserMenegment from '@/components/UserMenegment.vue';
 import OngoingOrders from '@/components/OngoingOrders.vue';
 import SupplierForm from '@/components/Forms/SupplierForm.vue';
+import SupplyForm from '@/components/Forms/SupplyForm.vue';
 import OrderForm from '@/components/Forms/OrderForm.vue';
 import CustomerForm from '@/components/Forms/CustomerForm.vue';
 import WorkerForm from '@/components/Forms/WorkerForm.vue';
@@ -25,6 +26,7 @@ import OrderDetails from '@/views/OrderDetails.vue';
 import RepresentativeDetails from '@/views/RepresentativeDetails.vue';
 import CustomerDetails from '@/views/CustomerDetails.vue';
 import SupplierDetails from '@/views/SupplierDetails.vue';
+import SupplyDetails from '@/views/SupplyDetails.vue';
 
 import { useUserStore } from '@/stores/UserStore';
 
@@ -119,6 +121,12 @@ const children = [
     meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
+    path: '/supplyForm',
+    name: 'SupplyForm',
+    component: SupplyForm,
+    meta: { requiresAuth: true, authorize: ['Basic'] }
+  },
+  {
     path: '/supplySearch',
     name: 'SupplySearch',
     component: SupplySearch,
@@ -179,6 +187,13 @@ const children = [
     path: '/supplierDetails:id',
     name: 'SupplierDetails',
     component: SupplierDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/supplyDetails:id',
+    name: 'SupplyDetails',
+    component: SupplyDetails,
     meta: { requiresAuth: true, authorize: ['Basic'] },
     props: true,
   },
