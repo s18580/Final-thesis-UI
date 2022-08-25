@@ -205,8 +205,17 @@ export default {
         editItemById(row) {
             this.$router.push({ name: "RepresentativeDetails", params: { id: this.results[row].idRepresentative, mode: 'edit' } });
         },
-        deleteItemById() {
-            // to call delete
+        async deleteItemById(row) {
+            let callPath = "/Representative/deleteRepresentative";
+            let body = { data: { IdSupply: this.results[row].idRepresentative } };
+
+            await CallAPI.delete(callPath, body)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
         },
 	}
 }
