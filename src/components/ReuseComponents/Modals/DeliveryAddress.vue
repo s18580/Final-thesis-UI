@@ -1,7 +1,7 @@
 <template>
     <va-modal
         v-model="showModal"
-        title="Przydziel adres dostawy"
+        :title="message"
         hide-default-actions
         @click-outside="closeModal()"
     >
@@ -14,7 +14,7 @@
                     label="Adres"
                     noOptionsText="Brak adresów do wybrania"
                  />
-                <va-button type="submit" color="info" gradient class="my-3 sub">Przydziel adres dostawy</va-button>
+                <va-button type="submit" color="info" gradient class="my-3 sub"> {{ message }} </va-button>
             </va-form>
         </div>
     </va-modal>
@@ -29,7 +29,11 @@ export default {
   props: {
     idCustomer: {
         type: Number,
-        required: true,
+        required: false,
+    },
+    idSupplier: {
+        type: Number,
+        required: false,
     },
   },
   emits: ["createDeliveryAddress", "close"],
@@ -38,6 +42,7 @@ export default {
             showModal: true,
             rawAddresses: [],
             selectedAddress: "",
+            message: "",
 		}
 	},
     computed: {
@@ -79,14 +84,27 @@ export default {
     async mounted() {
         this.selectedAddress = "";
 
-        let callPath = "/Address/getAddressesByCustomer?id=" + this.idCustomer;
-        this.rawAddresses = await CallAPI.get(callPath)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-        });
+        if(this.idCustomer == null || this.idCustomer == undefined) {
+            this.message = "Przydziel adres odbioru";
+            let callPath = "/Address/getAddressesBySupplier?id=" + this.idSupplier;
+            this.rawAddresses = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        } else {
+            this.message = "Przydziel adres dostawy";
+            let callPath = "/Address/getAddressesByCustomer?id=" + this.idCustomer;
+            this.rawAddresses = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        }
     }
 }
 </script>
