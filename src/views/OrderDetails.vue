@@ -19,6 +19,7 @@
                     </div>
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
+                            class="inputWidth"
                             v-model="orderName"
                             :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
                             label="Nazwa"
@@ -26,12 +27,14 @@
                             :readonly = "readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="orderIdentifier"
                             label="Identyfikator"
                             placeholder="Identyfikator zamówienia"
                             readonly
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="orderNote"
                             type="textarea"
                             :rules="[(v) => v.length < 256 || `Pole notatka przekroczyło limit znaków.`]"
@@ -39,35 +42,41 @@
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
+                            class="inputWidth"
                             v-model="expectedDeliveryDate"
                             label="Przewidywana data dostawy"
                             placeholder="Pożądana data dostawy"
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
+                            class="inputWidth"
                             v-model="deliveryDate"
                             label="Data dostawy"
                             placeholder="Data dostawy"
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
+                            class="inputWidth"
                             v-model="creationDate"
                             label="Data stworzenia zamówienia"
                             readonly
                         />
                         <va-date-input
+                            class="inputWidth"
                             v-model="offerValidityDate"
                             label="Termin ważności oferty"
                             placeholder="Termin ważności oferty"
                             :readonly = "readOnlyMode"
                         />
                         <va-date-input
+                            class="inputWidth"
                             v-model="submissionDate"
                             label="Data złożenia zamówienia"
                             placeholder="Data złożenia zamówienia"
                             :readonly = "readOnlyMode"
                         />
                         <va-select
+                            class="inputWidth"
                             v-model="selectedRepresentative"
                             :options="representatives"
                             label="Osoba kontaktowa"
@@ -75,13 +84,14 @@
                             :readonly = "readOnlyMode"
                         />
                         <va-select
+                            class="inputWidth"
                             v-model="selectedStatus"
                             :options="orderStatuses"
                             label="Status zamówienia"
                             noOptionsText="Brak statusów do wybrania"
                             :readonly = "readOnlyMode"
                         />
-                        <va-button v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
+                        <va-button id="editButton" v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
                     </va-form>
                 </div>
             </div>
@@ -105,10 +115,6 @@
                             <va-list-item-section>
                                 <va-list-item-label>
                                     {{ item.name }}
-                                </va-list-item-label>
-
-                                <va-list-item-label caption>
-                                    {{  }}
                                 </va-list-item-label>
                             </va-list-item-section>
 
@@ -952,13 +958,14 @@ export default {
 <style scoped>
 #background {
     display: grid;
-    grid-template-columns: 50px 1fr 1fr 1fr 50px;
+    grid-template-columns: 50px 1fr 1fr 50px;
     grid-template-rows: auto;
     grid-template-areas: 
-    ". header header header ."
-    ". main main sidebarA ."
-    ". sidebarC sidebarC sidebarB ."
-    ". sidebarD sidebarD sidebarB .";
+    ". header header ."
+    ". main sidebarA ."
+    ". main sidebarB ."
+    ". sidebarC sidebarC ."
+    ". sidebarD sidebarD .";
     grid-gap: 30px;
 }
 
@@ -1027,7 +1034,21 @@ export default {
     margin: 10px;
 }
 
+#form {
+    display: flex;
+    flex-direction: column;
+}
 
+.inputWidth {
+    margin: 10px;
+    width: 300px;
+    align-self: center;
+}
+
+#editButton{
+    width: 150px;
+    align-self: center;
+}
 
 
 
