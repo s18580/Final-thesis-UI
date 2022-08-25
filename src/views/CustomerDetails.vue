@@ -11,6 +11,7 @@
                 <div id="customerDetailsCoInner">
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
+                            class="inputWidth"
                             v-if="!isCompanyCustomer"
                             v-model="customerName"
                             :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
@@ -19,6 +20,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-if="!isCompanyCustomer"
                             v-model="customerLastName"
                             :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
@@ -27,6 +29,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-if="isCompanyCustomer"
                             v-model="companyName"
                             :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -35,6 +38,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-if="isCompanyCustomer"
                             v-model="nip"
                             :rules="[(v) => v.length === 10 || `Pole nip jest nieprawidłowe.`]"
@@ -43,6 +47,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-if="isCompanyCustomer"
                             v-model="regon"
                             :rules="[(v) => v.length > 8 || `Pole regon jest nieprawidłowe.`, (v) => v.length < 15 || `Pole regon przekroczyło limit znaków.`]"
@@ -51,6 +56,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="companyPhone"
                             :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
                             label="Telefon"
@@ -58,6 +64,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="companyEmail"
                             :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
                             label="Email"
@@ -65,13 +72,14 @@
                             :readonly="readOnlyMode"
                         />
                         <va-select
+                            class="inputWidth"
                             v-model="selectedWorker"
                             :options="workers"
                             label="Pracownik"
                             noOptionsText="Brak pracowniów do wybrania"
                             :readonly="readOnlyMode"
                         />
-                        <va-button v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
+                        <va-button id="editButton" v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
                     </va-form>
                 </div>
             </div>
@@ -89,7 +97,7 @@
                             :key="representative.idRepresentative"
                         >
                             <va-list-item-section avatar>
-                                <va-avatar color="#6B5B95" icon="list_alt" />
+                                <va-avatar color="#6B5B95" icon="person" />
                             </va-list-item-section>
 
                             <va-list-item-section>
@@ -518,7 +526,19 @@ export default {
 	border-radius: 25px;
 }
 
+#form {
+    display: flex;
+    flex-direction: column;
+}
+
 .inputWidth {
+    margin: 10px;
     width: 250px;
+    align-self: center;
+}
+
+#editButton{
+    width: 150px;
+    align-self: center;
 }
 </style>

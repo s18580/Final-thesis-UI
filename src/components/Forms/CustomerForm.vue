@@ -92,47 +92,85 @@
             </div>
         </div>
         <div id="representativesCoOuter">
-            <h3>Osoby kontaktowe klienta</h3>
+            <h3> Osoby kontaktowe klienta  </h3>
             <va-divider />
             <div id="representativesCoInner">
-                <div class="objects-card-wrapper">
-					<h6>Lista osób kontaktowych:</h6>
-					<div class="objects-card">
-						<div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
-                            <div class="my-1">
+                <va-list>
+                    <va-list-label>
+                        Lista osób kontaktowych
+                    </va-list-label>
+
+                    <va-list-item
+                        v-for="person in contactPepole"
+                        :key="person.IdForRepresentativeTable"
+                    >
+                        <va-list-item-section avatar>
+                            <va-avatar color="#6B5B95" icon="person" />
+                        </va-list-item-section>
+
+                        <va-list-item-section>
+                            <va-list-item-label>
                                 {{ person.name + ' ' + person.lastName }}
-                            </div>
-                            <div class="card-icons">
-                                <va-icon @click="editContactInModal(person)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                <va-icon @click="removeContact(person.IdForRepresentativeTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                            </div>
-						</div>
-					</div>
-                    <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
-                    <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
-				</div>
+                            </va-list-item-label>
+
+                            <va-list-item-label caption>
+                                {{ person.emailAddress }}
+                            </va-list-item-label>
+                        </va-list-item-section>
+
+                        <va-list-item-section icon>
+                            <va-popover message="Edytuj dane osoby" v-if="!readOnlyMode">
+                                <va-button flat icon="edit" @click="editContactInModal(person)" />
+                            </va-popover>
+                            <va-popover message="Usuń osobę" v-if="!readOnlyMode">
+                                <va-button flat icon="delete" @click="removeContact(person.IdForRepresentativeTable)" />
+                            </va-popover>
+                        </va-list-item-section>
+                    </va-list-item>
+                </va-list>
+                <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
             </div>
         </div>
         <div id="adressesCoOuter">
             <h3>Adresy klienta</h3>
             <va-divider />
             <div id="adressesCoInner">
-                <div class="objects-card-wrapper">
-					<h6>Lista adresów:</h6>
-					<div class="objects-card">
-						<div v-for="address in customerAddresses" :key="address.IdForAddressTable" class="card-items">
-                            <div class="my-1">
+                <va-list>
+                    <va-list-label>
+                        Lista adresów
+                    </va-list-label>
+
+                    <va-list-item
+                        v-for="address in customerAddresses"
+                        :key="address.IdForAddressTable"
+                    >
+                        <va-list-item-section avatar>
+                            <va-avatar color="#6B5B95" icon="home" />
+                        </va-list-item-section>
+
+                        <va-list-item-section>
+                            <va-list-item-label>
                                 {{ address.name }}
-                            </div>
-                            <div class="card-icons">
-                                <va-icon @click="editAddressInModal(address)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                <va-icon @click="removeAddress(address.IdForAddressTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                            </div>
-						</div>
-					</div>
-                    <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
-                    <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
-				</div>
+                            </va-list-item-label>
+
+                            <va-list-item-label caption>
+                                {{ address.streetName + " " + address.streetNumber + ", " + address.city }}
+                            </va-list-item-label>
+                        </va-list-item-section>
+
+                        <va-list-item-section icon>
+                            <va-popover message="Edytuj dane adresu" v-if="!readOnlyMode">
+                                <va-button flat icon="edit" @click="editAddressInModal(address)" />
+                            </va-popover>
+                            <va-popover message="Usuń adres" v-if="!readOnlyMode">
+                                <va-button flat icon="delete" @click="removeAddress(address.IdForAddressTable)" />
+                            </va-popover>
+                        </va-list-item-section>
+                    </va-list-item>
+                </va-list>
+                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
+                <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
             </div>
         </div>
 	</div>
@@ -373,6 +411,7 @@ export default {
 
 #representativesCoInner {
     padding-top: 5px;
+    padding: 15px;
     background: white;
 	border-radius: 25px;
 }
@@ -383,6 +422,7 @@ export default {
 
 #adressesCoInner {
     padding-top: 5px;
+    padding: 15px;
     background: white;
 	border-radius: 25px;
 }
