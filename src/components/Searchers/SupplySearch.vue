@@ -181,7 +181,25 @@ export default {
             } catch (error) {
                 //do nothing
             }
-        }
+        },
+        viewItemById(row) {
+            this.$router.push({ name: "SupplyDetails", params: { id: this.results[row].idSupply, mode: 'read' } });
+        },
+        editItemById(row) {
+            this.$router.push({ name: "SupplyDetails", params: { id: this.results[row].idSupply, mode: 'edit' } });
+        },
+        async deleteItemById(row) {
+            let callPath = "/Supply/deleteSupply";
+            let body = { data: { IdSupply: this.results[row].idSupply } };
+
+            await CallAPI.delete(callPath, body)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        },
 	},
     async mounted() {
         let dictionaryData = [
