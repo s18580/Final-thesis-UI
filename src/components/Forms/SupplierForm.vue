@@ -48,44 +48,74 @@
             <h3>Osoby kontaktowe dostawcy</h3>
             <va-divider />
             <div id="representativesCoInner">
-                <div class="objects-card-wrapper">
-					<h6>Lista osób kontaktowych:</h6>
-					<div class="objects-card">
-						<div v-for="person in contactPepole" :key="person.IdForRepresentativeTable" class="card-items">
-                            <div class="my-1">
+                <va-list id="representativeList">
+                    <va-list-label>
+                        Lista osób kontaktowych
+                    </va-list-label>
+
+                    <va-list-item
+                        v-for="person in contactPepole"
+                        :key="person.IdForRepresentativeTable"
+                    >
+                        <va-list-item-section avatar>
+                            <va-avatar color="#6B5B95" icon="person" />
+                        </va-list-item-section>
+
+                        <va-list-item-section>
+                            <va-list-item-label>
                                 {{ person.name + ' ' + person.lastName }}
-                            </div>
-                            <div class="card-icons">
-                                <va-icon @click="editContactInModal(person)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                <va-icon @click="removeContact(person.IdForRepresentativeTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                            </div>
-						</div>
-					</div>
-                    <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
-                    <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
-				</div>
+                            </va-list-item-label>
+                        </va-list-item-section>
+
+                        <va-list-item-section icon>
+                            <va-popover message="Edytuj osobę kontaktową">
+                                <va-button flat icon="edit" @click="editContactInModal(person)" />
+                            </va-popover>
+                            <va-popover message="Usuń osobę kontaktową">
+                                <va-button flat icon="delete" @click="removeContact(person.IdForRepresentativeTable)" />
+                            </va-popover>
+                        </va-list-item-section>
+                    </va-list-item>
+                </va-list>
+                <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
             </div>
         </div>
         <div id="adressesCoOuter">
             <h3>Adresy dostawcy</h3>
             <va-divider />
             <div id="adressesCoInner">
-                <div class="objects-card-wrapper">
-					<h6>Lista adresów:</h6>
-					<div class="objects-card">
-						<div v-for="address in suplierAddresses" :key="address.IdForAddressTable" class="card-items">
-                            <div class="my-1">
+                <va-list id="addressList">
+                    <va-list-label>
+                        Lista adresów
+                    </va-list-label>
+
+                    <va-list-item
+                        v-for="address in suplierAddresses"
+                        :key="address.IdForAddressTable"
+                    >
+                        <va-list-item-section avatar>
+                            <va-avatar color="#6B5B95" icon="home" />
+                        </va-list-item-section>
+
+                        <va-list-item-section>
+                            <va-list-item-label>
                                 {{ address.name }}
-                            </div>
-                            <div class="card-icons">
-                                <va-icon @click="editAddressInModal(address)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                <va-icon @click="removeAddress(address.IdForAddressTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                            </div>
-						</div>
-					</div>
-                    <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
+                            </va-list-item-label>
+                        </va-list-item-section>
+
+                        <va-list-item-section icon>
+                            <va-popover message="Edytuj adres">
+                                <va-button flat icon="edit" @click="editAddressInModal(address)" />
+                            </va-popover>
+                            <va-popover message="Usuń adres">
+                                <va-button flat icon="delete" @click="removeAddress(address.IdForAddressTable)" />
+                            </va-popover>
+                        </va-list-item-section>
+                    </va-list-item>
+                </va-list>
+                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
                     <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
-				</div>
             </div>
         </div>
 	</div>
@@ -98,7 +128,7 @@ import AddressModal from '@/components/ReuseComponents/Modals/AddressModal.vue';
 import RepresentativeModal from '@/components/ReuseComponents/Modals/RepresentativeModal.vue';
 
 export default {
-  name: 'AddSupplier',
+  name: 'SupplierForm',
 	data() {
 		return {
             addressCounter: 0,
@@ -280,6 +310,7 @@ export default {
 #representativesCoInner {
     padding-top: 5px;
     background: white;
+    padding-bottom: 15px;
 	border-radius: 25px;
 }
 
@@ -290,6 +321,7 @@ export default {
 #adressesCoInner {
     padding-top: 5px;
     background: white;
+    padding-bottom: 15px;
 	border-radius: 25px;
 }
 
@@ -300,6 +332,14 @@ export default {
     justify-items: center;
     align-items: center;
     height: 360px;
+}
+
+#addressList {
+    padding: 20px;
+}
+
+#representativeList {
+    padding: 20px;
 }
 
 .gridSpreadC {
