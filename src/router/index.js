@@ -11,7 +11,9 @@ import ProgramConstants from '@/components/ProgramConstants.vue';
 import UserMenegment from '@/components/UserMenegment.vue';
 import OngoingOrders from '@/components/OngoingOrders.vue';
 import SupplierForm from '@/components/Forms/SupplierForm.vue';
+import SupplyForm from '@/components/Forms/SupplyForm.vue';
 import OrderForm from '@/components/Forms/OrderForm.vue';
+import ValuationForm from '@/components/Forms/ValuationForm.vue';
 import CustomerForm from '@/components/Forms/CustomerForm.vue';
 import WorkerForm from '@/components/Forms/WorkerForm.vue';
 import SupplierSearch from '@/components/Searchers/SupplierSearch.vue';
@@ -22,6 +24,11 @@ import CustomerSearch from '@/components/Searchers/CustomerSearch.vue';
 import OrderSearch from '@/components/Searchers/OrderSearch.vue';
 import ValuationSearch from '@/components/Searchers/ValuationSearch.vue';
 import OrderDetails from '@/views/OrderDetails.vue';
+import RepresentativeDetails from '@/views/RepresentativeDetails.vue';
+import CustomerDetails from '@/views/CustomerDetails.vue';
+import SupplierDetails from '@/views/SupplierDetails.vue';
+import SupplyDetails from '@/views/SupplyDetails.vue';
+import ValuationDetails from '@/views/ValuationDetails.vue';
 
 import { useUserStore } from '@/stores/UserStore';
 
@@ -103,6 +110,12 @@ const children = [
     meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
+    path: '/valuationForm',
+    name: 'ValuationForm',
+    component: ValuationForm,
+    meta: { requiresAuth: true, authorize: ['Basic'] }
+  },
+  {
     path: '/workerForm:id?',
     name: 'WorkerForm',
     component: WorkerForm,
@@ -113,6 +126,12 @@ const children = [
     path: '/supplierSearch',
     name: 'SupplierSearch',
     component: SupplierSearch,
+    meta: { requiresAuth: true, authorize: ['Basic'] }
+  },
+  {
+    path: '/supplyForm',
+    name: 'SupplyForm',
+    component: SupplyForm,
     meta: { requiresAuth: true, authorize: ['Basic'] }
   },
   {
@@ -155,6 +174,41 @@ const children = [
     path: '/orderDetails:id',
     name: 'OrderDetails',
     component: OrderDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/valuationDetails:id',
+    name: 'ValuationDetails',
+    component: ValuationDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/representativeDetails:id',
+    name: 'RepresentativeDetails',
+    component: RepresentativeDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/customerDetails:id',
+    name: 'CustomerDetails',
+    component: CustomerDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/supplierDetails:id',
+    name: 'SupplierDetails',
+    component: SupplierDetails,
+    meta: { requiresAuth: true, authorize: ['Basic'] },
+    props: true,
+  },
+  {
+    path: '/supplyDetails:id',
+    name: 'SupplyDetails',
+    component: SupplyDetails,
     meta: { requiresAuth: true, authorize: ['Basic'] },
     props: true,
   },
