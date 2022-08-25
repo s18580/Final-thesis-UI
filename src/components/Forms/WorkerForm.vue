@@ -83,21 +83,34 @@
             <h3>Dostępy użytkownika</h3>
             <va-divider />
             <div id="rolesCoInner">
-                <div class="objects-card-wrapper">
-					<h6>Role użytkownika:</h6>
-					<div class="objects-card">
-						<div v-for="role in workerRoles" :key="role.idRole" class="card-items">
-                            <div class="my-1">
+                <va-list>
+                    <va-list-label>
+                        Role użytkownika
+                    </va-list-label>
+
+                    <va-list-item
+                        v-for="role in workerRoles"
+                        :key="role.idRole"
+                    >
+                        <va-list-item-section avatar>
+                            <va-avatar color="#6B5B95" icon="admin_panel_settings" />
+                        </va-list-item-section>
+
+                        <va-list-item-section>
+                            <va-list-item-label>
                                 {{ role.name }}
-                            </div>
-                            <div class="card-icons">
-                                <va-icon @click="removeRole(role)" color="#1b63b1" class="material-icons">delete</va-icon>
-                            </div>
-						</div>
-					</div>
-                    <va-button @click="showModal=true" type="button" color="success" gradient>Dodaj rolę</va-button>
-                    <RoleModal v-if="showModal" @close="showModal=false" @addRole="addRole($event)"/>
-				</div>
+                            </va-list-item-label>
+                        </va-list-item-section>
+
+                        <va-list-item-section icon>
+                            <va-popover message="Usuń rolę" v-if="!readOnlyMode">
+                                <va-button flat icon="delete" @click="removeRole(role)" />
+                            </va-popover>
+                        </va-list-item-section>
+                    </va-list-item>
+                </va-list>
+                <va-button @click="showModal=true" type="button" color="success" gradient>Dodaj rolę</va-button>
+                <RoleModal v-if="showModal" @close="showModal=false" @addRole="addRole($event)"/>
             </div>
         </div>
     </div>
@@ -399,6 +412,7 @@ export default {
 
 #rolesCoInner {
     padding-top: 5px;
+    padding: 15px;
     background: white;
 	border-radius: 25px;
 }

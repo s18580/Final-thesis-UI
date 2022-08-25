@@ -11,6 +11,7 @@
                 <div id="supplierDetailsCoInner">
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
+                            class="inputWidth"
                             v-model="supplierName"
                             :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
                             label="Nazwa"
@@ -18,6 +19,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="supplierPhone"
                             :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
                             label="Telefon"
@@ -25,6 +27,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="supplierEmail"
                             :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
                             label="Email"
@@ -32,6 +35,7 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="supplierDescription"
                             :rules="[(v) => v.length < 256 || `Pole opis przekroczyło limit znaków.`]"
                             label="Opis"
@@ -39,7 +43,7 @@
                             placeholder="Opis dostawcy"
                             :readonly="readOnlyMode"
                         />
-                        <va-button v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
+                        <va-button id="editButton" v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
                     </va-form>
                 </div>
             </div>
@@ -57,7 +61,7 @@
                             :key="representative.idRepresentative"
                         >
                             <va-list-item-section avatar>
-                                <va-avatar color="#6B5B95" icon="list_alt" />
+                                <va-avatar color="#6B5B95" icon="person" />
                             </va-list-item-section>
 
                             <va-list-item-section>
@@ -406,6 +410,11 @@ export default {
 	border-radius: 25px;
 }
 
+#form {
+    display: flex;
+    flex-direction: column;
+}
+
 #supplierDetailsCo {
     grid-area: main;
 }
@@ -437,6 +446,13 @@ export default {
 }
 
 .inputWidth {
+    margin: 10px;
     width: 250px;
+    align-self: center;
+}
+
+#editButton{
+    width: 150px;
+    align-self: center;
 }
 </style>

@@ -11,18 +11,21 @@
                 <div id="representativeDetailsCoInner">
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
+                            class="inputWidth"
                             v-model="repName"
                             :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
                             label="Imię"
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="repLastName"
                             :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
                             label="Nazwisko"
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="repEmail"
                             :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
                             label="Adres email"
@@ -30,13 +33,14 @@
                             :readonly="readOnlyMode"
                         />
                         <va-input
+                            class="inputWidth"
                             v-model="repPhone"
                             :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
                             label="Telefon"
                             placeholder="Telefon"
                             :readonly="readOnlyMode"
                         />
-                        <va-button v-if="!readOnlyMode" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
+                        <va-button v-if="!readOnlyMode" id="editButton" @click="submitForm()" color="info" gradient class="my-3">Edytuj dane</va-button>
                     </va-form>
                 </div>
             </div>
@@ -45,17 +49,20 @@
                 <va-divider />
                 <div id="ownerDetailsCoInner">
                     <va-input
+                        class="inputWidth"
                         v-model="ownerName"
                         :label="ownerNameLabel"
                         readonly
                     />
                     <va-input
+                        class="inputWidth"
                         v-model="ownerEmail"
                         :label="ownerEmailLabel"
                         :placeholder="ownerEmailLabel"
                         readonly
                     />
                     <va-input
+                        class="inputWidth"
                         v-model="ownerPhone"
                         :label="ownerPhoneLabel"
                         :placeholder="ownerPhoneLabel"
@@ -77,7 +84,7 @@
                             :key="item.idOrder"
                         >
                             <va-list-item-section avatar>
-                                <va-avatar color="#6B5B95" icon="list_alt" />
+                                <va-avatar color="#6B5B95" icon="grading" />
                             </va-list-item-section>
 
                             <va-list-item-section>
@@ -110,7 +117,7 @@
                             :key="item.idSupply"
                         >
                             <va-list-item-section avatar>
-                                <va-avatar color="#6B5B95" icon="list_alt" />
+                                <va-avatar color="#6B5B95" icon="grading" />
                             </va-list-item-section>
 
                             <va-list-item-section>
@@ -340,6 +347,8 @@ export default {
     padding: 20px;
     background: white;
 	border-radius: 25px;
+    display: flex;
+    flex-direction: column;
 }
 
 #itemsCo {
@@ -352,7 +361,19 @@ export default {
 	border-radius: 25px;
 }
 
+#form {
+    display: flex;
+    flex-direction: column;
+}
+
 .inputWidth {
-    width: 250px;
+    margin: 10px;
+    width: 300px;
+    align-self: center;
+}
+
+#editButton{
+    width: 150px;
+    align-self: center;
 }
 </style>
