@@ -113,14 +113,6 @@
                                     :rules="[(v) => v > 0 || `Wprowadź poprawną ilość akruszy`, (v) => v != '' || `Wprowadź poprawną ilość akruszy`]"
                                     placeholder="Ilość arkuszy"
                                 />
-                                <va-select
-                                    v-if="showCoverForm"
-                                    class="inputWidth"
-                                    v-model="selectedBinding"
-                                    :options="bindings"
-                                    label="Typ szycia"
-                                    noOptionsText="Brak typów szycia do wybrania"
-                                />
                                 <va-input
                                     class="inputWidth"
                                     v-model="isnideOther"
@@ -208,6 +200,13 @@
                                     label="Ilość arkuszy"
                                     :rules="[(v) => v > 0 || `Wprowadź poprawną ilość akruszy`, (v) => v != '' || `Wprowadź poprawną ilość akruszy`]"
                                     placeholder="Ilość arkuszy"
+                                />
+                                <va-select
+                                    class="inputWidth"
+                                    v-model="selectedBinding"
+                                    :options="bindings"
+                                    label="Typ szycia"
+                                    noOptionsText="Brak typów szycia do wybrania"
                                 />
                                 <va-input
                                     class="inputWidth"
@@ -630,21 +629,104 @@ export default {
             this.coverColorCounter = savedValuation.coverColorCounter;
             this.selectedBinding = savedValuation.selectedBinding;
         },
-
-
-
         calcPrices() {
             this.finalPrice = 20458; // remove and add some calc flow
             if(this.mainCirculation != '' && this.mainCirculation != null && this.mainCirculation > 0 && this.mainCirculation != undefined) {
                 this.unitPrice = this.finalPrice / this.mainCirculation;
             }
         },
-        submitForm() {
-            
+        async submitForm() {
+            if(this.validateForm) {
+                const userStore = useUserStore();
+
+                let orderItemId = "";
+                if(this.saveButtonMessage == 'Zapisz wycenę bez przedmiotu zamówienia') {
+                    orderItemId = null;
+                } else {
+                    orderItemId = this.rawOrderItems.find(element => element.name == this.selectedOrderItem).idOrderItem;
+                }
+
+                let callPath = "/Valuation/createValuation";
+                let body = {};
+
+                if(this.showCoverForm) {
+                    body = {
+                    Name: this.valuationName,
+                    Recipient: this.valuationRecipient,
+                    OfferValidityDate: this.offerValidity,
+                    InsideCirculation: this.insideCirculation,
+                    Capacity: this.insideCapacity,
+                    InsideFormat: this.insideFormat,
+                    CoverFormat: this.coverFormat,
+                    InsideSheetFormat: this.insideFormatSheet,
+                    CoverSheetFormat: this.coverFormatSheet,
+                    InsideSheetNumber: this.insideSheetNumber,
+                    CoverSheetNumber: this.coverSheetNumber,
+                    InsideOther: this.isnideOther,
+                    CoverOther: this.coverOther,
+                    CoverCirculation: this.coverCirculation,
+                    InsidePlateNumber: this.insidePlateNumber,
+                    CoverPlateNumber: this.coverPlateNumber,
+                    MainCirculation: this.mainCirculation,
+                    FinalPrice: this.finalPrice,
+                    IdAuthor: userStore.userId,
+                    IdOrderItem: orderItemId,
+                    IdBindingType: this.rawBindingType.find(element => element.name == this.selectedBinding).idBindingType,
+                };
+                } else {
+                    body = {
+                    Name: this.valuationName,
+                    Recipient: this.valuationRecipient,
+                    OfferValidityDate: this.offerValidity,
+                    InsideCirculation: this.insideCirculation,
+                    Capacity: this.insideCapacity,
+                    InsideFormat: this.insideFormat,
+                    CoverFormat: "",
+                    InsideSheetFormat: this.insideFormatSheet,
+                    CoverSheetFormat: "",
+                    InsideSheetNumber: this.insideSheetNumber,
+                    CoverSheetNumber: null,
+                    InsideOther: this.isnideOther,
+                    CoverOther: "",
+                    CoverCirculation: null,
+                    InsidePlateNumber: this.insidePlateNumber,
+                    CoverPlateNumber: null,
+                    MainCirculation: this.mainCirculation,
+                    FinalPrice: this.finalPrice,
+                    IdAuthor: userStore.userId,
+                    IdOrderItem: orderItemId,
+                    IdBindingType: this.rawBindingType.find(element => element.name == this.selectedBinding).idBindingType,
+                };
+                }
+
+                await CallAPI.post(callPath, body)
+                .then(res => {
+                    this.$vaToast.init({ message: 'Wycena została zapisana.', color: 'success', duration: 3000 })
+                    return res.data;
+                })
+                .catch(err => {
+                    if(err.message.includes("422")) {
+                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                    }else{
+                        this.$vaToast.init({ message: 'Błąd zapisu wyceny.', color: 'danger', duration: 3000 })
+                    }
+
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+            }
         },
+        validateForm(){
+            this.$refs.preDetailsform.validate();
+            this.$refs.detailsInsideform.validate();
+            this.$refs.detailsCoverform.validate();
+            
+            if(this.showCoverForm && this.selectedBinding == '') {
+                this.$vaToast.init({ message: 'Wybierz typ szycia.', color: 'danger', duration: 3000 })
+                return false;
+            }
 
-
-
+            return (this.isPreDetailsFormValidate && this.isDetailsInsideFormValidate && this.isDetailsCoverFormValidate);
+        },
         closeServiceModal() {
             this.showServiceModal = false;
             this.editedService = null;
