@@ -225,29 +225,14 @@
         </div>
       </li>
       <li class="nav-menu-item" v-if="checkIfAuthorized('Manager')">
-        <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseStats" role="button" aria-expanded="false" aria-controls="collapseExample">
-          <div>
+        <router-link :to="{ name: 'home'}">
+          <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-down" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07Z"/>
-          </svg>
-          Statystyki
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-          </svg>
-        </div>
-        <div class="collapse" id="collapseStats">
-          <router-link :to="{ name: 'home'}">
-          <div class="px-2 py-3 item-content inner">
+              <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm14.817 11.887a.5.5 0 0 0 .07-.704l-4.5-5.5a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61 4.15 5.073a.5.5 0 0 0 .704.07Z"/>
+            </svg>
             Statystyki biznesowe
           </div>
           </router-link>
-          <router-link :to="{ name: 'home'}">
-          <div class="px-2 py-3 item-content inner">
-            Statystyki systemowe
-          </div>
-          </router-link>
-        </div>
       </li>
       <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
         <router-link :to="{ name: 'RepresentativeSearch'}">
