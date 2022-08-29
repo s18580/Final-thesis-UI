@@ -81,16 +81,16 @@
                                 <va-input
                                     class="inputWidth"
                                     v-model="insideFormat"
-                                    label="Format użytku"
+                                    label="Format użytku (w mm)"
                                     :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
-                                    placeholder="Format użytku"
+                                    placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
                                     v-model="insideFormatSheet"
-                                    label="Format arkusza"
+                                    label="Format arkusza (w mm)"
                                     :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
-                                    placeholder="Format arkusza"
+                                    placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
@@ -176,16 +176,16 @@
                                 <va-input
                                     class="inputWidth"
                                     v-model="coverFormat"
-                                    label="Format użytku"
+                                    label="Format użytku (w mm)"
                                     :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
-                                    placeholder="Format użytku"
+                                    placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
                                     v-model="coverFormatSheet"
-                                    label="Format arkusza"
+                                    label="Format arkusza (w mm)"
                                     :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
-                                    placeholder="Format arkusza"
+                                    placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
