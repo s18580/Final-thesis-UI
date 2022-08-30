@@ -559,11 +559,25 @@ export default {
             }
 
             for(let i=0; i < this.selectedOrderItemData.colors.length; i++) {
-                let newColor = {
-                    name: this.selectedOrderItemData.colors[i].name,
-                };
+                if(!this.selectedOrderItemData.colors[i].isForCover) {
+                    let newColor = {
+                        name: this.selectedOrderItemData.colors[i].name,
+                        isForCover: this.selectedOrderItemData.colors[i].isForCover,
+                    };
 
-                this.addInsideColor({ newColor });
+                    this.addInsideColor({ newColor });
+                }
+            }
+
+            for(let i=0; i < this.selectedOrderItemData.colors.length; i++) {
+                if(this.selectedOrderItemData.colors[i].isForCover) {
+                    let newColor = {
+                        name: this.selectedOrderItemData.colors[i].name,
+                        isForCover: this.selectedOrderItemData.colors[i].isForCover,
+                    };
+
+                    this.addCoverColor({ newColor });
+                }
             }
 
             for(let i=0; i < this.selectedOrderItemData.papers.length; i++) {
@@ -591,21 +605,17 @@ export default {
             }
         },
         loadCopiedData() {
-            const userStore = useValuationStore();
-            let savedValuation = userStore.wholeValuation;
+            const valuationStore = useValuationStore();
+            let savedValuation = valuationStore.wholeValuation;
             
             this.insidePlateNumber = savedValuation.insidePlateNumber;
             this.coverPlateNumber = savedValuation.coverPlateNumber;
-            this.showOrderPicker = savedValuation.showOrderPicker;
-            this.showValuationPicker = savedValuation.showValuationPicker;
-            this.showValuationForm = savedValuation.showValuationForm;
             this.showCoverForm = savedValuation.showCoverForm;
-            this.showCoverColors = savedValuation.showCoverColors;
-            this.selectedOrder = savedValuation.selectedOrder;
-            this.selectedOrderItem = savedValuation.selectedOrderItem;
+            this.selectedOrder = "";
+            this.selectedOrderItem = "";
             this.valuationName = savedValuation.valuationName;
             this.valuationRecipient = savedValuation.valuationRecipient;
-            this.offerValidity = savedValuation.offerValidity;
+            this.offerValidity = new Date(Date.parse(savedValuation.offerValidity));
             this.insideFormat = savedValuation.insideFormat;
             this.insideFormatSheet = savedValuation.insideFormatSheet;
             this.insideCirculation = savedValuation.insideCirculation;
@@ -618,16 +628,55 @@ export default {
             this.coverSheetNumber = savedValuation.coverSheetNumber;
             this.coverOther = savedValuation.coverOther;
             this.mainCirculation = savedValuation.mainCirculation;
-            this.saveButtonMessage = savedValuation.saveButtonMessage;
-            this.insideColors = savedValuation.insideColors;
-            this.coverColors = savedValuation.coverColors;
-            this.papers = savedValuation.papers;
-            this.services = savedValuation.services;
-            this.serviceCounter = savedValuation.serviceCounter;
-            this.paperCounter = savedValuation.paperCounter;
-            this.insideColorCounter = savedValuation.insideColorCounter;
-            this.coverColorCounter = savedValuation.coverColorCounter;
+            this.serviceCounter = 0;
+            this.paperCounter = 0;
+            this.insideColorCounter = 0;
+            this.coverColorCounter = 0;
             this.selectedBinding = savedValuation.selectedBinding;
+
+            for(let i=0; i < savedValuation.insideColors.length; i++) {
+                let newColor = {
+                    name: savedValuation.insideColors[i].name,
+                };
+
+                this.addInsideColor({ newColor });
+            }
+
+            for(let i=0; i < savedValuation.coverColors.length; i++) {
+                let newColor = {
+                    name: savedValuation.coverColors[i].name,
+                    isForCover: savedValuation.coverColors[i].isForCover,
+                };
+
+                this.addCoverColor({ newColor });
+            }
+
+            for(let i=0; i < savedValuation.papers.length; i++) {
+                let newPaper = {
+                    name: savedValuation.papers[i].name,
+                    kind: savedValuation.papers[i].kind,
+                    sheetFormat: savedValuation.papers[i].sheetFormat,
+                    fiberDirection: savedValuation.papers[i].fiberDirection,
+                    opacity: savedValuation.papers[i].opacity,
+                    pricePerKilogram: savedValuation.papers[i].pricePerKilogram,
+                    quantity: savedValuation.papers[i].quantity
+                };
+
+                this.addPaper({ newPaper });
+            }
+
+            for(let i=0; i < savedValuation.services.length; i++) {
+                let newService = {
+                    serviceName: savedValuation.services[i].serviceName.name,
+                    name: savedValuation.services[i].name,
+                    price: savedValuation.services[i].price,
+                };
+
+                this.addService({ newService });
+            }
+
+            this.showValuationPicker = false;
+            this.showValuationForm = true;
         },
         calcPrices() {
             this.finalPrice = 20458; // remove and add some calc flow
