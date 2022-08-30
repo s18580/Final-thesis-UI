@@ -3,12 +3,7 @@ import { defineStore } from 'pinia'
 export const useValuationStore = defineStore('ValuationStore', {
     state: () => {
         return {
-            showOrderPicker: true,
-            showValuationPicker: false,
-            showValuationForm: false,
             showCoverForm: false,
-            selectedOrder: "",
-            selectedOrderItem: "",
 
             valuationName: "",
             valuationRecipient: "",
@@ -31,16 +26,12 @@ export const useValuationStore = defineStore('ValuationStore', {
             coverPlateNumber: "",
 
             mainCirculation: "",
-            saveButtonMessage: "",
+            finalPrice: "",
 
             insideColors: [],
             coverColors: [],
             papers: [],
             services: [],
-            serviceCounter: 0,
-            paperCounter: 0,
-            insideColorCounter: 0,
-            coverColorCounter: 0,
         }
     },
 
@@ -50,13 +41,7 @@ export const useValuationStore = defineStore('ValuationStore', {
                 insidePlateNumber: this.insidePlateNumber,
                 coverPlateNumber: this.coverPlateNumber,
                 selectedBinding: this.selectedBinding,
-                showOrderPicker: this.showOrderPicker,
-                showValuationPicker: this.showValuationPicker,
-                showValuationForm: this.showValuationForm,
                 showCoverForm: this.showCoverForm,
-                showCoverColors: this.showCoverColors,
-                selectedOrder: this.selectedOrder,
-                selectedOrderItem: this.selectedOrderItem,
                 valuationName: this.valuationName,
                 valuationRecipient: this.valuationRecipient,
                 offerValidity: this.offerValidity,
@@ -72,21 +57,42 @@ export const useValuationStore = defineStore('ValuationStore', {
                 coverSheetNumber: this.coverSheetNumber,
                 coverOther: this.coverOther,
                 mainCirculation: this.mainCirculation,
-                saveButtonMessage: this.saveButtonMessage,
                 insideColors: this.insideColors,
                 coverColors: this.coverColors,
                 papers: this.papers,
                 services: this.services,
-                serviceCounter: this.serviceCounter,
-                paperCounter: this.paperCounter,
-                insideColorCounter: this.insideColorCounter,
-                coverColorCounter: this.coverColorCounter,
+                finalPrice: this.finalPrice,
             }
         }
     },
 
     actions: {
-        
+        resetData() {
+            this.insidePlateNumber = "";
+            this.coverPlateNumber = "";
+            this.selectedBinding = "";
+            this.showCoverForm = false;
+            this.valuationName = "";
+            this.valuationRecipient = "";
+            this.offerValidity = new Date();
+            this.insideFormat = "";
+            this.insideFormatSheet = "";
+            this.insideCirculation = "";
+            this.insideCapacity = "";
+            this.insideSheetNumber = "";
+            this.isnideOther = "";
+            this.coverFormat = "";
+            this.coverFormatSheet = "";
+            this.coverCirculation = "";
+            this.coverSheetNumber = "";
+            this.coverOther = "";
+            this.mainCirculation = "";
+            this.insideColors = [];
+            this.coverColors = [];
+            this.papers = [];
+            this.services = [];
+            this.finalPrice = "";
+        }
     },
     persist: true,
   })
