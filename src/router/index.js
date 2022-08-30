@@ -23,7 +23,6 @@ import RepresentativeSearch from '@/components/Searchers/RepresentativeSearch.vu
 import CustomerSearch from '@/components/Searchers/CustomerSearch.vue';
 import OrderSearch from '@/components/Searchers/OrderSearch.vue';
 import ValuationSearch from '@/components/Searchers/ValuationSearch.vue';
-import BusinessStatistics from '@/components/BusinessStatistics.vue';
 import OrderDetails from '@/views/OrderDetails.vue';
 import RepresentativeDetails from '@/views/RepresentativeDetails.vue';
 import CustomerDetails from '@/views/CustomerDetails.vue';
@@ -79,12 +78,6 @@ const children = [
     name: 'ProgramConstants',
     component: ProgramConstants,
     meta: { requiresAuth: true, authorize: ['Admin'] }
-  },
-  {
-    path: '/businessStatistics',
-    name: 'BusinessStatistics',
-    component: BusinessStatistics,
-    meta: { requiresAuth: true, authorize: ['Manager'] }
   },
   {
     path: '/userMenegment',
