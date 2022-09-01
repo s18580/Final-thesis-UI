@@ -61,21 +61,29 @@
                     :options="orderItemTypes"
                     label="Typ przedmiotu zamówienia"
                     noOptionsText="Brak typów przedmiotu zamówienia do wybrania"
-                 />
-                 <va-select
+                />
+                <va-select
                     class="mb-4 some-space"
                     v-model="selectedDeliveryType"
                     :options="deliveryTypes"
                     label="Typ dostawy"
                     noOptionsText="Brak typów dostawy do wybrania"
-                 />
-                 <va-select
+                />
+                <va-select
+                    v-if="showValuationSelect"
+                    class="mb-4 some-space"
+                    v-model="selectedValuation"
+                    :options="valuations"
+                    label="Wybrana wycena"
+                    noOptionsText="Brak wycen do wybrania"
+                />
+                <va-select
                     class="mb-4 some-space"
                     v-model="selectedBindingTypes"
                     :options="bindingTypes"
                     label="Typ szycia"
                     noOptionsText="Brak typów szycia do wybrania"
-                 />
+                /> 
                 <va-input
                     class="mb-4 some-space"
                     v-model="comments"
@@ -215,6 +223,7 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
+            showValuationSelect: false,
             orderItemId: null,
             orderItemColors: [],
             showColorModal: false,
@@ -246,6 +255,8 @@ export default {
             selectedDeliveryType: "",
             rawBindingTypes: [],
             selectedBindingTypes: "Bez szycia",
+            selectedValuation: "",
+            rawValuations: [],
 		}
 	},
     computed: {
@@ -270,6 +281,13 @@ export default {
 
             return ["Bez szycia"].concat(resultArr);
         },
+        valuations() {
+            let resultArr = this.rawValuations.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        }
     },
 	methods: {
 		submitForm() {
@@ -278,7 +296,7 @@ export default {
 
                 let data = {
                     newOrderItem: {
-                        idOrderItem: this.idOrderItem,
+                        idOrderItem: this.orderItem.idOrderItem,
                         name: this.orderItemName,
                         comments: this.comments,
                         insideFormat: this.insideFormat,
@@ -290,6 +308,7 @@ export default {
                         selectedOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
                         selectedDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
                         selectedBindingTypes: this.getIdByName("bindingType", this.selectedBindingTypes),
+                        selectedValuation: this.getIdByName("valutaion", this.selectedValuation),
                         colors: this.orderItemColors,
                         papers: this.orderItemPapers,
                         services: this.orderItemService,
@@ -331,6 +350,8 @@ export default {
                     } else {
                         return this.rawBindingTypes.find(element => element.name == objName).idBindingType;
                     }
+                case "valutaion":
+                    return this.rawValuations.find(element => element.name == objName).idValuation;
             }
         },
         validateForm() {
@@ -441,8 +462,7 @@ export default {
             this.editedService = null;
         },
 	},
-    async mounted() {
-        console.log(this.orderItem); 
+    async mounted() { 
         let callPath = "/BindingType/getBindingTypes";
         this.rawBindingTypes = await CallAPI.get(callPath)
         .then(res => {
@@ -471,6 +491,7 @@ export default {
         });
 
         if(this.orderItem === null) {
+            this.showValuationSelect = false;
             this.buttonMessage = "Dodaj przedmiot zamówienia";
             this.orderItemName = "";
             this.comments = "";
@@ -492,6 +513,7 @@ export default {
             this.editedColor = null;
             this.orderItemId = null;
         }else {
+            this.showValuationSelect = true;
             this.buttonMessage = "Edytuj przedmiot zamówienia";
             if(this.orderItem.idOrderItem != undefined && this.orderItem.idOrderItem != null) {
                 this.orderItemId = this.orderItem.idOrderItem;
@@ -523,6 +545,27 @@ export default {
             } else{
                 this.expectedCompletionDate = null;
             }
+
+            callPath = "/Valuation/getValuationsWithoutOrderItem";
+            let valuationWithoutOrderItem = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            callPath = "/Valuation/getValuationsByOrderItem?id=" + this.orderItem.idOrderItem;
+            let valuationByOrderItem = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
+            this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
         }
     }
 }
