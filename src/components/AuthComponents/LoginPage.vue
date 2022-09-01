@@ -14,6 +14,7 @@
                     <div id="inputsContainer">
                         <va-form @submit.prevent="this.submitForm()" tag="form" ref="formLogin" @validation="isFormValidate = $event">
                         <va-input
+                            id="username"
                             class="some-space mb-4"
                             v-model="login"
                             :rules="[(v) => v.length > 0 || `Pole nazwa użytkownika nie może być puste.`, (v) => v.length < 256 || `Nazwa użytkownika przekroczyła limit znaków.`]"
@@ -21,6 +22,7 @@
                             placeholder="Nazwa użytkownika"
                         />
                         <va-input
+                            id="password"
                             class="some-space mb-4"
                             v-model="password"
                             type="password"
@@ -28,7 +30,7 @@
                             label="Hasło"
                             placeholder="Hasło"
                         />
-                        <va-button type="submit" color="info">Zaloguj</va-button>
+                        <va-button id="login" type="submit" color="info">Zaloguj</va-button>
                     </va-form>
                     </div>
                 </div>
