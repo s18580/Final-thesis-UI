@@ -93,7 +93,7 @@ export default {
 
                 // create params and command
                 this.fileName = this.selectedFile.name;
-                const params = { Bucket: this.albumBucketName, Key: this.fileName, Body: this.selectedFile };
+                const params = { Bucket: this.awsData.bucketName, Key: this.fileName, Body: this.selectedFile };
                 const command = new PutObjectCommand(params);
 
                 // send command and handle it correctly

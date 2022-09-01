@@ -625,7 +625,7 @@ export default {
             });
 
             // create params and command
-            const params = { Bucket: this.albumBucketName };
+            const params = { Bucket: this.awsData.bucketName };
             const command = new ListObjectsCommand(params);
 
             // send command and handle it correctly
@@ -648,7 +648,7 @@ export default {
             });
 
             // create params and command
-            const params = { Bucket: this.albumBucketName, Delete: { Objects: [ { Key: file.Key } ] }, Quiet: true };
+            const params = { Bucket: this.awsData.bucketName, Delete: { Objects: [ { Key: file.Key } ] }, Quiet: true };
             const command = new DeleteObjectsCommand(params);
 
             // send command and handle it correctly
