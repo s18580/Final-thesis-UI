@@ -8,6 +8,7 @@
         <div class="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalRepresentativeForm" tag="form" ref="modalRepresentativeForm" @validation="isRepresentativeFormValidate = $event">
                 <va-input
+                    id="repName"
                     class="some-space mb-4"
                     v-model="representativeName"
                     :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
@@ -15,6 +16,7 @@
                     placeholder="Imię"
                 />
                 <va-input
+                    id="repLastName"
                     class="some-space mb-4"
                     v-model="representativeLastName"
                     :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
@@ -22,6 +24,7 @@
                     placeholder="Nazwisko"
                 />
                 <va-input
+                    id="repPhone"
                     class="some-space mb-4"
                     v-model="representativePhone"
                     :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
@@ -29,13 +32,14 @@
                     placeholder="Telefon"
                 />
                 <va-input
+                    id="repEmail"
                     class="some-space mb-4"
                     v-model="representativeEmail"
                     :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
                     label="Email (opcjonalne)"
                     placeholder="Adres email"
                 />
-                <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="addRep" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
     </va-modal>

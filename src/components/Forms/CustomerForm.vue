@@ -10,6 +10,7 @@
             <div id="mainCoInner">
                 <div class="gridSpreadC">
                     <va-radio
+                        id="customerType"
                         v-for="(option, index) in radioOptions"
                         :key="index"
                         v-model="selectedRadioOption"
@@ -18,6 +19,7 @@
                 </div>
                 <va-form v-if="selectedRadioOption==='Firma'" @submit.prevent="this.submitForm()" id="companyForm" tag="form" ref="formCompany" @validation="isFormCompanyValidate = $event">
                     <va-input
+                        id="companyName"
                         class="gridSpreadC gridFirstR inputWidthLong"
                         v-model="companyName"
                         :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -25,6 +27,7 @@
                         placeholder="Nazwa firmy klienta"
                     />
                     <va-input
+                        id="companyNip"
                         class="gridFirstC gridSecondR inputWidth"
                         v-model="nip"
                         :rules="[(v) => v.length === 10 || `Pole nip jest nieprawidłowe.`]"
@@ -32,6 +35,7 @@
                         placeholder="NIP klienta"
                     />
                     <va-input
+                        id="companyRegon"
                         class="gridSecondC gridSecondR inputWidth"
                         v-model="regon"
                         :rules="[(v) => v.length > 8 || `Pole regon jest nieprawidłowe.`, (v) => v.length < 15 || `Pole regon przekroczyło limit znaków.`]"
@@ -39,6 +43,7 @@
                         placeholder="Regon klienta"
                     />
                     <va-input
+                        id="companyPhone"
                         class="gridSecondC gridThirdR inputWidth"
                         v-model="companyPhone"
                         :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
@@ -46,6 +51,7 @@
                         placeholder="Telefon firmowy klienta"
                     />
                     <va-input
+                        id="companyEmail"
                         class="gridFirstC gridThirdR inputWidth"
                         v-model="companyEmail"
                         :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
@@ -53,11 +59,12 @@
                         placeholder="Email firmowy klienta"
                     />
                     <div class="gridSpreadC gridFourthR">
-                        <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+                        <va-button id="addCustomer" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
                     </div>
                 </va-form>
                 <va-form v-if="selectedRadioOption==='Osoba prywatna'" @submit.prevent="this.submitForm()" id="privateForm" tag="form" ref="formPerson" @validation="isFormPersonValidate = $event">
                     <va-input
+                        id="customerName"
                         class="gridFirstC gridFirstR inputWidth"
                         v-model="customerName"
                         :rules="[(v) => v.length > 0 || `Pole imię nie może być puste.`, (v) => v.length < 33 || `Pole imię przekroczyło limit znaków.`]"
@@ -65,6 +72,7 @@
                         placeholder="Imię klienta"
                     />
                     <va-input
+                        id="customerLastName"
                         class="gridSecondC gridFirstR inputWidth"
                         v-model="customerLastName"
                         :rules="[(v) => v.length > 0 || `Pole nazwisko nie może być puste.`, (v) => v.length < 65 || `Pole nazwisko przekroczyło limit znaków.`]"
@@ -72,6 +80,7 @@
                         placeholder="Nazwisko klienta"
                     />
                     <va-input
+                        id="customerPhone"
                         class="gridSecondC gridSecondR inputWidth"
                         v-model="customerPhone"
                         :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
@@ -79,6 +88,7 @@
                         placeholder="Telefon klienta"
                     />
                     <va-input
+                        id="customerEmail"
                         class="gridFirstC gridSecondR inputWidth"
                         v-model="customerEmail"
                         :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
@@ -86,7 +96,7 @@
                         placeholder="Email klienta"
                     />
                     <div class="gridSpreadC gridThirdR">
-                        <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button> 
+                        <va-button id="addCustomer" type="submit" color="info" gradient class="my-3">Dodaj</va-button> 
                     </div>
                 </va-form>
             </div>
@@ -128,7 +138,7 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                <va-button id="addRepresentative" @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
                 <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
             </div>
         </div>
@@ -169,7 +179,7 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
+                <va-button id="addAddress" @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
                 <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
             </div>
         </div>
