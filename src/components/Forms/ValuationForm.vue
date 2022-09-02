@@ -102,7 +102,7 @@
                                 <va-input
                                     class="inputWidth"
                                     v-model="insideCapacity"
-                                    label="Objętość (opcjonalnie)"
+                                    label="Objętość"
                                     :rules="[(v) => v >= 0 || `Wprowadź poprawną objętość.`, (v) => v != '' || `Wprowadź poprawną objętość.`]"
                                     placeholder="Objętość"
                                 />
@@ -310,8 +310,56 @@
                     <va-button class="modalButton" @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
                 </div>
             </div>
+            <div v-if="showCoverForm">
+                <h5>Lista papierów okładki</h5>
+                <div id="papers">
+                    <va-list id="papersList">
+                        <va-list-item
+                            v-for="paper in coverPapers"
+                            :key="paper.IdPaper"
+                        >
+                            <va-list-item-section avatar>
+                                <va-avatar color="#6B5B95" icon="newspaper" />
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ paper.name }}
+                                </va-list-item-label>
+
+                                <va-list-item-label>
+                                    {{ paper.kind }}
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ paper.sheetFormat }}
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ paper.quantity }} szt.
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section icon>
+                                <va-popover message="Edytuj papier">
+                                    <va-button flat icon="edit" @click="editCoverPaperInModal(paper)" />
+                                </va-popover>
+                                <va-popover message="Usuń papier">
+                                    <va-button flat icon="delete" @click="deleteCoverPaper(paper)" />
+                                </va-popover>
+                            </va-list-item-section>
+                        </va-list-item>
+                    </va-list>
+                    <va-button class="modalButton" @click="showCoverPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
+                </div>
+            </div>
         </div>
         <PaperModal v-if="showPaperModal" :paper="editedPaper" @close="closePaperModal()" @createPaper="addPaper($event)" @editPaper="editPaper($event)"/>
+        <PaperModal v-if="showCoverPaperModal" :paper="editedCoverPaper" @close="closeCoverPaperModal()" @createPaper="addCoverPaper($event)" @editPaper="editCoverPaper($event)"/>
         <div v-if="showValuationForm" id="servicesCo">
             <div>
                 <h5>Usługi i ceny</h5>
@@ -439,17 +487,22 @@ export default {
             showCoverColorModal: false,
             showPaperModal: false,
             showServiceModal: false,
+            showCoverPaperModal: false,
             editedPaper: null,
             editedService: null,
+            editedCoverPaper: null,
             insideColors: [],
             coverColors: [],
             papers: [],
+            coverPapers: [],
             services: [],
             serviceCounter: 0,
             paperCounter: 0,
+            paperCoverCounter: 0,
             insideColorCounter: 0,
             coverColorCounter: 0,
 
+            printCalcConstant: 0.015,
             saveButtonMessage: "",
 		}
 	},
@@ -679,7 +732,46 @@ export default {
             this.showValuationForm = true;
         },
         calcPrices() {
-            this.finalPrice = 20458; // remove and add some calc flow
+            console.log(this.papers);
+            console.log(this.services);
+            let resultPrice = 0;
+
+            // paper and print price
+            for(let i=0; i<this.papers.length; i++){
+                let paper = this.papers[i];
+
+                let paperFormats = paper.sheetFormat.split('x');
+                let sheetArea = paperFormats[0] * paperFormats[1];
+
+                //paper price
+                resultPrice += sheetArea * paper.opacity * paper.pricePerKilogram * paper.quantity;
+
+                //print price
+                resultPrice += parseFloat(paper.quantity) * parseFloat(this.insidePlateNumber) * this.printCalcConstant;
+            }
+
+            // cover paper print price
+            if(this.showCoverForm && this.coverPapers.length !== 0){
+                for(let i=0; i<this.coverPapers.length; i++){
+                    let paper = this.coverPapers[i];
+
+                    let paperFormats = paper.sheetFormat.split('x');
+                    let sheetArea = paperFormats[0] * paperFormats[1];
+
+                    //paper price
+                    resultPrice += sheetArea * paper.opacity * paper.pricePerKilogram * paper.quantity;
+
+                    //print price
+                    resultPrice += parseFloat(paper.quantity) * parseFloat(this.insidePlateNumber) * this.printCalcConstant;
+                }
+            }
+
+            // services price
+            for(let i=0; i<this.services.length; i++){
+                resultPrice += parseFloat(this.services[i].price);
+            }
+            
+            this.finalPrice = resultPrice.toFixed(4);
             if(this.mainCirculation != '' && this.mainCirculation != null && this.mainCirculation > 0 && this.mainCirculation != undefined) {
                 this.unitPrice = this.finalPrice / this.mainCirculation;
             }
@@ -851,6 +943,48 @@ export default {
         },
         deletePaper(paper) {
             this.papers = this.papers.filter(item => item.IdForPaperTable !== paper.IdForPaperTable);
+        },
+        editCoverPaperInModal(paper) {
+            this.editedCoverPaper = paper;
+            this.showCoverPaperModal = true;
+        },
+        deleteCoverPaper(paper) {
+            this.coverPapers = this.coverPapers.filter(item => item.IdForPaperTable !== paper.IdForPaperTable);
+        },
+        addCoverPaper(e) {
+            let newPaper = {
+                IdForPaperTable: this.paperCounter,
+                idPaper: e.newPaper.IdPaper,
+                name: e.newPaper.name,
+                kind: e.newPaper.kind,
+                sheetFormat: e.newPaper.sheetFormat,
+                fiberDirection: e.newPaper.fiberDirection,
+                opacity: e.newPaper.opacity,
+                pricePerKilogram: e.newPaper.pricePerKilogram,
+                quantity: e.newPaper.quantity
+            };
+            this.coverPapers.push(newPaper);
+            this.paperCoverCounter++;
+        },
+        editCoverPaper(e) {
+            for(const obj of this.coverPapers){
+                if (obj.IdForPaperTable === e.newPaper.IdForPaperTable) {
+                    obj.name = e.newPaper.name;
+                    obj.kind = e.newPaper.kind;
+                    obj.sheetFormat = e.newPaper.sheetFormat;
+                    obj.fiberDirection = e.newPaper.fiberDirection;
+                    obj.opacity = e.newPaper.opacity;
+                    obj.pricePerKilogram = e.newPaper.pricePerKilogram;
+                    obj.quantity = e.newPaper.quantity;
+                    break;
+                }
+            }
+
+            this.showCoverPaperModal = false;
+        },
+        closeCoverPaperModal() {
+            this.showCoverPaperModal = false;
+            this.editedCoverPaper = null;
         },
         closeInsideColorModal() {
             this.showInsideColorModal = false;

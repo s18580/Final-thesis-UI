@@ -45,7 +45,7 @@
                     class="some-space mb-4"
                     v-model="paperQuantity"
                     :rules="[ (v) => v >= 0 || `Nakład nie może być ujemny.`]"
-                    label="Nakład papieru"
+                    label="Nakład do druku"
                 />
                 <va-input
                     class="some-space mb-4"
