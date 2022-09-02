@@ -1,7 +1,7 @@
 <template>
   <div id="navigationMenu">
     <ul>
-      <li class="nav-menu-item" v-if="checkIfAdminHome()">
+      <li class="nav-menu-item" v-if="checkIfAdminHome()" id="home">
         <router-link :to="{ name: 'AdminHome'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
@@ -11,7 +11,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item" v-if="checkIfBasicHome()">
+      <li class="nav-menu-item" v-if="checkIfBasicHome()" id="home">
         <router-link :to="{ name: 'BasicHome'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
@@ -21,7 +21,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAccountantHome()">
+      <li class="nav-menu-item" v-if="checkIfAccountantHome()" id="home">
         <router-link :to="{ name: 'AccountantHome'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
@@ -31,7 +31,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')" id="manageAccountsSection">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseAccountsMenegment" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
@@ -43,20 +43,20 @@
             <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
           </svg>
         </div>
-        <div class="collapse" id="collapseAccountsMenegment">
+        <div class="collapse" id="collapseAccountsMenegment" name="manageAccounts">
           <router-link :to="{ name: 'UserMenegment'}">
           <div class="px-2 py-3 item-content inner">
             Zarządzaj kontami
           </div>
           </router-link>
-          <router-link :to="{ name: 'WorkerForm'}">
+          <router-link :to="{ name: 'WorkerForm'}" name="addAccount">
           <div class="px-2 py-3 item-content inner">
             Dodaj konto
           </div>
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Admin')" id="programConstants">
         <router-link :to="{ name: 'ProgramConstants'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-motherboard-fill" viewBox="0 0 16 16">
@@ -67,7 +67,7 @@
           </div>
         </router-link>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')" id="ordersSection">
           <div class="px-2 py-3 item-content nonclicable item-content2"  data-bs-toggle="collapse" data-bs-target="#collapseOrders" role="button" aria-expanded="false" aria-controls="collapseExample">
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-clipboard2-check" viewBox="0 0 16 16">
@@ -81,25 +81,25 @@
               <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
             </svg>
           </div>
-          <div class="collapse" id="collapseOrders">
+          <div class="collapse" id="collapseOrders" name="addOrder">
           <router-link :to="{ name: 'OrderForm'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj zamówienie
           </div>
           </router-link>
-          <router-link :to="{ name: 'OrderSearch'}">
+          <router-link :to="{ name: 'OrderSearch'}" name="searchOrder">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj zamówienie
           </div>
           </router-link>
-          <router-link :to="{ name: 'OngoingOrders'}">
+          <router-link :to="{ name: 'OngoingOrders'}" name="onGoingOrders">
           <div class="px-2 py-3 item-content inner">
             W trakcie realizacji
           </div>
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')" id="customersSection">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseClients" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
@@ -112,19 +112,19 @@
           </svg>
         </div>
         <div class="collapse" id="collapseClients">
-          <router-link :to="{ name: 'CustomerForm'}">
+          <router-link :to="{ name: 'CustomerForm'}" name="addCustomer">
           <div class="px-2 py-3 item-content inner">
             Dodaj klienta
           </div>
           </router-link>
-          <router-link :to="{ name: 'CustomerSearch'}">
+          <router-link :to="{ name: 'CustomerSearch'}" name="searchCustomer">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj klienta
           </div>
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')" id="suppiersAndSupplySection">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseSuppliers" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
@@ -138,29 +138,29 @@
           </svg>
         </div>
         <div class="collapse" id="collapseSuppliers">
-          <router-link :to="{ name: 'SupplierForm'}">
+          <router-link :to="{ name: 'SupplierForm'}" name="addSupplier">
           <div class="px-2 py-3 item-content inner">
             Dodaj dostawcę
           </div>
           </router-link>
-          <router-link :to="{ name: 'SupplierSearch'}">
+          <router-link :to="{ name: 'SupplierSearch'}" name="searchSupplier">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj dostawcę
           </div>
           </router-link>
-          <router-link :to="{ name: 'SupplyForm'}">
+          <router-link :to="{ name: 'SupplyForm'}" name="addSupply">
           <div class="px-2 py-3 item-content inner">
             Dodaj dostawę
           </div>
           </router-link>
-          <router-link :to="{ name: 'SupplySearch'}">
+          <router-link :to="{ name: 'SupplySearch'}" name="searchSupply">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj dostawę
           </div>
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Office')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Office')" id="valuationsSection">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseValuation" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
@@ -176,19 +176,19 @@
           </svg>
         </div>
         <div class="collapse" id="collapseValuation">
-          <router-link :to="{ name: 'ValuationForm'}">
+          <router-link :to="{ name: 'ValuationForm'}" name="addValuation">
           <div class="px-2 py-3 item-content inner">
             Stwórz wycenę
           </div>
           </router-link>
-          <router-link :to="{ name: 'ValuationSearch'}">
+          <router-link :to="{ name: 'ValuationSearch'}" name="searchValuation">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj wycenę
           </div>
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Accountant')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Accountant')" id="workersSection">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseWorker" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-workspace" viewBox="0 0 16 16">
@@ -201,7 +201,7 @@
             <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
           </svg>
         </div>
-        <div class="collapse" id="collapseWorker">
+        <div class="collapse" id="collapseWorker" name="searchWorker">
           <router-link :to="{ name: 'WorkerSearch'}">
           <div class="px-2 py-3 item-content inner">
             Wyszukaj pracownika
@@ -209,7 +209,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Basic')" name="searchRepresentative">
         <router-link :to="{ name: 'RepresentativeSearch'}">
           <div class="px-2 py-3 item-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
