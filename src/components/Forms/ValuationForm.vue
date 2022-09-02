@@ -732,8 +732,6 @@ export default {
             this.showValuationForm = true;
         },
         calcPrices() {
-            console.log(this.papers);
-            console.log(this.services);
             let resultPrice = 0;
 
             // paper and print price
