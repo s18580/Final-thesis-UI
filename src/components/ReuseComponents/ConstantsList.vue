@@ -85,6 +85,7 @@ export default {
             serviceNameType: false,
             priceListType: false,
             orderStatusType: false,
+            loadedType: "",
         }
     },
     computed: {
@@ -95,8 +96,12 @@ export default {
         }
     },
     beforeUpdate() {
+        if(this.constantType != this.loadedType) {
+            this.currentPage = 1;
+        }
+
+        this.loadedType = this.constantType;
         this.myArray = this.constants;
-        this.currentPage = 1;
         this.serviceNameType = this.constantType === 'Usługa';
         this.priceListType = this.constantType === 'Cennik';
         this.orderStatusType = this.constantType === 'Status zamówienia';

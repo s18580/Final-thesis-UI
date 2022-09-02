@@ -25,8 +25,8 @@
                     class="some-space mb-4"
                     v-model="sheetFormat"
                     :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
-                    label="Format arkusza"
-                    placeholder="Format arkusza"
+                    label="Format arkusza (w mm)"
+                    placeholder="Format arkusza (w mm)"
                 />
                 <va-select
                     class="mb-4 some-space"
@@ -39,13 +39,13 @@
                     class="some-space mb-4"
                     v-model="paperOpacity"
                     :rules="[ (v) => v >= 0 || `Grubość nie może być ujemna.`]"
-                    label="Grubość papieru"
+                    label="Grubość papieru (w gramach)"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="paperQuantity"
                     :rules="[ (v) => v >= 0 || `Nakład nie może być ujemny.`]"
-                    label="Nakład papieru"
+                    label="Nakład do druku"
                 />
                 <va-input
                     class="some-space mb-4"

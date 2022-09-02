@@ -61,21 +61,29 @@
                     :options="orderItemTypes"
                     label="Typ przedmiotu zamówienia"
                     noOptionsText="Brak typów przedmiotu zamówienia do wybrania"
-                 />
-                 <va-select
+                />
+                <va-select
                     class="mb-4 some-space"
                     v-model="selectedDeliveryType"
                     :options="deliveryTypes"
                     label="Typ dostawy"
                     noOptionsText="Brak typów dostawy do wybrania"
-                 />
-                 <va-select
+                />
+                <va-select
+                    v-if="showValuationSelect"
+                    class="mb-4 some-space"
+                    v-model="selectedValuation"
+                    :options="valuations"
+                    label="Wybrana wycena"
+                    noOptionsText="Brak wycen do wybrania"
+                />
+                <va-select
                     class="mb-4 some-space"
                     v-model="selectedBindingTypes"
                     :options="bindingTypes"
                     label="Typ szycia"
                     noOptionsText="Brak typów szycia do wybrania"
-                 />
+                /> 
                 <va-input
                     class="mb-4 some-space"
                     v-model="comments"
@@ -91,19 +99,31 @@
                 <div>
                     <div class="objects-card-wrapper">
                         <h6>Lista kolorów:</h6>
-                        <div class="objects-card">
-                            <div v-for="color in orderItemColors" :key="color.IdForColorTable" class="card-items">
-                                <div class="my-1">
-                                    {{ color.name }}
-                                </div>
-                                <div class="card-icons">
-                                    <va-icon @click="editColorInModal(color)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                    <va-icon @click="removeColor(color.IdForColorTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                                </div>
-                            </div>
-                        </div>
+                        <va-list id="insideColorList">
+                            <va-list-item
+                                v-for="color in orderItemColors"
+                                :key="color.IdForColorTable"
+                            >
+
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="palette" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ color.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Usuń kolor">
+                                        <va-button flat icon="delete" @click="removeColor(color.IdForColorTable)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
                         <va-button @click="showColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
-                        <ColorModal v-if="showColorModal" :color="editedColor" @close="closeColorModal()" @createColor="addColor($event)" @editColor="editColor($event)"/>
+                        <ColorModal v-if="showColorModal" :color="editedColor" @close="closeColorModal()" @createColor="addColor($event)"/>
                     </div>
                 </div>
             </div>
@@ -113,17 +133,31 @@
                 <div>
                     <div class="objects-card-wrapper">
                         <h6>Lista papierów:</h6>
-                        <div class="objects-card">
-                            <div v-for="paper in orderItemPapers" :key="paper.IdForPaperTable" class="card-items">
-                                <div class="my-1">
-                                    {{ paper.name }}
-                                </div>
-                                <div class="card-icons">
-                                    <va-icon @click="editPaperInModal(paper)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                    <va-icon @click="removePaper(paper.IdForPaperTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                                </div>
-                            </div>
-                        </div>
+                        <va-list id="papersList">
+                            <va-list-item
+                                v-for="paper in orderItemPapers"
+                                :key="paper.IdForPaperTable"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="newspaper" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ paper.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Edytuj papier">
+                                        <va-button flat icon="edit" @click="editPaperInModal(paper)" />
+                                    </va-popover>
+                                    <va-popover message="Usuń papier">
+                                        <va-button flat icon="delete" @click="removePaper(paper.IdForPaperTable)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
                         <va-button @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
                         <PaperModal v-if="showPaperModal" :paper="editedPaper" @close="closePaperModal()" @createPaper="addPaper($event)" @editPaper="editPaper($event)"/>
                     </div>
@@ -135,17 +169,31 @@
                 <div>
                     <div class="objects-card-wrapper">
                         <h6>Lista usług:</h6>
-                        <div class="objects-card">
-                            <div v-for="service in orderItemService" :key="service.IdForServiceTable" class="card-items">
-                                <div class="my-1">
-                                    {{ service.serviceName.name }}
-                                </div>
-                                <div class="card-icons">
-                                    <va-icon @click="editServiceInModal(service)" color="#1b63b1" class="material-icons">edit</va-icon>
-                                    <va-icon @click="removeService(service.IdForServiceTable)" color="#1b63b1" class="material-icons">delete</va-icon>
-                                </div>
-                            </div>
-                        </div>
+                        <va-list id="servicesList">
+                            <va-list-item
+                                v-for="service in orderItemService"
+                                :key="service.IdForServiceTable"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="receipt_long" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ service.serviceName.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Edytuj pozycję">
+                                        <va-button flat icon="edit" @click="editServiceInModal(service)" />
+                                    </va-popover>
+                                    <va-popover message="Usuń pozycję">
+                                        <va-button flat icon="delete" @click="removeService(service.IdForServiceTable)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
                         <va-button @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
                         <ServiceModal v-if="showServiceModal" :service="editedService" @close="closeServiceModal()" @createService="addService($event)" @editService="editService($event)"/>
                     </div>
@@ -175,6 +223,7 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
+            showValuationSelect: false,
             orderItemId: null,
             orderItemColors: [],
             showColorModal: false,
@@ -206,6 +255,8 @@ export default {
             selectedDeliveryType: "",
             rawBindingTypes: [],
             selectedBindingTypes: "Bez szycia",
+            selectedValuation: "",
+            rawValuations: [],
 		}
 	},
     computed: {
@@ -230,6 +281,13 @@ export default {
 
             return ["Bez szycia"].concat(resultArr);
         },
+        valuations() {
+            let resultArr = this.rawValuations.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        }
     },
 	methods: {
 		submitForm() {
@@ -238,7 +296,7 @@ export default {
 
                 let data = {
                     newOrderItem: {
-                        idOrderItem: this.idOrderItem,
+                        idOrderItem: this.orderItem.idOrderItem,
                         name: this.orderItemName,
                         comments: this.comments,
                         insideFormat: this.insideFormat,
@@ -250,6 +308,7 @@ export default {
                         selectedOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
                         selectedDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
                         selectedBindingTypes: this.getIdByName("bindingType", this.selectedBindingTypes),
+                        selectedValuation: this.getIdByName("valutaion", this.selectedValuation),
                         colors: this.orderItemColors,
                         papers: this.orderItemPapers,
                         services: this.orderItemService,
@@ -291,6 +350,8 @@ export default {
                     } else {
                         return this.rawBindingTypes.find(element => element.name == objName).idBindingType;
                     }
+                case "valutaion":
+                    return this.rawValuations.find(element => element.name == objName).idValuation;
             }
         },
         validateForm() {
@@ -316,20 +377,6 @@ export default {
             this.orderItemColors.push(e.newColor);
             this.colorCounter++;
             this.showColorModal = false;
-        },
-        editColor(e) {
-            for(const obj of this.orderItemColors){
-                if (obj.IdForColorTable === e.newColor.IdForColorTable) {
-                    obj.name = e.newColor.name;
-                    break;
-                }
-            }
-
-            this.showColorModal = false;
-        },
-        editColorInModal(color) {
-            this.editedColor = color;
-            this.showColorModal = true;
         },
         removeColor(id) {
             this.orderItemColors = this.orderItemColors.filter(item => item.IdForColorTable !== id);
@@ -415,8 +462,7 @@ export default {
             this.editedService = null;
         },
 	},
-    async mounted() {
-        console.log(this.orderItem); 
+    async mounted() { 
         let callPath = "/BindingType/getBindingTypes";
         this.rawBindingTypes = await CallAPI.get(callPath)
         .then(res => {
@@ -445,6 +491,7 @@ export default {
         });
 
         if(this.orderItem === null) {
+            this.showValuationSelect = false;
             this.buttonMessage = "Dodaj przedmiot zamówienia";
             this.orderItemName = "";
             this.comments = "";
@@ -466,6 +513,7 @@ export default {
             this.editedColor = null;
             this.orderItemId = null;
         }else {
+            this.showValuationSelect = true;
             this.buttonMessage = "Edytuj przedmiot zamówienia";
             if(this.orderItem.idOrderItem != undefined && this.orderItem.idOrderItem != null) {
                 this.orderItemId = this.orderItem.idOrderItem;
@@ -497,6 +545,27 @@ export default {
             } else{
                 this.expectedCompletionDate = null;
             }
+
+            callPath = "/Valuation/getValuationsWithoutOrderItem";
+            let valuationWithoutOrderItem = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            callPath = "/Valuation/getValuationsByOrderItem?id=" + this.orderItem.idOrderItem;
+            let valuationByOrderItem = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
+            this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
         }
     }
 }

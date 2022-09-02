@@ -321,6 +321,7 @@ import FileModal from '@/components/ReuseComponents/Modals/FileModal.vue';
 import WorkerModal from '@/components/ReuseComponents/Modals/WorkerModal.vue';
 import OrderItemModal from '@/components/ReuseComponents/Modals/OrderItemModal.vue';
 import { S3Client, ListObjectsCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import { useUserStore } from '@/stores/UserStore';
 
 export default {
     name: "OrderDetails",
@@ -341,6 +342,8 @@ export default {
             readOnlyMode: false,
             deleteModalMessage: "",
             deleteModalTitle: "",
+
+            awsData: null,
 
             isAuction: false,
             orderName: "",
@@ -407,6 +410,16 @@ export default {
 
         callPath = "/Representative/getRepresentative?id=" + orderData.idRepresentative;
         let representativeData = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+
+        const userStore = useUserStore();
+        callPath = "/Worker/getAWS?id=" + userStore.userId;
+        this.awsData = await CallAPI.get(callPath)
         .then(res => {
             return res.data;
         })
@@ -788,6 +801,7 @@ export default {
                 IdDeliveryType: e.newOrderItem.selectedDeliveryType,
                 IdBindingType: e.newOrderItem.selectedBindingTypes,
                 IdOrderItemType: e.newOrderItem.selectedOrderItemType,
+                IdSelectedValuation: e.newOrderItem.selectedValuation,
                 Colors: e.newOrderItem.colors,
                 Services: e.newOrderItem.services,
                 Papers: e.newOrderItem.papers,
@@ -889,22 +903,17 @@ export default {
             this.updateFileList();
         },
         async updateFileList() {
-            // setup data
-            const REGION = "eu-west-2";
-            const secretAccessKey = "ESrtU64dJv7DWCFdvKZ0kSokRNfnV5LbdRDbVN/h"
-            const accessKeyId = "AKIAQC42EGU5WCMUZBHR"
-
             // create s3 object
             const awsClient = new S3Client({
-                region: REGION,
+                region: this.awsData.region,
                 credentials: {
-                    accessKeyId: accessKeyId,
-                    secretAccessKey: secretAccessKey
+                    accessKeyId: this.awsData.accessKeyAWS,
+                    secretAccessKey: this.awsData.secretKeyAWS
                 }
             });
 
             // create params and command
-            const params = { Bucket: this.albumBucketName };
+            const params = { Bucket: this.awsData.bucketName };
             const command = new ListObjectsCommand(params);
 
             // send command and handle it correctly
@@ -917,22 +926,17 @@ export default {
             }
         },
         async deleteFile(file) {
-            // setup data
-            const REGION = "eu-west-2";
-            const secretAccessKey = "ESrtU64dJv7DWCFdvKZ0kSokRNfnV5LbdRDbVN/h"
-            const accessKeyId = "AKIAQC42EGU5WCMUZBHR"
-
             // create s3 object
             const awsClient = new S3Client({
-                region: REGION,
+                region: this.awsData.region,
                 credentials: {
-                    accessKeyId: accessKeyId,
-                    secretAccessKey: secretAccessKey
+                    accessKeyId: this.awsData.accessKeyAWS,
+                    secretAccessKey: this.awsData.secretKeyAWS
                 }
             });
 
             // create params and command
-            const params = { Bucket: this.albumBucketName, Delete: { Objects: [ { Key: file.Key } ] }, Quiet: true };
+            const params = { Bucket: this.awsData.bucketName, Delete: { Objects: [ { Key: file.Key } ] }, Quiet: true };
             const command = new DeleteObjectsCommand(params);
 
             // send command and handle it correctly
