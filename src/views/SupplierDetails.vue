@@ -192,31 +192,14 @@ export default {
     methods: {
         async submitForm() {
             if(this.validateForm) {
-                let callPath = "";
-                let body = {};
-
-                if(this.isCompanyCustomer) {
-                    callPath = "/Customer/updateCompanyCustomer";
-                    body = {
-                        IdCustomer: this.id,
-                        CompanyName: this.companyName,
-                        NIP: this.nip,
-                        Regon: this.regon,
-                        CompanyPhoneNumber: this.companyPhone,
-                        CompanyEmailAddress: this.companyEmail,
-                        IdWorker: this.getIdByName(this.selectedWorker),
-                    };
-                } else {
-                    callPath = "/Customer/updatePersonCustomer";
-                    body = {
-                        IdCustomer: this.id,
-                        Name: this.customerName,
-                        LastName: this.customerLastName, 
-                        CompanyPhoneNumber: this.companyPhone,
-                        CompanyEmailAddress: this.companyEmail,
-                        IdWorker: this.getIdByName(this.selectedWorker),
-                    };
-                }
+                let callPath = "/Supplier/updateSupplier";
+                let body = {
+                    IdSupplier: this.id,
+                    Name: this.supplierName,
+                    Description: this.supplierDescription,
+                    PhoneNumber: this.supplierPhone,
+                    EmailAddress: this.supplierEmail
+                };
                 
                 await CallAPI.post(callPath, body)
                 .then(res => {
@@ -348,7 +331,6 @@ export default {
             await this.updateAddressList();
         },
         async editAddress(e) {
-            console.log(e);
             let callPath = "/Address/updateAddress";
             let body = {
                 IdAddress: e.newAddress.idAddress,

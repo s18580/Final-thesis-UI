@@ -155,7 +155,7 @@ export default {
                         name: item["name"],
                         lastName: item["lastName"],
                         phoneNumber: item["phoneNumber"],
-                        emailAddress: item["addressEmail"]
+                        emailAddress: item["emailAddress"]
                     }
 
                     return result;
