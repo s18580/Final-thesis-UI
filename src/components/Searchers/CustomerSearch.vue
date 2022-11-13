@@ -65,8 +65,8 @@
             class="search-box"
             v-model="selectedWorker"
             :options="workers"
-            label="Status zamówienia:"
-            noOptionsText="Brak statusów do wybrania"
+            label="Pracownik prowadzący:"
+            noOptionsText="Brak pracowników"
         />
       </div>
       <div id="show-more">
