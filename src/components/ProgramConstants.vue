@@ -241,7 +241,7 @@ export default {
                     await this.callApiForAction('/OrderStatus/updateOrderStatus', 'edit', { idOrderStatus: e.Constant.idStatus, name: e.NewValues.Name, chipColor: e.NewValues.ChipColor });
                     break;
                 case 'Stanowisko pracy':
-                    await this.callApiForAction('/Worksite/updateWorksite', 'edit', { idWorksite: e.Constant.idWorksite, name: e.NewValues.NewValues.Name });
+                    await this.callApiForAction('/Worksite/updateWorksite', 'edit', { idWorksite: e.Constant.idWorksite, name: e.NewValues.Name });
                     break;
                 case 'Typ przedmiotu dostawy':
                     await this.callApiForAction('/SupplyItemType/updateSupplyItemsType', 'edit', { idSupplyItemType: e.Constant.idSupplyItemType, name: e.NewValues.Name });
