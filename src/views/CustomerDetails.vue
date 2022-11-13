@@ -243,7 +243,8 @@ export default {
             this.companyEmail = customerData.companyEmailAddress;
             this.companyPhone = customerData.companyPhoneNumber;
             this.regon = customerData.regon;
-            this.nip = customerData.nIP;
+            this.nip = customerData.nip;
+            this.selectedWorker = this.getNameById(customerData.idWorker);
         } else {
             for(let i=0; i < customerData.representatives.length; i++) {
                 if((customerData.representatives[i].name + " " + customerData.representatives[i].lastName) === customerData.companyName) {

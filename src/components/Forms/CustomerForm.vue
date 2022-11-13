@@ -224,12 +224,13 @@ export default {
 	methods: {
         async submitForm() {
             if(this.validateForm(this.selectedRadioOption === 'Firma')){
+                console.log(this.contactPepole);
                 var contactPeopleAPI = this.contactPepole.map(function(item) {
                     let result = {
                         name: item["name"],
                         lastName: item["lastName"],
                         phoneNumber: item["phoneNumber"],
-                        emailAddress: item["addressEmail"]
+                        emailAddress: item["emailAddress"]
                     }
 
                     return result;

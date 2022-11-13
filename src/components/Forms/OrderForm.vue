@@ -11,8 +11,8 @@
                 <div class="search-input-box">
                     <label>Zamówienie jest przetargiem:</label>
                     <div id="isAuctionCo">
-                        <va-icon v-if="!isAuction" color="success" class="material-icons">done</va-icon>
-                        <va-icon v-if="isAuction" color="danger" class="material-icons">close</va-icon>
+                        <va-icon v-if="isAuction" color="success" class="material-icons">done</va-icon>
+                        <va-icon v-if="!isAuction" color="danger" class="material-icons">close</va-icon>
                         <va-icon @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
                     </div> 
                 </div>
