@@ -296,7 +296,6 @@ export default {
 
                 let data = {
                     newOrderItem: {
-                        idOrderItem: this.orderItem.idOrderItem,
                         name: this.orderItemName,
                         comments: this.comments,
                         insideFormat: this.insideFormat,
@@ -314,6 +313,10 @@ export default {
                         services: this.orderItemService,
                     }
                 };
+
+                if(this.orderItem !== null){
+                    data.newOrderItem.idOrderItem = this.orderItem.idOrderItem;
+                }
 
                 if(this.IdForOrderItemTable !== null) {
                     data.newOrderItem.IdForOrderItemTable = this.IdForOrderItemTable;
@@ -339,7 +342,8 @@ export default {
             }
         },
         getIdByName(what, objName){
-            switch(what) {
+            if(objName !== ''){
+                switch(what) {
                 case "orderItemType":
                     return this.rawOrderItemTypes.find(element => element.name == objName).idOrderItemType;
                 case "deliveryType":
@@ -352,6 +356,7 @@ export default {
                     }
                 case "valutaion":
                     return this.rawValuations.find(element => element.name == objName).idValuation;
+                }
             }
         },
         validateForm() {
