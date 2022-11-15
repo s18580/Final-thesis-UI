@@ -224,7 +224,6 @@ export default {
 	methods: {
         async submitForm() {
             if(this.validateForm(this.selectedRadioOption === 'Firma')){
-                console.log(this.contactPepole);
                 var contactPeopleAPI = this.contactPepole.map(function(item) {
                     let result = {
                         name: item["name"],

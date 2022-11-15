@@ -310,7 +310,7 @@ export default {
         deleteDeliveryAddress(address) {
             const index = this.deliveryAddresses.indexOf(address);
             if (index > -1) {
-            this.deliveryAddresses.splice(index, 1);
+                this.deliveryAddresses.splice(index, 1);
             }
         }
 	},

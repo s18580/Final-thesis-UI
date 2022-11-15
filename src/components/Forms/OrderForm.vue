@@ -432,7 +432,6 @@ export default {
             this.editedDeliveryAddress = null;
         },
         addAddress(e) {
-            console.log(e);
             this.deliveryAddresses.push(e);
         },
         removeAddress(id) {
