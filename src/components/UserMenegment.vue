@@ -119,9 +119,11 @@ export default {
 
             await CallAPI.delete(callPath, body)
             .then(res => {
+                this.$vaToast.init({ message: 'Usunięto użytkownika.', color: 'success', duration: 3000 })
                 return res.data;
             })
             .catch(err => {
+                this.$vaToast.init({ message: 'Nie można usunąć użytkownika. Dezaktywuj go najpierw i spróbuj ponownie.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
             
@@ -133,6 +135,11 @@ export default {
 
             await CallAPI.post(callPath, body)
             .then(res => {
+                if(user.isDisabled){
+                    this.$vaToast.init({ message: 'Aktywowano użytkownika.', color: 'success', duration: 3000 })
+                } else {
+                    this.$vaToast.init({ message: 'Dezaktywowano użytkownika.', color: 'success', duration: 3000 })
+                }
                 return res.data;
             })
             .catch(err => {
