@@ -26,15 +26,15 @@
                 />
                 <va-date-input
                     class="inputWidth"
-                    v-model="expectedDeliveryDate"
-                    label="Przewidywana data dostawy"
-                    placeholder="Pożądana data dostawy"
-                />
-                <va-date-input
-                    class="inputWidth"
                     v-model="offerValidityDate"
                     label="Termin oferty"
                     placeholder="Termin ważności oferty"
+                />
+                <va-date-input
+                    class="inputWidth"
+                    v-model="expectedDeliveryDate"
+                    label="Przewidywana data dostawy"
+                    placeholder="Pożądana data dostawy"
                 />
                 <va-select
                     class="inputWidth"
@@ -45,6 +45,7 @@
                     @update:model-value="getRepresentativesData($event)"
                 />
                 <va-select
+                    v-if="isCustomerSelected"
                     class="inputWidth"
                     v-model="selectedRepresentative"
                     :options="representatives"
@@ -142,7 +143,7 @@
                 <WorkerModal :worker="editedWorker" v-if="showWorkerModal" @close="closeWorkerModal()" @createWorker="addWorker($event)" @editWorker="editWorker($event)"/>
             </div>
         </div>
-        <div id="addressesCo" v-if="showAddresses">
+        <div id="addressesCo" v-if="isCustomerSelected">
             <h3>Adresy dostawy zamówienia</h3>
             <va-divider />
             <div id="addressesCoInner">
@@ -217,13 +218,13 @@ export default {
             orderItems: [],
             orderItemsCounter: 0,
             orderNote: "",
-            showAddresses: false,
+            isCustomerSelected: false,
 		}
 	},
     watch: {
         selectedClient() {
             if(this.selectedClient !== ""){
-                this.showAddresses = true;
+                this.isCustomerSelected = true;
             }
         },
     },
@@ -343,7 +344,7 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    //this.resetData();
+                    this.resetData();
                     this.$vaToast.init({ message: 'Zamówienie zostało dodane.', color: 'success', duration: 3000 })
                     return res.data;
                 })
@@ -391,6 +392,9 @@ export default {
         closeOrderItemModal() {
             this.showOrderItemModal = false;
             this.editedOrderItem = null;
+        },
+        resetData() {
+            window.location.reload(true);
         },
         addOrderItem(e) {
             e.newOrderItem.IdForOrderItemTable = this.orderItemsCounter;
