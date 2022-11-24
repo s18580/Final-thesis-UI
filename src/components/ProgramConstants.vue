@@ -120,6 +120,7 @@ export default {
                         return res.data;
                     })
                     .catch(err => {
+                        if(err.message.includes("422")) this.$vaToast.init({ message: 'Błąd usuwania. Usuń powiązane obiekty i spróbuj ponownie.', color: 'danger', duration: 2000 });
                         CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                     });
             }

@@ -49,6 +49,7 @@
                     clearable
                 />
                 <va-date-input
+                    v-if="showCompletionDate"
                     class="some-space mb-4"
                     v-model="completionDate"
                     label="Data ukończenia"
@@ -224,6 +225,7 @@ export default {
 	data() {
 		return {
             showValuationSelect: false,
+            showCompletionDate: false,
             orderItemId: null,
             orderItemColors: [],
             showColorModal: false,
@@ -517,6 +519,7 @@ export default {
             this.editedPaper = null;
             this.editedColor = null;
             this.orderItemId = null;
+            this.showCompletionDate = false;
         }else {
             this.showValuationSelect = true;
             this.buttonMessage = "Edytuj przedmiot zamówienia";
@@ -539,6 +542,7 @@ export default {
             this.editedService = null;
             this.editedPaper = null;
             this.editedColor = null;
+            this.showCompletionDate = true;
 
             if(this.orderItem.completionDate != null) {
                 this.completionDate = new Date(Date.parse(this.orderItem.completionDate));
