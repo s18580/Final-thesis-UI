@@ -103,7 +103,7 @@
                         </va-list-item-section>
 
                         <va-list-item-section icon>
-                            <va-popover message="Usuń rolę" v-if="!readOnlyMode">
+                            <va-popover message="Usuń rolę">
                                 <va-button flat icon="delete" @click="removeRole(role)" />
                             </va-popover>
                         </va-list-item-section>
