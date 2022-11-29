@@ -7,11 +7,11 @@
         <div id="mainCo">
             <va-list>
                 <va-list-label>
-                    Użytkownicy
+                    Aktywni Użytkownicy
                 </va-list-label>
 
                 <va-list-item
-                    v-for="user in users"
+                    v-for="user in activeUsers"
                     :key="user.Id"
                 >
                     <va-list-item-section avatar>
@@ -32,14 +32,43 @@
                         <va-popover message="Edytuj uzytkownika">
                             <va-button flat icon="edit" @click="editWorker(user)" />
                         </va-popover>
-                        <va-popover message="Dezaktywuj użytkownika">
-                            <va-button v-if="!user.isDisabled" flat icon="person_off" @click="disableWorker(user)" />
+                        <va-popover message="Zawieś użytkownika">
+                            <va-button flat icon="person_off" @click="disableWorker(user)" />
+                        </va-popover>
+                    </va-list-item-section>
+                </va-list-item>
+            </va-list>
+        </div>
+        <div id="mainCo2">
+            <va-list>
+                <va-list-label>
+                    Zawieszeni Użytkownicy
+                </va-list-label>
+
+                <va-list-item
+                    v-for="user in inActiveUsers"
+                    :key="user.Id"
+                >
+                    <va-list-item-section avatar>
+                        <va-avatar color="#6B5B95" icon="face" />
+                    </va-list-item-section>
+
+                    <va-list-item-section>
+                        <va-list-item-label>
+                            {{ user.name + " " + user.lastName }}
+                        </va-list-item-label>
+
+                        <va-list-item-label caption>
+                            {{ this.getWorksite(user) }}
+                        </va-list-item-label>
+                    </va-list-item-section>
+
+                    <va-list-item-section icon>
+                        <va-popover message="Edytuj uzytkownika">
+                            <va-button flat icon="edit" @click="editWorker(user)" />
                         </va-popover>
                         <va-popover message="Aktywuj użytkownika">
-                            <va-button v-if="user.isDisabled" flat icon="person" @click="disableWorker(user)" />
-                        </va-popover>
-                        <va-popover message="Usuń użytkownika">
-                            <va-button flat icon="delete" @click="openDeleteModal(user)" />
+                            <va-button flat icon="person" @click="disableWorker(user)" />
                         </va-popover>
                     </va-list-item-section>
                 </va-list-item>
@@ -69,6 +98,8 @@ export default {
 	data() {
 		return {
 			users: [],
+            activeUsers: [],
+            inActiveUsers: [],
             selectedWorker: null,
             showModal: false,
             showDeleteModal: false,
@@ -81,13 +112,17 @@ export default {
     methods: {
         async updateUserList() {
             let callPath = "/Worker/getWorkers";
-            this.users = await CallAPI.get(callPath)
+            let users = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
             })
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
+
+            this.inActiveUsers = users.filter(user => user.isDisabled);
+
+            this.activeUsers = users.filter(user => !user.isDisabled);
         },
         getWorksite(user) {
             if(user.worksite != null){
@@ -112,22 +147,6 @@ export default {
         },
         closeDeleteModal() {
             this.showDeleteModal = false;
-        },
-        async deleteWorker() {
-            let callPath = "/Worker/deleteWorker";
-            let body = { data: { Id: this.selectedWorker.idWorker} };
-
-            await CallAPI.delete(callPath, body)
-            .then(res => {
-                this.$vaToast.init({ message: 'Usunięto użytkownika.', color: 'success', duration: 3000 })
-                return res.data;
-            })
-            .catch(err => {
-                this.$vaToast.init({ message: 'Nie można usunąć użytkownika. Dezaktywuj go najpierw i spróbuj ponownie.', color: 'danger', duration: 3000 })
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
-            
-            await this.updateUserList();
         },
         async disableWorker(user) {
             let callPath = "/Worker/disableWorker";
@@ -159,13 +178,25 @@ export default {
     grid-template-rows: auto;
     grid-template-areas: 
     ". header ."
-    ". main .";
+    ". mainActive ."
+    ". mainInActive .";
     grid-gap: 30px;
 
 }
 
 #mainCo {
-    grid-area: main;
+    grid-area: mainActive;
+    margin-top: 20px;
+	padding: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+	background: white;
+	border-radius: 25px;
+    min-width: 800px;
+}
+
+#mainCo2 {
+    grid-area: mainInActive;
     margin-top: 20px;
 	padding: 0px;
     padding-left: 20px;
