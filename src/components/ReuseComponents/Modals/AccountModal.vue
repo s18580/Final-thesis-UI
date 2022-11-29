@@ -74,7 +74,11 @@ export default {
         this.userName = userData.name + " " + userData.lastName;
         this.email = userData.emailAddres;
         this.phoneNumber = userData.phoneNumber;
-        this.userWorksite = userData.worksite.name;
+        if(userData.worksite == null) {
+            this.userWorksite = 'Brak stanowiska';
+        }else {
+            this.userWorksite = userData.worksite.name;
+        }
     }
 }
 </script>
