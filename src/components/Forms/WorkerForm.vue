@@ -190,7 +190,7 @@ export default {
             if(editedWorker.worksite != null) {
                 this.selectedWorksite = editedWorker.worksite.name;
             } else {
-                this.selectedWorksite = null;
+                this.selectedWorksite = "Bez stanowiska";
             }
 
             this.titleName = "Edytuj konto użytkownika";
