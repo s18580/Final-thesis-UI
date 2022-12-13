@@ -1,0 +1,160 @@
+AddressController
+    GetAddressesByCustomer
+    CreateAddress
+    UpdateAddress
+    DisableAddress
+
+AssignmentController
+
+
+
+BindingTypeController
+    GetBindingTypes
+    CreateBindingType
+    UpdateBindingType
+    DeleteBindingType
+
+
+ColorController
+
+
+
+CustomerController
+    GetCustomer
+    GetSearchCustomers
+    UpdateCompanyCustomer
+    UpdatePersonCustomer
+    CreateCompanyCustomerWithData
+    CreatePersonCustomerWithData
+
+
+DeliveriesAddressesController
+
+
+
+DeliveryTypeController
+    GetDeliveryTypes
+    CreateDeliveryType
+    UpdateDeliveryType
+    DeleteDeliveryType
+
+
+FileController
+
+
+
+FileStatusController
+    GetFileStatuses
+    CreateFileStatus
+    UpdateFileStatus
+    DeleteFileStatus
+
+
+FileTypeController
+    GetFileTypes
+    CreateFileType
+    UpdateFileType
+    DeleteFileType
+
+
+OrderController
+
+
+
+OrderItemController
+
+
+
+OrderItemTypeController
+    GetOrderItemsTypes
+    CreateOrderItemsType
+    UpdateOrderItemsType
+    DeleteOrderItemsType
+
+
+OrderStatusController
+    GetOrderStatuses
+    CreateOrderStatus
+    UpdateOrderStatus
+    DeleteOrderStatus
+
+
+PaperController
+
+
+
+PriceListController
+    GetPriceLists
+    CreatePriceList
+    UpdatePriceList
+    DeletePriceList
+    
+
+
+RepresentativeController
+    GetRepresentativesByCustomer
+    CreateRepresentative
+    UpdateRepresentative
+    DisableRepresentative
+
+
+RoleAssignmentController
+
+
+
+RoleController
+
+
+
+ServiceController
+
+
+
+ServiceNameController
+    GetServiceNames
+    CreateServiceName
+    UpdateServiceName
+    DeleteServiceName
+
+
+SupplierController
+
+
+
+SupplyController
+
+
+
+SupplyItemTypeController
+    GetSupplyItemsTypes
+    CreateSupplyItemsType
+    UpdateSupplyItemsType
+    DeleteSupplyItemsType
+
+
+UserController
+    Login
+    RegisterWithRoles
+
+
+ValuationController
+
+
+
+ValuationPriceListController
+
+
+
+WorkerController
+    GetWorker
+    GetAWS
+    GetWorkers
+    UpdateWorker
+    DisableWorker
+
+
+WorksiteController
+    GetWorksites
+    CreateWorksite
+    UpdateWorksite
+    DeleteWorksite

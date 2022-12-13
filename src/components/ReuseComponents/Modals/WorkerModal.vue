@@ -118,7 +118,7 @@ export default {
             this.buttonMessage = "Edytuj przydział";
             this.isReadOnly = true;
             this.selectedWorker = this.worker.worker.name + " " + this.worker.worker.lastName;
-            this.hoursWorker = this.worker.hoursWorked;
+            this.hoursWorked = this.worker.hoursWorked;
             this.isLeader = this.worker.orderLeader;
             this.IdForWorkerTable = this.worker.IdForWorkerTable;
         }

@@ -89,7 +89,6 @@
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
                 <va-button flat icon="edit" @click="editItemById(rowIndex)" />
-                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
             </template>
             <template #bodyAppend>
                 <tr><td colspan="8" class="table-pagination">
@@ -108,6 +107,7 @@
 <script>
 import CallAPI from '@/axios/axios-connection.js';
 import CallSeq from '@/logging/seq-logger.js';
+import { useUserStore } from '@/stores/UserStore';
 
 export default {
   name: 'CustomerSearch',
@@ -132,8 +132,8 @@ export default {
                 { key: 'customerName', label:"Nazwa", sortable: true },
                 { key: 'customerPhone', label:"Telefon", sortable: true },
                 { key: 'customerEmail', label:"Email", sortable: true },
-                { key: 'nIP', label:"NIP", sortable: true },
-                { key: 'rEGON', label:"REGON", sortable: true },
+                { key: 'nip', label:"NIP", sortable: true },
+                { key: 'regon', label:"REGON", sortable: true },
                 { key: 'workerLeader', label:"Pracownik prowadzący" },
                 { key: 'actions', label:"Akcje", width: 80 },
             ],
@@ -168,6 +168,10 @@ export default {
 	methods: {
         changeMode() {
             this.largeMode = !this.largeMode;
+        },
+        checkIfAuthorized(role) {
+            const userStore = useUserStore();
+            return userStore.doesUserHasRole(role);
         },
         async searchForResults() {
             this.largeMode = false;
@@ -234,9 +238,6 @@ export default {
         },
         editItemById(row) {
             this.$router.push({ name: "CustomerDetails", params: { id: this.results[row].idCustomer, mode: 'edit' } });
-        },
-        deleteItemById() {
-            // to call delete
         },
 	}
 }

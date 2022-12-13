@@ -75,8 +75,11 @@
                             </va-list-item-section>
 
                             <va-list-item-section icon>
-                                <va-popover message="Edytuj dane zamówienia" v-if="!readOnlyMode">
+                                <va-popover message="Edytuj dane osoby" v-if="!readOnlyMode">
                                     <va-button flat icon="edit" @click="openEditRepresentative(representative)" />
+                                </va-popover>
+                                <va-popover message="Usuń osobę" v-if="!readOnlyMode">
+                                    <va-button flat icon="delete" @click="openDeleteRepresentativeModal(representative)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
@@ -115,6 +118,9 @@
                                 <va-popover message="Edytuj dane adresu" v-if="!readOnlyMode">
                                     <va-button flat icon="edit" @click="openEditAddress(address)" />
                                 </va-popover>
+                                <va-popover message="Usuń adres" v-if="!readOnlyMode">
+                                    <va-button flat icon="delete" @click="openDeleteAddressModal(address)" />
+                                </va-popover>
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
@@ -124,6 +130,26 @@
             <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
             <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
         </div>
+        <va-modal v-model="showDeleteAddressModal"
+            message="Czy napewno chcesz usunąć ten adres ?"
+            size="small"
+            title="Usuń adres"
+            cancel-text="Anuluj"
+            ok-text="Usuń"
+            @cancel="closeDeleteAddressModal()"
+            @click-outside="closeDeleteAddressModal()"
+            @ok="deleteAddress()"
+        />
+        <va-modal v-model="showDeleteRepresentativeModal"
+            message="Czy napewno chcesz usunąć tą osobę ?"
+            size="small"
+            title="Usuń osobę"
+            cancel-text="Anuluj"
+            ok-text="Usuń"
+            @cancel="closeDeleteRepresentativeModal()"
+            @click-outside="closeDeleteRepresentativeModal()"
+            @ok="deleteRepresentative()"
+        />
     </div>
 </template>
 
@@ -155,6 +181,11 @@ export default {
             supplierDescription: "",
             addresses: [],
             representatives: [],
+
+            selectedAddressToDelete: null,
+            selectedRepresentativeToDelete: null,
+            showDeleteAddressModal: false,
+            showDeleteRepresentativeModal: false,
 
             showContactModal: false,
             editedContact: null,
@@ -237,6 +268,57 @@ export default {
             this.editedContact = null;
             this.showContactModal = false;
         },
+
+
+        openDeleteAddressModal(address){
+            this.selectedAddressToDelete = address;
+            this.showDeleteAddressModal = true;
+        },
+        openDeleteRepresentativeModal(representative){
+            this.selectedRepresentativeToDelete = representative;
+            this.showDeleteRepresentativeModal = true;
+        },
+        closeDeleteAddressModal(){
+            this.showDeleteAddressModal = false;
+        },
+        closeDeleteRepresentativeModal(){
+            this.showDeleteRepresentativeModal = false;
+        },
+        async deleteAddress(){
+            let callPath = "/Address/deleteAddress";
+            let body = { data: { IdAddress: this.selectedAddressToDelete.idAddress} };
+
+            await CallAPI.delete(callPath, body)
+            .then(res => {
+                this.$vaToast.init({ message: 'Usunięto adres.', color: 'success', duration: 3000 })
+                return res.data;
+            })
+            .catch(err => {
+                this.$vaToast.init({ message: 'Nie można usunąć adresu póki jest używany w dostawach od tego dostawcy.', color: 'danger', duration: 3000 })
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            await this.updateAddressList();
+        },
+        async deleteRepresentative(){
+            let callPath = "/Representative/deleteRepresentative";
+            let body = { data: { IdRepresentative: this.selectedRepresentativeToDelete.idRepresentative} };
+
+            await CallAPI.delete(callPath, body)
+            .then(res => {
+                this.$vaToast.init({ message: 'Usunięto osobę.', color: 'success', duration: 3000 })
+                return res.data;
+            })
+            .catch(err => {
+                this.$vaToast.init({ message: 'Nie można usunąć osoby póki jest ona kontaktem, w dostawach od tego dostawcy.', color: 'danger', duration: 3000 })
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            await this.updateContactList();
+        },
+
+
+
         async addContact(e) {
             let callPath = "/Representative/createRepresentative";
             let body = {
