@@ -84,7 +84,7 @@
                 </div>
             </div>
             <div id="representativesCo">
-                <h3> Osoby kontaktowe klienta  </h3>
+                <h3> Osoby kontaktowe klienta</h3>
                 <va-divider />
                 <div id="representativesCoInner">
                     <va-list>
@@ -97,7 +97,7 @@
                             :key="representative.idRepresentative"
                         >
                             <va-list-item-section avatar>
-                                <va-avatar color="#6B5B95" icon="person" />
+                                <va-avatar color="#6B5B95" icon="person"/>
                             </va-list-item-section>
 
                             <va-list-item-section>

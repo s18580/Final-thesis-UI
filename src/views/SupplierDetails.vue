@@ -57,7 +57,7 @@
                         </va-list-label>
 
                         <va-list-item
-                            v-for="representative in representatives"
+                            v-for="representative in activedRepresentatives"
                             :key="representative.idRepresentative"
                         >
                             <va-list-item-section avatar>
@@ -78,13 +78,55 @@
                                 <va-popover message="Edytuj dane osoby" v-if="!readOnlyMode">
                                     <va-button flat icon="edit" @click="openEditRepresentative(representative)" />
                                 </va-popover>
-                                <va-popover message="Usuń osobę" v-if="!readOnlyMode">
-                                    <va-button flat icon="delete" @click="openDeleteRepresentativeModal(representative)" />
+                                <va-popover message="Dezaktywuj osobę" v-if="!readOnlyMode">
+                                    <va-button flat icon="delete" @click="disableRepresentative(representative)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
                     <va-button v-if="!readOnlyMode" @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                </div>
+                <div v-if= "!showDisabledRepresentatives">
+                    <p class="showMoreDetails" @click="showDisabledRepresentatives = !showDisabledRepresentatives">Pokaż dezaktywowane osoby kontaktowe</p>
+                </div>
+            </div>
+            <div id="representativesCoDisable">
+                <div v-if= "showDisabledRepresentatives">
+                    <h3> Dezaktywowane osoby kontaktowe dostawcy  </h3>
+                    <va-divider />
+                    <div id="representativesCoInner">
+                        <va-list>
+                            <va-list-label>
+                                Dezaktywowane osoby kontaktowe
+                            </va-list-label>
+
+                            <va-list-item
+                                v-for="representative in disabledRepresentatives"
+                                :key="representative.idRepresentative"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="person" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ representative.name + ' ' + representative.lastName }}
+                                    </va-list-item-label>
+
+                                    <va-list-item-label caption>
+                                        {{ representative.emailAddress }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Aktywuj osobę" v-if="!readOnlyMode">
+                                        <va-button flat icon="restore_from_trash" @click="activateRepresentative(representative)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
+                    </div>
+                    <p class="showMoreDetails" @click="showDisabledRepresentatives = !showDisabledRepresentatives">Ukryj dezaktywowane osoby kontaktowe</p>
                 </div>
             </div>
             <div id="addressesCo">
@@ -97,7 +139,7 @@
                         </va-list-label>
 
                         <va-list-item
-                            v-for="address in addresses"
+                            v-for="address in activedAddresses"
                             :key="address.idAddress"
                         >
                             <va-list-item-section avatar>
@@ -118,38 +160,60 @@
                                 <va-popover message="Edytuj dane adresu" v-if="!readOnlyMode">
                                     <va-button flat icon="edit" @click="openEditAddress(address)" />
                                 </va-popover>
-                                <va-popover message="Usuń adres" v-if="!readOnlyMode">
-                                    <va-button flat icon="delete" @click="openDeleteAddressModal(address)" />
+                                <va-popover message="Dezaktywuj adres" v-if="!readOnlyMode">
+                                    <va-button flat icon="delete" @click="disableAddress(address)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
                     <va-button v-if="!readOnlyMode" @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
                 </div>
+                <div v-if= "!showDisabledAddresses">
+                    <p class="showMoreDetails" @click="showDisabledAddresses = !showDisabledAddresses">Pokaż dezaktywowane adresy</p>
+                </div>
+            </div>
+            <div id="addressesCoDisable">
+                <div v-if= "showDisabledAddresses">
+                    <h3> Dezaktywowane adresy dostawcy </h3>
+                    <va-divider />
+                    <div id="addressesCoInner">
+                        <va-list>
+                            <va-list-label>
+                                Dezaktywowane adresy
+                            </va-list-label>
+
+                            <va-list-item
+                                v-for="address in disabledAddresses"
+                                :key="address.idAddress"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="home" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ address.name }}
+                                    </va-list-item-label>
+
+                                    <va-list-item-label caption>
+                                        {{ address.streetName + " " + address.streetNumber + ", " + address.city }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Aktywuj adres" v-if="!readOnlyMode">
+                                        <va-button flat icon="restore_from_trash" @click="activateAddress(address)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
+                    </div>
+                    <p class="showMoreDetails" @click="showDisabledAddresses = !showDisabledAddresses">Ukryj dezaktywowane adresy</p>
+                </div>
             </div>
             <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
             <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
         </div>
-        <va-modal v-model="showDeleteAddressModal"
-            message="Czy napewno chcesz usunąć ten adres ?"
-            size="small"
-            title="Usuń adres"
-            cancel-text="Anuluj"
-            ok-text="Usuń"
-            @cancel="closeDeleteAddressModal()"
-            @click-outside="closeDeleteAddressModal()"
-            @ok="deleteAddress()"
-        />
-        <va-modal v-model="showDeleteRepresentativeModal"
-            message="Czy napewno chcesz usunąć tą osobę ?"
-            size="small"
-            title="Usuń osobę"
-            cancel-text="Anuluj"
-            ok-text="Usuń"
-            @cancel="closeDeleteRepresentativeModal()"
-            @click-outside="closeDeleteRepresentativeModal()"
-            @ok="deleteRepresentative()"
-        />
     </div>
 </template>
 
@@ -182,10 +246,8 @@ export default {
             addresses: [],
             representatives: [],
 
-            selectedAddressToDelete: null,
-            selectedRepresentativeToDelete: null,
-            showDeleteAddressModal: false,
-            showDeleteRepresentativeModal: false,
+            showDisabledAddresses: false,
+            showDisabledRepresentatives: false,
 
             showContactModal: false,
             editedContact: null,
@@ -195,6 +257,20 @@ export default {
             readOnlyMode: false,
             isFormValidate: false,
         }
+    },
+    computed: {
+        disabledAddresses() {
+            return this.addresses.filter(address => address.isDisabled == true)
+        },
+        activedAddresses() {
+            return this.addresses.filter(address => address.isDisabled == false)
+        },
+        disabledRepresentatives() {
+            return this.representatives.filter(representative => representative.isDisabled == true)
+        },
+        activedRepresentatives() {
+            return this.representatives.filter(representative => representative.isDisabled == false)
+        },
     },
     async mounted() {
         if(this.mode === "read") {
@@ -269,55 +345,70 @@ export default {
             this.showContactModal = false;
         },
 
+        async disableAddress(e){
+            let callPath = "/Address/disableAddress";
+            let body = { Id: e.idAddress, IsDisabled: true };
 
-        openDeleteAddressModal(address){
-            this.selectedAddressToDelete = address;
-            this.showDeleteAddressModal = true;
-        },
-        openDeleteRepresentativeModal(representative){
-            this.selectedRepresentativeToDelete = representative;
-            this.showDeleteRepresentativeModal = true;
-        },
-        closeDeleteAddressModal(){
-            this.showDeleteAddressModal = false;
-        },
-        closeDeleteRepresentativeModal(){
-            this.showDeleteRepresentativeModal = false;
-        },
-        async deleteAddress(){
-            let callPath = "/Address/deleteAddress";
-            let body = { data: { IdAddress: this.selectedAddressToDelete.idAddress} };
-
-            await CallAPI.delete(callPath, body)
+            await CallAPI.post(callPath, body)
             .then(res => {
-                this.$vaToast.init({ message: 'Usunięto adres.', color: 'success', duration: 3000 })
+                this.$vaToast.init({ message: 'Dezaktywowano adres.', color: 'success', duration: 3000 })
                 return res.data;
             })
             .catch(err => {
-                this.$vaToast.init({ message: 'Nie można usunąć adresu póki jest używany w dostawach od tego dostawcy.', color: 'danger', duration: 3000 })
+                this.$vaToast.init({ message: 'Błąd dezaktywacji adresu.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
 
             await this.updateAddressList();
         },
-        async deleteRepresentative(){
-            let callPath = "/Representative/deleteRepresentative";
-            let body = { data: { IdRepresentative: this.selectedRepresentativeToDelete.idRepresentative} };
+        async disableRepresentative(e){
+            let callPath = "/Representative/disableRepresentative";
+            let body = { Id: e.idRepresentative, IsDisabled: true };
 
-            await CallAPI.delete(callPath, body)
+            await CallAPI.post(callPath, body)
             .then(res => {
-                this.$vaToast.init({ message: 'Usunięto osobę.', color: 'success', duration: 3000 })
+                this.$vaToast.init({ message: 'Dezaktywowano osobę.', color: 'success', duration: 3000 })
                 return res.data;
             })
             .catch(err => {
-                this.$vaToast.init({ message: 'Nie można usunąć osoby póki jest ona kontaktem, w dostawach od tego dostawcy.', color: 'danger', duration: 3000 })
+                this.$vaToast.init({ message: 'Błąd dezaktywacji osoby kontaktowej klienta.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
 
             await this.updateContactList();
         },
+        async activateAddress(e){
+            let callPath = "/Address/disableAddress";
+            let body = { Id: e.idAddress, IsDisabled: false };
 
+            await CallAPI.post(callPath, body)
+            .then(res => {
+                this.$vaToast.init({ message: 'Aktywowano adres.', color: 'success', duration: 3000 })
+                return res.data;
+            })
+            .catch(err => {
+                this.$vaToast.init({ message: 'Błąd aktywacji adresu.', color: 'danger', duration: 3000 })
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
 
+            await this.updateAddressList();
+        },
+        async activateRepresentative(e){
+            let callPath = "/Representative/disableRepresentative";
+            let body = { Id: e.idRepresentative, IsDisabled: false };
+
+            await CallAPI.post(callPath, body)
+            .then(res => {
+                this.$vaToast.init({ message: 'Aktywowano osobę.', color: 'success', duration: 3000 })
+                return res.data;
+            })
+            .catch(err => {
+                this.$vaToast.init({ message: 'Błąd aktywacji osoby kontaktowej klienta.', color: 'danger', duration: 3000 })
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            await this.updateContactList();
+        },
 
         async addContact(e) {
             let callPath = "/Representative/createRepresentative";
@@ -463,7 +554,7 @@ export default {
     grid-template-areas: 
     ". header header header ."
     ". main sidebarA sidebarB ."
-    ". main sidebarA sidebarB .";
+    ". main sidebarAc sidebarBc .";
     grid-gap: 30px;
 }
 
@@ -493,20 +584,30 @@ export default {
     grid-area: sidebarA;
 }
 
+#representativesCoDisable {
+    grid-area: sidebarAc;
+}
+
 #representativesCoInner {
     padding: 20px;
     background: white;
 	border-radius: 25px;
+    margin-bottom: 20px;
 }
 
 #addressesCo {
     grid-area: sidebarB;
 }
 
+#addressesCoDisable {
+    grid-area: sidebarBc;
+}
+
 #addressesCoInner {
     padding: 20px;
     background: white;
 	border-radius: 25px;
+    margin-bottom: 20px;
 }
 
 .inputWidth {
@@ -518,5 +619,15 @@ export default {
 #editButton{
     width: 150px;
     align-self: center;
+}
+
+.showMoreDetails {
+    color: #217cde;
+    font-style: oblique;
+}
+
+.showMoreDetails:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 </style>
