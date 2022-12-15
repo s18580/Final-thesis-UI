@@ -199,6 +199,8 @@ export default {
             .catch(err => {
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
+
+            this.searchForResults();
         },
 	},
     async mounted() {

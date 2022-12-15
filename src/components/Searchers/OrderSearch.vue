@@ -94,7 +94,6 @@
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
                 <va-button flat icon="edit" @click="editItemById(rowIndex)" />
-                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
             </template>
             <template #bodyAppend>
                 <tr><td colspan="12" class="table-pagination">
@@ -308,9 +307,6 @@ export default {
         },
         editItemById(row) {
             this.$router.push({ name: "OrderDetails", params: { id: this.results[row].idOrder, mode: 'edit' } });
-        },
-        deleteItemById() {
-            // to call delete
         },
 	}
 }

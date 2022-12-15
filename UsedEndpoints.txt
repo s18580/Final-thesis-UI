@@ -1,11 +1,15 @@
 AddressController
     GetAddressesByCustomer
+    GetAddressesBySupplier
     CreateAddress
     UpdateAddress
     DisableAddress
 
 AssignmentController
-
+    GetAssignmentsByOrder
+    CreateAssignment
+    UpdateAssignment
+    DeleteAssignment
 
 
 BindingTypeController
@@ -21,6 +25,7 @@ ColorController
 
 CustomerController
     GetCustomer
+    GetCustomers
     GetSearchCustomers
     UpdateCompanyCustomer
     UpdatePersonCustomer
@@ -29,7 +34,10 @@ CustomerController
 
 
 DeliveriesAddressesController
-
+    GetDeliveriesAddressesByOrder
+    GetDeliveriesAddressesBySupply
+    CreateDeliveriesAddress
+    DeleteDeliveriesAddress
 
 
 DeliveryTypeController
@@ -40,7 +48,7 @@ DeliveryTypeController
 
 
 FileController
-
+    CreateFile
 
 
 FileStatusController
@@ -58,11 +66,20 @@ FileTypeController
 
 
 OrderController
-
+    GetOrder
+    GetOrdersByWorker
+    GetOrdersByDeliveryDate
+    GetOnGoingOrdersList
+    GetSearchOrders
+    CreateOrderWithData
+    UpdateOrder
 
 
 OrderItemController
-
+    GetOrderItemsByOrder
+    CreateOrderItem
+    UpdateOrderItem
+    DeleteOrderItem
 
 
 OrderItemTypeController
@@ -92,7 +109,12 @@ PriceListController
 
 
 RepresentativeController
+    GetRepresentative
+    GetRepresentatives
+    GetSearchRepresentatives
     GetRepresentativesByCustomer
+    GetSupplierRepresentatives
+    GetCustomerRepresentatives
     CreateRepresentative
     UpdateRepresentative
     DisableRepresentative
@@ -118,11 +140,18 @@ ServiceNameController
 
 
 SupplierController
-
+    GetSupplier
+    GetSuppliers
+    GetSearchSuppliers
+    CreateSupplierWithData
+    UpdateSupplier
 
 
 SupplyController
-
+    GetSupply
+    CreateSupplyWithAddresses
+    UpdateSupply
+    DeleteSupply
 
 
 SupplyItemTypeController
@@ -149,6 +178,7 @@ WorkerController
     GetWorker
     GetAWS
     GetWorkers
+    GetSearchWorkers
     UpdateWorker
     DisableWorker
 
