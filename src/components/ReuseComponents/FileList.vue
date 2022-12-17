@@ -4,7 +4,7 @@
         <va-divider />
         <div id="filesCoInner" class="file-container-wrapper">
             <div class="file-container">
-                <div v-for="file in files" :key="file.Key" class="file-item">
+                <div v-for="file in files" :key="file.Key" class="file-item" @click="downloadFile(file)">
                     <va-icon v-if="!readOnlyMode" color="danger" name="close" id="deleteFile" @click="deleteFile(file)"/>
                     <div class="file-icons-wrapper">
                         <div class="file-icons">
@@ -73,7 +73,8 @@
 //import CallAPI from '@/axios/axios-connection.js';
 import CallSeq from '@/logging/seq-logger.js';
 import FileModal from '@/components/ReuseComponents/Modals/FileModal.vue';
-import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, ListObjectsCommand } from "@aws-sdk/client-s3";
 
 export default {
     name: "FileList",
@@ -259,6 +260,30 @@ export default {
 
             this.updateFileList();
         },
+        async downloadFile(e){
+            console.log(e);
+            // create s3 object
+            const awsClient = this.createNewAwsClient();
+
+            // create params and command
+            const params = { Bucket: this.awsData.bucketName, Key: e.Key };
+            const command = new GetObjectCommand(params);
+
+            // get file url
+            const url = await getSignedUrl(awsClient, command, { expiresIn: 3600 });
+
+            // download file
+            this.downloadURI(url, e.Key);
+
+        },
+        downloadURI(uri, name) {
+            var link = document.createElement("a");
+            link.download = name;
+            link.href = uri;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     }
 }
 </script>
