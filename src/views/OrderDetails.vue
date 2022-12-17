@@ -75,6 +75,12 @@
                             placeholder="Data złożenia zamówienia"
                             :readonly = "readOnlyMode"
                         />
+                        <va-input
+                            class="inputWidth"
+                            v-model="selectedCustomerName"
+                            label="Klient"
+                            :readonly = "true"
+                        />
                         <va-select
                             class="inputWidth"
                             v-model="selectedRepresentative"
@@ -292,6 +298,7 @@ export default {
             selectedRepresentative: "",
             rawRepresentatives: [],
             idCustomer: null,
+            selectedCustomerName: "",
             selectedStatus: "",
             rawOrderStatuses: [],
             isFormValidate: false,
@@ -405,6 +412,7 @@ export default {
             this.submissionDate = null;
         }
         this.selectedRepresentative = this.getNameById('representative', orderData.idRepresentative);
+        this.selectedCustomerName = this.getNameById('customer', orderData.idRepresentative);
         this.selectedStatus = this.getNameById('status', orderData.idStatus);
     },
     methods: {
@@ -468,7 +476,10 @@ export default {
                 case "status":
                     return this.rawOrderStatuses.find(element => element.idStatus == id).name;
                 case "representative":
-                    return this.rawRepresentatives.find(element => element.idRepresentative == id).name;
+                    var representative = this.rawRepresentatives.find(element => element.idRepresentative == id);
+                    return representative.name + " " +  representative.lastName;
+                case "customer":
+                    return this.rawRepresentatives.find(element => element.idRepresentative == id).customer.companyName;
             }
         },
         getIdByName(what, selectedName) {
