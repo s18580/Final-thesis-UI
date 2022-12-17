@@ -73,7 +73,7 @@
 //import CallAPI from '@/axios/axios-connection.js';
 import CallSeq from '@/logging/seq-logger.js';
 import FileModal from '@/components/ReuseComponents/Modals/FileModal.vue';
-import { S3Client, PutObjectCommand, DeleteObjectsCommand, ListObjectsCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsCommand } from "@aws-sdk/client-s3";
 
 export default {
     name: "FileList",
@@ -110,9 +110,9 @@ export default {
     computed: {
         filePrefix(){
             if(this.parentType === "order") {
-                return "Order" + this.id;
+                return "Order" + this.id + "/";
             } else {
-                return "Valuation" + this.id;
+                return "Valuation" + this.id + "/";
             }
         }
     },
@@ -212,6 +212,8 @@ export default {
                 });
             }
             */
+            awsClient.destroy();
+
             this.updateFileList();
         },
         async deleteFile(e){
@@ -221,14 +223,15 @@ export default {
             const awsClient = this.createNewAwsClient();
 
             // create params and command
-            const params = { Bucket: this.awsData.bucketName, Delete: { Objects: [ { Key: e.Key } ] }, Quiet: true };
-            const command = new DeleteObjectsCommand(params);
+            const params = { Bucket: this.awsData.bucketName, Key: e.Key };
+            const command = new DeleteObjectCommand(params);
 
             // send command and handle it correctly
             try{
-                await awsClient.send(command);
+                await awsClient.send(command)
                 //deletedFromAws = true;
             }catch(err) {
+                console.log(err);
                 this.$vaToast.init({ message: 'Błąd usuwania pliku.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             }
@@ -252,6 +255,8 @@ export default {
                 });
             }
             */
+            awsClient.destroy();
+
             this.updateFileList();
         },
     }
@@ -308,12 +313,10 @@ export default {
     border-radius: 15px;
     margin: 10px;
     position: relative;
-    border: lightgray 1px solid;
-    box-shadow: 1px 1px lightgray;
 }
 
 .file-item:hover {
-    box-shadow: 10px 10px 5px lightblue;
+    box-shadow: 3px 3px 15px 8px lightblue;
 }
 
 .file-icons {
