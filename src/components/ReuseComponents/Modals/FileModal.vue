@@ -13,16 +13,16 @@
                     :options="fileTypes"
                     label="Rodzaj pliku"
                     noOptionsText="Brak rodzajów do wybrania"
-                 />
-                 <va-select
+                />
+                <va-select
                     v-if="isGraphicType"
                     class="mb-4 some-space"
                     v-model="selectedFileStatus"
                     :options="fileStatuses"
                     label="Status pliku"
                     noOptionsText="Brak statusów do wybrania"
-                 />
-                 <input @input="uploadFile($event)" type="file" ref="fileUpload" />
+                />
+                <input @input="uploadFile($event)" type="file" ref="fileUpload" />
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
@@ -30,8 +30,6 @@
 </template>
 
 <script>
-import { S3Client, PutObjectCommand  } from "@aws-sdk/client-s3";
-import { useUserStore } from '@/stores/UserStore';
 import CallAPI from '@/axios/axios-connection.js';
 import CallSeq from '@/logging/seq-logger.js';
 
@@ -40,18 +38,15 @@ export default {
   emits: ["createFile", "close"],
 	data() {
 		return {
-            awsData: null,
-            buttonMessage: "",
+            buttonMessage: "Dodaj plik",
             isFileFormValidate: false,
             showFileModal: true,
             fileUpload: [],
-            fileName: "",
             selectedFile: null,
             rawfileTypes: [],
             selectedFileType: "",
             rawfileStatuses: [],
             selectedFileStatus: "",
-            albumBucketName: "printingsystemfiles",
 		}
 	},
     computed: {
@@ -82,41 +77,14 @@ export default {
 	methods: {
 		async submitForm() {
             if(this.validateForm()) {
-                // create s3 object
-                const awsClient = new S3Client({
-                    region: this.awsData.region,
-                    credentials: {
-                        accessKeyId: this.awsData.accessKeyAWS,
-                        secretAccessKey: this.awsData.secretKeyAWS
-                    }
-                });
+                let data = {
+                    selectedFile: this.selectedFile,
+                    fileType: this.getIdByName("fileType", this.selectedFileType),
+                    fileStatus: this.getIdByName("fileStatus", this.selectedFileStatus),
+                };
 
-                // create params and command
-                this.fileName = this.selectedFile.name;
-                const params = { Bucket: this.awsData.bucketName, Key: this.fileName, Body: this.selectedFile };
-                const command = new PutObjectCommand(params);
-
-                // send command and handle it correctly
-                try{
-                    var resultData = await awsClient.send(command);
-                    console.log("Succesfully for now");
-                    console.log(resultData);
-
-                    let data = {
-                        newFile: {
-                            name: this.fileName,
-                            fileType: this.getIdByName("fileType", this.selectedFileType),
-                            fileStatus: this.getIdByName("fileStatus", this.selectedFileStatus),
-                        }
-                    };
-
-                    this.$emit('createFile', data);
-                    this.closeFileModal();
-
-                }catch(err) {
-                    console.log("Error appeared");
-                    console.log(err);
-                }
+                this.$emit('createFile', data);
+                this.closeFileModal();
             }
 		},
         uploadFile(e) {
@@ -173,20 +141,8 @@ export default {
         }
 	},
     async mounted() {
-        const userStore = useUserStore();
-        let callPath = "/Worker/getAWS?id=" + userStore.userId;
-        this.awsData = await CallAPI.get(callPath)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-        });
-
-        this.buttonMessage = "Dodaj plik";
         this.selectedFileType = "";
         this.selectedFileStatus = "";
-        this.fileName = "";
         this.selectedFile = null;
 
         this.getDictionaryData();

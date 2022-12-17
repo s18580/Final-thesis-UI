@@ -49,6 +49,7 @@ DeliveryTypeController
 
 FileController
     CreateFile
+    DeleteFile
 
 
 FileStatusController
@@ -67,6 +68,7 @@ FileTypeController
 
 OrderController
     GetOrder
+    GetOrders
     GetOrdersByWorker
     GetOrdersByDeliveryDate
     GetOnGoingOrdersList
@@ -76,6 +78,7 @@ OrderController
 
 
 OrderItemController
+    GetOrderItem
     GetOrderItemsByOrder
     CreateOrderItem
     UpdateOrderItem
@@ -167,7 +170,11 @@ UserController
 
 
 ValuationController
-
+    GetValuation
+    GetSearchValuations
+    CreateValuation
+    UpdateValuation
+    DeleteValuation
 
 
 ValuationPriceListController
