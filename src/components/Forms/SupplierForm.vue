@@ -186,8 +186,8 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.resetData();
-                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 })
+                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "SupplierDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
                 .catch(err => {
@@ -265,9 +265,6 @@ export default {
         },
         removeContact(id) {
             this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
-        },
-        resetData() {
-            window.location.reload(true);
         },
 	},
 }

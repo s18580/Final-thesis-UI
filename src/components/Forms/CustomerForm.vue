@@ -265,8 +265,8 @@ export default {
 
                     await CallAPI.post(callPath, body)
                     .then(res => {
-                        this.resetData();
-                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 5000 })
+                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 5000 });
+                        this.$router.push({ name: "CustomerDetails", params: { id: res.data, mode: 'edit' } });
                         return res.data;
                     })
                     .catch(err => {
@@ -292,8 +292,8 @@ export default {
 
                     await CallAPI.post(callPath, body)
                     .then(res => {
-                        this.resetData();
-                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 5000 })
+                        this.$vaToast.init({ message: 'Klient został dodany.', color: 'success', duration: 5000 });
+                        this.$router.push({ name: "CustomerDetails", params: { id: res.data, mode: 'edit' } });
                         return res.data;
                     })
                     .catch(err => {
@@ -377,9 +377,6 @@ export default {
         },
         removeContact(id) {
             this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
-        },
-        resetData() {
-            window.location.reload(true);
         },
 	},
 }

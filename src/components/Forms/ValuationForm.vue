@@ -840,7 +840,8 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.$vaToast.init({ message: 'Wycena została zapisana.', color: 'success', duration: 3000 })
+                    this.$vaToast.init({ message: 'Wycena została zapisana.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "ValuationDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
                 .catch(err => {

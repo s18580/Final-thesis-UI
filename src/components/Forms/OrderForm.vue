@@ -344,8 +344,8 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.resetData();
-                    this.$vaToast.init({ message: 'Zamówienie zostało dodane.', color: 'success', duration: 3000 })
+                    this.$vaToast.init({ message: 'Zamówienie zostało dodane.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "OrderDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
                 .catch(err => {
@@ -392,9 +392,6 @@ export default {
         closeOrderItemModal() {
             this.showOrderItemModal = false;
             this.editedOrderItem = null;
-        },
-        resetData() {
-            window.location.reload(true);
         },
         addOrderItem(e) {
             e.newOrderItem.IdForOrderItemTable = this.orderItemsCounter;
