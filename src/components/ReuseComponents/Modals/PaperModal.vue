@@ -83,26 +83,22 @@ export default {
             paperOpacity: 0,
             paperQuantity: 0,
             pricePerKilogram: 0.0,
-            IdForPaperTable: null,
 		}
 	},
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newPaper: {
-                        name: this.paperName,
-                        kind: this.paperKind,
-                        sheetFormat: this.sheetFormat,
-                        fiberDirection: this.selectedFiberDirection,
-                        opacity: this.paperOpacity,
-                        pricePerKilogram: this.pricePerKilogram,
-                        quantity: this.paperQuantity
-                    }
+                    name: this.paperName,
+                    kind: this.paperKind,
+                    sheetFormat: this.sheetFormat,
+                    fiberDirection: this.selectedFiberDirection,
+                    opacity: this.paperOpacity,
+                    pricePerKilogram: this.pricePerKilogram,
+                    quantity: this.paperQuantity
                 };
 
-                if(this.IdForPaperTable !== null) {
-                    data.newPaper.IdForPaperTable = this.IdForPaperTable;
+                if(this.paper !== null) {
                     this.$emit('editPaper', data);
                 } else {
                     this.$emit('createPaper', data);
@@ -122,24 +118,22 @@ export default {
     mounted() {
         if(this.paper === null) {
             this.buttonMessage = "Dodaj papier";
-            this.paperName = "",
-            this.paperKind = "",
-            this.sheetFormat = "",
-            this.selectedFiberDirection = "Pionowy",
-            this.paperOpacity = 0,
-            this.paperQuantity = 0,
-            this.pricePerKilogram = 0.0,
-            this.IdForPaperTable = null;
+            this.paperName = "";
+            this.paperKind = "";
+            this.sheetFormat = "";
+            this.selectedFiberDirection = "Pionowy";
+            this.paperOpacity = 0;
+            this.paperQuantity = 0;
+            this.pricePerKilogram = 0.0;
         }else {
             this.buttonMessage = "Edytuj papier";
-            this.paperName = this.paper.name,
-            this.paperKind = this.paper.kind,
-            this.sheetFormat = this.paper.sheetFormat,
-            this.selectedFiberDirection = this.paper.fiberDirection,
-            this.paperOpacity = this.paper.opacity,
-            this.paperQuantity = this.paper.quantity,
-            this.pricePerKilogram = this.paper.pricePerKilogram,
-            this.IdForPaperTable = this.paper.IdForPaperTable;
+            this.paperName = this.paper.name;
+            this.paperKind = this.paper.kind;
+            this.sheetFormat = this.paper.sheetFormat;
+            this.selectedFiberDirection = this.paper.fiberDirection;
+            this.paperOpacity = this.paper.opacity;
+            this.paperQuantity = this.paper.quantity;
+            this.pricePerKilogram = this.paper.pricePerKilogram;
         }
     }
 }
