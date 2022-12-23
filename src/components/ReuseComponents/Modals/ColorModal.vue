@@ -14,10 +14,6 @@
                     label="Nazwa"
                     placeholder="Nazwa koloru"
                 />
-                <div id="checkboxCo" v-if="withSelect">
-                    <p>Traktuj jako kolorystyka okładki: </p>
-                    <input v-model="isForCover" type="checkbox">
-                </div>
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
@@ -27,45 +23,23 @@
 <script>
 export default {
   name: 'ColorModal',
-  props: {
-    color: {
-        type: Object,
-        required: false,
-        default: null
-    },
-    withSelect: {
-        type: Boolean,
-        required: false,
-        default: true
-    }
-  },
-  emits: ["createColor", "editColor", "close"],
+  emits: ["createColor", "close"],
 	data() {
 		return {
             buttonMessage: "",
             isColorFormValidate: false,
             showColorModal: true,
             colorName: "",
-            isForCover: false,
-            IdForColorTable: null,
 		}
 	},
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newColor: {
-                        name: this.colorName,
-                        isForCover: this.isForCover,
-                    }
+                    name: this.colorName,
                 };
 
-                if(this.IdForColorTable !== null) {
-                    data.newColor.IdForColorTable = this.IdForColorTable;
-                    this.$emit('editColor', data);
-                } else {
-                    this.$emit('createColor', data);
-                }
+                this.$emit('createColor', data);
                 this.closeColorModal();
             }
 		},
@@ -79,17 +53,8 @@ export default {
         }
 	},
     mounted() {
-        if(this.color === null) {
-            this.buttonMessage = "Dodaj kolorystykę";
-            this.colorName = "";
-            this.isForCover = false;
-            this.IdForColorTable = null;
-        }else {
-            this.buttonMessage = "Edytuj kolorystykę";
-            this.isForCover = this.color.isForCover;
-            this.colorName = this.color.name;
-            this.IdForColorTable = this.color.IdForColorTable;
-        }
+        this.buttonMessage = "Dodaj kolorystykę";
+        this.colorName = "";
     }
 }
 </script>

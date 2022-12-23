@@ -49,7 +49,6 @@ export default {
             servicePrice: 0.0,
             rawServices: [],
             selectedService: "",
-            IdForServiceTable: null,
 		}
 	},
     computed: {
@@ -65,16 +64,13 @@ export default {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newService: {
-                        idServiceName: this.getServiceIdByName(this.selectedService),
-                        serviceName : { name: this.selectedService },
-                        name: this.selectedService,
-                        price: this.servicePrice,
-                    }
+                    idServiceName: this.getServiceIdByName(this.selectedService),
+                    serviceName : { name: this.selectedService },
+                    name: this.selectedService,
+                    price: this.servicePrice,
                 };
 
-                if(this.IdForServiceTable !== null) {
-                    data.newService.IdForServiceTable = this.IdForServiceTable;
+                if(this.service !== null) {
                     this.$emit('editService', data);
                 } else {
                     this.$emit('createService', data);
@@ -95,21 +91,12 @@ export default {
         },
         getServiceIdByName(serviceName) {
             return this.rawServices.find(element => element.name == serviceName).idServiceName;
+        },
+        getServiceNameById(idService) {
+            return this.rawServices.find(element => element.idServiceName == idService).name;
         }
 	},
     async mounted() {
-        if(this.service === null) {
-            this.buttonMessage = "Dodaj usługę";
-            this.selectedService = "";
-            this.servicePrice = 0.0;
-            this.IdForFileTable = null;
-        }else {
-            this.buttonMessage = "Edytuj usługę";
-            this.servicePrice = this.newService.price;
-            this.selectedService = this.newService.selectedService;
-            this.IdForServiceTable = this.newService.IdForServiceTable;
-        }
-
         let callPath = "/ServiceName/getServiceNames";
         this.rawServices = await CallAPI.get(callPath)
         .then(res => {
@@ -118,6 +105,20 @@ export default {
         .catch(err => {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
+
+        if(this.service === null) {
+            this.buttonMessage = "Dodaj usługę";
+            this.selectedService = "";
+            this.servicePrice = 0.0;
+        }else {
+            console.log(this.service);
+            console.log(this.selectedService);
+
+            this.buttonMessage = "Edytuj usługę";
+            this.servicePrice = this.service.price;
+            this.selectedService = this.getServiceNameById(this.service.idServiceName);
+            console.log(this.selectedService);
+        }
     }
 }
 </script>
