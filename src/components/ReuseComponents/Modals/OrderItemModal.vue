@@ -8,6 +8,14 @@
     >
         <div id="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalOrderItemForm" tag="form" ref="modalOrderItemForm" @validation="isOrderItemFormValidate = $event">
+                <div id="isCover">
+                    <va-radio
+                        v-for="(option, index) in radioOptions"
+                        :key="index"
+                        v-model="selectedRadioOption"
+                        :option="option"
+                    />
+                </div>
                 <va-input
                     class="some-space mb-4"
                     v-model="orderItemName"
@@ -24,22 +32,9 @@
                 />
                 <va-input
                     class="some-space mb-4"
-                    v-model="coverFormat"
-                    :rules="[(v) => v.length < 101 || `Pole format okładki przekroczyło limit znaków.`]"
-                    label="Format okładki"
-                    placeholder="Format okładki przedmiotu zamówienia"
-                />
-                <va-input
-                    class="some-space mb-4"
                     v-model="circulation"
                     :rules="[(v) => v >= 0 || `Nakład nie może być ujmeny.`]"
                     label="Nakład"
-                />
-                <va-input
-                    class="some-space mb-4"
-                    v-model="capacity"
-                    :rules="[(v) => v >= 0 || `Objętość nie może być ujemna.`]"
-                    label="Objętość"
                 />
                 <va-date-input
                     class="some-space mb-4"
@@ -49,7 +44,7 @@
                     clearable
                 />
                 <va-date-input
-                    v-if="showCompletionDate"
+                    v-if="!newItemMode"
                     class="some-space mb-4"
                     v-model="completionDate"
                     label="Data ukończenia"
@@ -71,20 +66,13 @@
                     noOptionsText="Brak typów dostawy do wybrania"
                 />
                 <va-select
-                    v-if="showValuationSelect"
+                    v-if="showValuationSelect && !newItemMode"
                     class="mb-4 some-space"
                     v-model="selectedValuation"
                     :options="valuations"
                     label="Wybrana wycena"
                     noOptionsText="Brak wycen do wybrania"
                 />
-                <va-select
-                    class="mb-4 some-space"
-                    v-model="selectedBindingTypes"
-                    :options="bindingTypes"
-                    label="Typ szycia"
-                    noOptionsText="Brak typów szycia do wybrania"
-                /> 
                 <va-input
                     class="mb-4 some-space"
                     v-model="comments"
@@ -92,7 +80,6 @@
                     :rules="[(v) => v.length < 256 || `Pole notatka przekroczyło limit znaków.`]"
                     label="Notatka (opcjonalnie)"
                 />
-                <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
             <div id="colorCo">
                 <h3>Kolorystyka</h3>
@@ -102,10 +89,9 @@
                         <h6>Lista kolorów:</h6>
                         <va-list id="insideColorList">
                             <va-list-item
-                                v-for="color in orderItemColors"
-                                :key="color.IdForColorTable"
+                                v-for="(color, index) in colors"
+                                :key="index"
                             >
-
                                 <va-list-item-section avatar>
                                     <va-avatar color="#6B5B95" icon="palette" />
                                 </va-list-item-section>
@@ -118,13 +104,13 @@
 
                                 <va-list-item-section icon>
                                     <va-popover message="Usuń kolor">
-                                        <va-button flat icon="delete" @click="removeColor(color.IdForColorTable)" />
+                                        <va-button flat icon="delete" @click="removeItem(colors, index)" />
                                     </va-popover>
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
                         <va-button @click="showColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
-                        <ColorModal v-if="showColorModal" :color="editedColor" @close="closeColorModal()" @createColor="addColor($event)"/>
+                        <ColorModal v-if="showColorModal" @close="showColorModal=false" @createColor="addItem(colors, $event)"/>
                     </div>
                 </div>
             </div>
@@ -136,8 +122,8 @@
                         <h6>Lista papierów:</h6>
                         <va-list id="papersList">
                             <va-list-item
-                                v-for="paper in orderItemPapers"
-                                :key="paper.IdForPaperTable"
+                                v-for="(paper, index) in papers"
+                                :key="index"
                             >
                                 <va-list-item-section avatar>
                                     <va-avatar color="#6B5B95" icon="newspaper" />
@@ -151,16 +137,16 @@
 
                                 <va-list-item-section icon>
                                     <va-popover message="Edytuj papier">
-                                        <va-button flat icon="edit" @click="editPaperInModal(paper)" />
+                                        <va-button flat icon="edit" @click="editPaperInModal(index)" />
                                     </va-popover>
                                     <va-popover message="Usuń papier">
-                                        <va-button flat icon="delete" @click="removePaper(paper.IdForPaperTable)" />
+                                        <va-button flat icon="delete" @click="removeItem(papers, index)" />
                                     </va-popover>
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
                         <va-button @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
-                        <PaperModal v-if="showPaperModal" :paper="editedPaper" @close="closePaperModal()" @createPaper="addPaper($event)" @editPaper="editPaper($event)"/>
+                        <PaperModal v-if="showPaperModal" :paper="papers[editedPaperIndex]" @close="closePaperModal()" @createPaper="addItem(papers, $event)" @editPaper="editPaper($event)"/>
                     </div>
                 </div>
             </div>
@@ -172,8 +158,8 @@
                         <h6>Lista usług:</h6>
                         <va-list id="servicesList">
                             <va-list-item
-                                v-for="service in orderItemService"
-                                :key="service.IdForServiceTable"
+                                v-for="(service, index) in services"
+                                :key="index"
                             >
                                 <va-list-item-section avatar>
                                     <va-avatar color="#6B5B95" icon="receipt_long" />
@@ -187,18 +173,149 @@
 
                                 <va-list-item-section icon>
                                     <va-popover message="Edytuj pozycję">
-                                        <va-button flat icon="edit" @click="editServiceInModal(service)" />
+                                        <va-button flat icon="edit" @click="editServiceInModal(index)" />
                                     </va-popover>
                                     <va-popover message="Usuń pozycję">
-                                        <va-button flat icon="delete" @click="removeService(service.IdForServiceTable)" />
+                                        <va-button flat icon="delete" @click="removeItem(services, index)" />
                                     </va-popover>
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
                         <va-button @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
-                        <ServiceModal v-if="showServiceModal" :service="editedService" @close="closeServiceModal()" @createService="addService($event)" @editService="editService($event)"/>
+                        <ServiceModal v-if="showServiceModal" :service="services[editedServiceIndex]" @close="closeServiceModal()" @createService="addItem(services, $event)" @editService="editService($event)"/>
                     </div>
                 </div>
+            </div>
+            <va-form v-if="showCoverDetails" @submit.prevent="submitForm()" id="modalOrderItemCoverForm" tag="coverForm" ref="modalOrderItemCoverForm" @validation="isOrderItemCoverFormValidate = $event">
+                <div id="someSpace"></div>
+                <va-input
+                    class="some-space mb-4"
+                    v-model="coverFormat"
+                    :rules="[(v) => v.length < 101 || `Pole format okładki przekroczyło limit znaków.`]"
+                    label="Format okładki"
+                    placeholder="Format okładki przedmiotu zamówienia"
+                />
+                <va-input
+                    class="some-space mb-4"
+                    v-model="capacity"
+                    :rules="[(v) => v >= 0 || `Objętość nie może być ujemna.`]"
+                    label="Objętość"
+                />
+                <va-select
+                    class="mb-4 some-space"
+                    v-model="selectedBindingTypes"
+                    :options="bindingTypes"
+                    label="Typ szycia"
+                    noOptionsText="Brak typów szycia do wybrania"
+                /> 
+            </va-form>
+            <div id="colorCoCover" v-if="showCoverDetails">
+                <h3>Kolorystyka okładki</h3>
+                <va-divider />
+                <div>
+                    <div class="objects-card-wrapper">
+                        <h6>Lista kolorów:</h6>
+                        <va-list id="insideColorList">
+                            <va-list-item
+                                v-for="(color, index) in coverColors"
+                                :key="index"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="palette" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ color.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Usuń kolor">
+                                        <va-button flat icon="delete" @click="removeItem(coverColors, index)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
+                        <va-button @click="showCoverColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
+                        <ColorModal v-if="showCoverColorModal" @close="showCoverColorModal=false;" @createColor="addItem(coverColors, $event)"/>
+                    </div>
+                </div>
+            </div>
+            <div id="paperCoCover" v-if="showCoverDetails">
+                <h3>Papiery okładki</h3>
+                <va-divider />
+                <div>
+                    <div class="objects-card-wrapper">
+                        <h6>Lista papierów:</h6>
+                        <va-list id="papersList">
+                            <va-list-item
+                                v-for="(paper, index) in coverPapers"
+                                :key="index"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="newspaper" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ paper.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Edytuj papier">
+                                        <va-button flat icon="edit" @click="editCoverPaperInModal(index)" />
+                                    </va-popover>
+                                    <va-popover message="Usuń papier">
+                                        <va-button flat icon="delete" @click="removeItem(coverPapers, index)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
+                        <va-button @click="showCoverPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
+                        <PaperModal v-if="showCoverPaperModal" :paper="coverPapers[editedCoverPaperIndex]" @close="closeCoverPaperModal()" @createPaper="addItem(coverPapers, $event)" @editPaper="editCoverPaper($event)"/>
+                    </div>
+                </div>
+            </div>
+            <div id="serviceCoCover" v-if="showCoverDetails">
+                <h3>Usługi okładki</h3>
+                <va-divider />
+                <div>
+                    <div class="objects-card-wrapper">
+                        <h6>Lista usług:</h6>
+                        <va-list id="servicesList">
+                            <va-list-item
+                                v-for="(service, index) in coverServices"
+                                :key="index"
+                            >
+                                <va-list-item-section avatar>
+                                    <va-avatar color="#6B5B95" icon="receipt_long" />
+                                </va-list-item-section>
+
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ service.serviceName.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+
+                                <va-list-item-section icon>
+                                    <va-popover message="Edytuj pozycję">
+                                        <va-button flat icon="edit" @click="editCoverServiceInModal(index)" />
+                                    </va-popover>
+                                    <va-popover message="Usuń pozycję">
+                                        <va-button flat icon="delete" @click="removeItem(coverServices, index)" />
+                                    </va-popover>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
+                        <va-button @click="showCoverServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
+                        <ServiceModal v-if="showCoverServiceModal" :service="coverServices[editedCoverServiceIndex]" @close="closeCoverServiceModal()" @createService="addItem(coverServices, $event)" @editService="editCoverService($event)"/>
+                    </div>
+                </div>
+            </div>
+            <div id="buttonCo">
+                <va-button @click="submitForm()" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </div>
         </div>
     </va-modal>
@@ -224,44 +341,64 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
-            showValuationSelect: false,
-            showCompletionDate: false,
-            orderItemId: null,
-            orderItemColors: [],
-            showColorModal: false,
-            colorCounter: 0,
-            editedColor: null,
-            orderItemPapers: [],
-            showPaperModal: false,
-            paperCounter: 0,
-            editedPaper: null,
-            orderItemService: [],
-            showServiceModal: false,
-            serviceCounter: 0,
-            editedService: null,
-            buttonMessage: "",
-            isOrderItemFormValidate: false,
-            showOrderItemModal: true,
-            IdForOrderItemTable: null,
             orderItemName: "",
-            comments: "",
             insideFormat: "",
-            coverFormat: "",
-            completionDate: null,
-            expectedCompletionDate: null,
-            capacity: 0,
             circulation: 1,
-            rawOrderItemTypes: [],
+            expectedCompletionDate: new Date(),
+            completionDate: new Date(),
             selectedOrderItemType: "",
-            rawDeliveryTypes: [],
             selectedDeliveryType: "",
-            rawBindingTypes: [],
-            selectedBindingTypes: "Bez szycia",
             selectedValuation: "",
-            rawValuations: [],
-		}
+            showValuationSelect: false,
+            comments: "",
+
+            colors: [],
+            showColorModal: false,
+            papers: [],
+            showPaperModal: false,
+            editedPaperIndex: null,
+            services: [],
+            showServiceModal: false,
+            editedServiceIndex: null,
+
+
+            coverFormat: "",
+            capacity: 0,
+            selectedBindingTypes: "",
+
+            coverColors: [],
+            showCoverColorModal: false,
+            coverPapers: [],
+            showCoverPaperModal: false,
+            editedCoverPaperIndex: null,
+            coverServices: [],
+            showCoverServiceModal: false,
+            editedCoverServiceIndex: null,
+
+            rawBindingTypes: [],
+            rawDeliveryTypes: [],
+            rawOrderItemTypes: [],
+
+            isOrderItemFormValidate: false,
+            isOrderItemCoverFormValidate: false,
+            newItemMode: true,
+            buttonMessage: "",
+            showOrderItemModal: true,
+            selectedRadioOption: "Bez okładki",
+            radioOptions: ['Bez okładki', 'Z okładką'],
+		} 
 	},
     computed: {
+        showCoverDetails(){
+            return this.selectedRadioOption === "Z okładką";
+        },
+        bindingTypes() {
+            let resultArr = this.rawBindingTypes.map(function(item) {
+                return item["name"];
+            });
+
+            return ["Bez szycia"].concat(resultArr);
+        },
         orderItemTypes(){
             let resultArr = this.rawOrderItemTypes.map(function(item) {
                 return item["name"];
@@ -276,13 +413,6 @@ export default {
 
             return resultArr;
         },
-        bindingTypes(){
-            let resultArr = this.rawBindingTypes.map(function(item) {
-                return item["name"];
-            });
-
-            return ["Bez szycia"].concat(resultArr);
-        },
         valuations() {
             let resultArr = this.rawValuations.map(function(item) {
                 return item["name"];
@@ -291,45 +421,131 @@ export default {
             return resultArr;
         }
     },
-	methods: {
-		submitForm() {
-            if(this.validateForm()) {
-                if(this.capacity == 0 || this.capacity == 1) this.capacity == null;
+    async mounted() { 
+        this.rawBindingTypes = await CallAPI.get("/BindingType/getBindingTypes")
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
 
-                let data = {
-                    newOrderItem: {
-                        name: this.orderItemName,
-                        comments: this.comments,
-                        insideFormat: this.insideFormat,
-                        coverFormat: this.coverFormat,
-                        capacity: this.capacity,
-                        circulation: this.circulation,
-                        completionDate: this.completionDate,
-                        expectedCompletionDate: this.expectedCompletionDate,
-                        selectedOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
-                        selectedDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
-                        selectedBindingTypes: this.getIdByName("bindingType", this.selectedBindingTypes),
-                        selectedValuation: this.getIdByName("valutaion", this.selectedValuation),
-                        colors: this.orderItemColors,
-                        papers: this.orderItemPapers,
-                        services: this.orderItemService,
-                    }
-                };
+        this.rawDeliveryTypes = await CallAPI.get("/DeliveryType/getDeliveryTypes")
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
 
-                if(this.orderItem !== null){
-                    data.newOrderItem.idOrderItem = this.orderItem.idOrderItem;
-                }
+        this.rawOrderItemTypes = await CallAPI.get("/OrderItemType/getOrderItemsTypes")
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
 
-                if(this.IdForOrderItemTable !== null) {
-                    data.newOrderItem.IdForOrderItemTable = this.IdForOrderItemTable;
-                    this.$emit('editOrderItem', data);
-                } else {
-                    this.$emit('createOrderItem', data);
-                }
-                this.closeOrderItemModal();
+        this.selectedRadioOption = "Bez okładki";
+        this.showColorModal = false;
+        this.showPaperModal = false;
+        this.showServiceModal = false;
+        this.editedServiceIndex = null;
+        this.editedPaperIndex = null;
+        this.showCoverColorModal = false;
+        this.showCoverPaperModal = false;
+        this.showCoverServiceModal = false;
+        this.editedCoverServiceIndex = null;
+        this.editedCoverPaperIndex = null;
+        this.isOrderItemFormValidate = false;
+        this.isOrderItemCoverFormValidate = false;
+
+        if(this.orderItem === null) {
+            this.showValuationSelect = false;
+            this.orderItemName = "";
+            this.comments = "";
+            this.insideFormat = "";
+            this.coverFormat = "";
+            this.capacity = 0;
+            this.circulation = 1;
+            this.completionDate = null;
+            this.expectedCompletionDate = null;
+            this.selectedOrderItemType = "";
+            this.selectedDeliveryType = "";
+            this.selectedBindingTypes = "Bez szycia";
+            this.selectedValuation = "";
+            this.colors = [];
+            this.papers = [];
+            this.service = [];
+            this.coverColors = [];
+            this.coverPapers = [];
+            this.coverServices = [];
+
+            this.newItemMode = true;
+            this.buttonMessage = "Dodaj przedmiot zamówienia";
+        } else {
+            this.showValuationSelect = true;
+            this.orderItemName = this.orderItem.name;
+            this.comments = this.orderItem.comments;
+            this.insideFormat = this.orderItem.insideFormat;
+            this.coverFormat = this.orderItem.coverFormat;
+            this.capacity = this.orderItem.capacity;
+            this.circulation = this.orderItem.circulation;
+            this.selectedOrderItemType = this.getNameById("orderItemType", this.orderItem.idOrderItemType);
+            this.selectedDeliveryType = this.getNameById("deliveryType", this.orderItem.idDeliveryType);
+            this.selectedBindingTypes = this.getNameById("bindingType", this.orderItem.idBindingType);
+            this.colors = this.getItems("inside", this.orderItem.colors);
+            this.papers = this.getItems("inside", this.orderItem.papers);
+            this.service = this.getItems("inside", this.orderItem.services);
+            this.coverColors = this.getItems("cover", this.orderItem.colors);
+            this.coverPapers = this.getItems("cover", this.orderItem.papers);
+            this.coverServices = this.getItems("cover", this.orderItem.services);
+
+            if(this.orderItem.completionDate != null) {
+                this.completionDate = new Date(Date.parse(this.orderItem.completionDate));
+            } else {
+                this.completionDate = null;
             }
-		},
-        getNameById(what, id){
+            if(this.orderItem.expectedCompletionDate != null) {
+                this.expectedCompletionDate = new Date(Date.parse(this.orderItem.expectedCompletionDate));
+            } else {
+                this.expectedCompletionDate = null;
+            }
+
+            let valuationWithoutOrderItem = await CallAPI.get("/Valuation/getValuationsWithoutOrderItem")
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            let callPath = "/Valuation/getValuationsByOrderItem?id=" + this.orderItem.idOrderItem;
+            let valuationByOrderItem = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
+            this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
+
+            this.newItemMode = false;
+            this.buttonMessage = "Edytuj przedmiot zamówienia";
+        }
+    },
+	methods: {
+        addItem(array, e) {
+            array.push(e);
+        },
+        removeItem(array, index) {
+            if (index > -1) {
+                array.splice(index, 1);
+            }
+        },
+        getNameById(what, id) {
             switch(what) {
                 case "orderItemType":
                     return this.rawOrderItemTypes.find(element => element.idOrderItemType == id).name;
@@ -361,226 +577,222 @@ export default {
                 }
             }
         },
-        validateForm() {
-            this.$refs.modalOrderItemForm.validate();
+        getItems(what, array) {
+            switch(what) {
+                case "inside":
+                    return array.find(element => element.isForCover == false);
+                case "cover":
+                    return array.find(element => element.isForCover == true);
+            }
+        },
+        submitForm() {
+            if(this.validateForm()) {
+                if(this.capacity == 0 || this.capacity == 1) this.capacity == null;
 
+                let allColorsCover = [];
+                let allPapersCover = [];
+                let allServicesCover = [];
+
+                //create colors, papers, and services
+                let allColors = this.colors.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        isForCover: false,
+                    }
+
+                    return result;
+                });
+
+                let allPapers = this.papers.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        kind: item["kind"],
+                        sheetFormat: item["sheetFormat"],
+                        fiberDirection: item["fiberDirection"],
+                        opacity: item["opacity"],
+                        pricePerKilogram: item["pricePerKilogram"],
+                        quantity: item["quantity"],
+                        isForCover: false,
+                    }
+
+                    return result;
+                });
+
+                let allServices = this.services.map(function(item) {
+                    let result = {
+                        idServiceName: item["idServiceName"],
+                        serviceName: item["serviceName"],
+                        name: item["name"],
+                        price: item["price"],
+                        isForCover: false,
+                    }
+
+                    return result;
+                });
+
+                if(this.showCoverDetails) {
+                    allColorsCover = this.coverColors.map(function(item) {
+                        let result = {
+                            name: item["name"],
+                            isForCover: true,
+                        }
+
+                        return result;
+                    });
+
+                    allPapersCover = this.coverPapers.map(function(item) {
+                        let result = {
+                            name: item["name"],
+                            kind: item["kind"],
+                            sheetFormat: item["sheetFormat"],
+                            fiberDirection: item["fiberDirection"],
+                            opacity: item["opacity"],
+                            pricePerKilogram: item["pricePerKilogram"],
+                            quantity: item["quantity"],
+                            isForCover: true,
+                        }
+
+                        return result;
+                    });
+
+                    allServicesCover = this.coverServices.map(function(item) {
+                        let result = {
+                            idServiceName: item["idServiceName"],
+                            serviceName: item["serviceName"],
+                            name: item["name"],
+                            price: item["price"],
+                            isForCover: true,
+                        }
+
+                        return result;
+                    });
+                }
+
+                //create order item
+                let data = {
+                    newOrderItem: {
+                        name: this.orderItemName,
+                        comments: this.comments,
+                        insideFormat: this.insideFormat,
+                        coverFormat: this.coverFormat,
+                        capacity: this.capacity,
+                        circulation: this.circulation,
+                        completionDate: this.completionDate,
+                        expectedCompletionDate: this.expectedCompletionDate,
+                        selectedOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
+                        selectedDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
+                        selectedBindingTypes: this.getIdByName("bindingType", this.selectedBindingTypes),
+                        selectedValuation: this.getIdByName("valutaion", this.selectedValuation),
+                        colors: allColors.concat(allColorsCover),
+                        papers: allPapers.concat(allPapersCover),
+                        services: allServices.concat(allServicesCover),
+                    }
+                };
+
+                if(!this.newItemMode) {
+                    this.$emit('editOrderItem', data);
+                } else {
+                    this.$emit('createOrderItem', data);
+                }
+                this.closeOrderItemModal();
+            }
+		},
+        validateForm() {
             if(this.selectedOrderItemType === "") {
-                this.isOrderItemFormValidate = false;
                 this.$vaToast.init({ message: 'Wybierz typ przedmiotu zamówienia', color: 'danger', duration: 2000 })
+                return false;
             }
 
             if(this.selectedDeliveryType === "") {
-                this.isOrderItemFormValidate = false;
                 this.$vaToast.init({ message: 'Wybierz typ dostawy.', color: 'danger', duration: 2000 })
+                return false;
             }
 
-            return this.isOrderItemFormValidate;
+            if(!this.showCoverDetails) {
+                this.$refs.modalOrderItemForm.validate();
+                return this.isOrderItemFormValidate;
+            }else{
+                this.$refs.modalOrderItemForm.validate();
+                this.$refs.modalOrderItemCoverForm.validate();
+                return this.isOrderItemFormValidate && this.isOrderItemCoverFormValidate;
+            }
         },
         closeOrderItemModal() {
             this.$emit('close');
         },
-        addColor(e) {
-            e.newColor.IdForColorTable = this.colorCounter;
-            this.orderItemColors.push(e.newColor);
-            this.colorCounter++;
-            this.showColorModal = false;
-        },
-        removeColor(id) {
-            this.orderItemColors = this.orderItemColors.filter(item => item.IdForColorTable !== id);
-        },
-        closeColorModal() {
-            this.showColorModal = false;
-            this.editedColor = null;
-        },
-        addPaper(e) {
-            let newPaper = {
-                IdForPaperTable: this.paperCounter,
-                idPaper: e.newPaper.IdPaper,
-                name: e.newPaper.name,
-                kind: e.newPaper.kind,
-                sheetFormat: e.newPaper.sheetFormat,
-                fiberDirection: e.newPaper.fiberDirection,
-                opacity: e.newPaper.opacity,
-                pricePerKilogram: e.newPaper.pricePerKilogram,
-                quantity: e.newPaper.quantity
-            };
-            this.orderItemPapers.push(newPaper);
-            this.paperCounter++;
-        },
-        editPaper(e) {
-            for(const obj of this.orderItemPapers){
-                if (obj.IdForPaperTable === e.newPaper.IdForPaperTable) {
-                    obj.name = e.newPaper.name;
-                    obj.kind = e.newPaper.kind;
-                    obj.sheetFormat = e.newPaper.sheetFormat;
-                    obj.fiberDirection = e.newPaper.fiberDirection;
-                    obj.opacity = e.newPaper.opacity;
-                    obj.pricePerKilogram = e.newPaper.pricePerKilogram;
-                    obj.quantity = e.newPaper.quantity;
-                    break;
-                }
-            }
 
-            this.showPaperModal = false;
-        },
-        editPaperInModal(paper) {
-            this.editedPaper = paper;
+
+        editPaperInModal(index) {
+            this.editedPaperIndex = index;
             this.showPaperModal = true;
-        },
-        removePaper(id) {
-            this.orderItemPapers = this.orderItemPapers.filter(item => item.IdForPaperTable !== id);
         },
         closePaperModal() {
             this.showPaperModal = false;
-            this.editedPaper = null;
+            this.editedPaperIndex = null;
         },
-        addService(e) {
-            let newService = {
-                IdForServiceTable: this.serviceCounter,
-                idServiceName: e.newService.idServiceName,
-                serviceName: e.newService.serviceName,
-                name: e.newService.name,
-                price: e.newService.price,
-            };
-            this.orderItemService.push(newService);
-            this.serviceCounter++;
+        editPaper(e) {
+            this.papers[this.editedPaperIndex] = e;
+
+            this.showPaperModal = false;
+        },
+        editServiceInModal(index){
+            this.editedServiceIndex = index;
+            this.showServiceModal = true;
+        },
+        closeServiceModal() {
+            this.showServiceModal = false;
+            this.editedServiceIndex = null;
         },
         editService(e) {
-            for(const obj of this.orderItemService){
-                if (obj.IdForServiceTable === e.newService.IdForServiceTable) {
-                    obj.serviceName = e.newService.serviceName;
-                    obj.price = e.newService.price;
-                    obj.name = e.newService.name;
-                    break;
-                }
-            }
+            this.services[this.editedServiceIndex] = e;
 
             this.showServiceModal = false;
         },
-        editServiceInModal(service) {
-            this.editedService = service;
-            this.showServiceModal = true;
+
+        editCoverPaperInModal(index) {
+            this.editedCoverPaperIndex = index;
+            this.showCoverPaperModal = true;
         },
-        removeService(id) {
-            this.orderItemService = this.orderItemService.filter(item => item.IdForServiceTable !== id);
+        closeCoverPaperModal() {
+            this.showCoverPaperModal = false;
+            this.editedCoverPaperIndex = null;
         },
-        closeServiceModal() {
-            this.showServiceModal=false;
-            this.editedService = null;
+        editCoverPaper(e) {
+            this.coverPapers[this.editedCoverPaperIndex] = e;
+
+            this.showCoverPaperModal = false;
         },
-	},
-    async mounted() { 
-        let callPath = "/BindingType/getBindingTypes";
-        this.rawBindingTypes = await CallAPI.get(callPath)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-        });
+        editCoverServiceInModal(index){
+            this.editedCoverServiceIndex = index;
+            this.showCoverServiceModal = true;
+        },
+        closeCoverServiceModal() {
+            this.showCoverServiceModal = false;
+            this.editedCoverServiceIndex = null;
+        },
+        editCoverService(e) {
+            this.coverServices[this.editedCoverServiceIndex] = e
 
-        callPath = "/DeliveryType/getDeliveryTypes";
-        this.rawDeliveryTypes = await CallAPI.get(callPath)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-        });
-
-        callPath = "/OrderItemType/getOrderItemsTypes";
-        this.rawOrderItemTypes = await CallAPI.get(callPath)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-        });
-
-        if(this.orderItem === null) {
-            this.showValuationSelect = false;
-            this.buttonMessage = "Dodaj przedmiot zamówienia";
-            this.orderItemName = "";
-            this.comments = "";
-            this.insideFormat = "";
-            this.coverFormat = "";
-            this.capacity = 0;
-            this.circulation = 1;
-            this.completionDate = null;
-            this.expectedCompletionDate = null;
-            this.selectedOrderItemType = "";
-            this.selectedDeliveryType = "";
-            this.selectedBindingTypes = "Bez szycia";
-            this.IdForOrderItemTable = null;
-            this.orderItemColors = [];
-            this.orderItemPapers = [];
-            this.orderItemService = [];
-            this.editedService = null;
-            this.editedPaper = null;
-            this.editedColor = null;
-            this.orderItemId = null;
-            this.showCompletionDate = false;
-        }else {
-            this.showValuationSelect = true;
-            this.buttonMessage = "Edytuj przedmiot zamówienia";
-            if(this.orderItem.idOrderItem != undefined && this.orderItem.idOrderItem != null) {
-                this.orderItemId = this.orderItem.idOrderItem;
-            }
-            this.orderItemName = this.orderItem.name;
-            this.comments = this.orderItem.comments;
-            this.insideFormat = this.orderItem.insideFormat;
-            this.coverFormat = this.orderItem.coverFormat;
-            this.capacity = this.orderItem.capacity;
-            this.circulation = this.orderItem.circulation;    
-            this.selectedOrderItemType = this.getNameById("orderItemType", this.orderItem.idOrderItemType);
-            this.selectedDeliveryType = this.getNameById("deliveryType", this.orderItem.idDeliveryType);
-            this.selectedBindingTypes = this.getNameById("bindingType", this.orderItem.idBindingType);
-            this.IdForOrderItemTable = this.orderItem.IdForOrderItemTable;
-            this.orderItemColors = this.orderItem.colors;
-            this.orderItemPapers = this.orderItem.papers;
-            this.orderItemService = this.orderItem.services;
-            this.editedService = null;
-            this.editedPaper = null;
-            this.editedColor = null;
-            this.showCompletionDate = true;
-
-            if(this.orderItem.completionDate != null) {
-                this.completionDate = new Date(Date.parse(this.orderItem.completionDate));
-            } else{
-                this.completionDate = null;
-            }
-            if(this.orderItem.expectedCompletionDate != null) {
-                this.expectedCompletionDate = new Date(Date.parse(this.orderItem.expectedCompletionDate));
-            } else{
-                this.expectedCompletionDate = null;
-            }
-
-            callPath = "/Valuation/getValuationsWithoutOrderItem";
-            let valuationWithoutOrderItem = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
-
-            callPath = "/Valuation/getValuationsByOrderItem?id=" + this.orderItem.idOrderItem;
-            let valuationByOrderItem = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
-
-            this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
-            this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
+            this.showCoverServiceModal = false;
         }
-    }
+	},
 }
 </script>
 
 <style scoped>
+#background-modal {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 1fr 50px;
+    grid-template-rows: auto;
+    grid-template-areas: 
+    ". . main . ."
+    ". sidebarA sidebarB sidebarC ."
+    ". . mainCover . ."
+    ". sidebarACover sidebarBCover sidebarCCover ."
+    ". . footer . .";
+    grid-gap: 30px;
+}
+
 #modalOrderItemForm {
     min-width: 400px;
     display: flex;
@@ -589,82 +801,53 @@ export default {
     grid-area: main;
 }
 
-#background-modal {
-    display: grid;
-    grid-template-columns: 50px 2fr 1fr 1fr 50px;
-    grid-template-rows: auto;
-    grid-template-areas: 
-    ". main sidebarA sidebarC ."
-    ". main sidebarB sidebarC ."
-    ". . footer . .";
-    grid-gap: 30px;
-}
-
 #colorCo{
     grid-area: sidebarA;
+    text-align: center;
 }
 
 #paperCo{
     grid-area: sidebarB;
+    text-align: center;
 }
 
 #serviceCo{
     grid-area: sidebarC;
+    text-align: center;
 }
 
-.objects-card-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 20px;
-	padding-bottom: 20px;
+#modalOrderItemCoverForm {
+    margin-top: 80px;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    grid-area: mainCover;
 }
 
-.objects-card {
-	border-color: rgb(226, 226, 226);
-	border-style: solid;
-    border-radius: 10px;
-	width: 250px;
-	max-height: 300px;
-	margin-bottom: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-    max-height: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+#colorCoCover{
+    grid-area: sidebarACover;
+    text-align: center;
 }
 
-.card-items {
-    background: #d3e5f8;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin: 5px;
-    width: 240px;
-    border-radius: 50px;
-    border: solid 1px #1b63b1;
-    display: grid;
-    grid-template-columns: 1fr 80px;
-    grid-template-rows: 1fr;
-    justify-items: center;
+#paperCoCover{
+    grid-area: sidebarBCover;
+    text-align: center;
 }
 
-.card-icons svg{
-    margin-left: 5px;
-    cursor: pointer;
+#serviceCoCover{
+    grid-area: sidebarCCover;
+    text-align: center;
 }
 
-.objects-card::-webkit-scrollbar {
-    width: 0.25rem;
+#buttonCo{
+    grid-area: footer;
+    text-align: center;
 }
 
-.objects-card::-webkit-scrollbar-thumb {
-    background: #1b63b1;
-    border-radius: 100vw;
-}
-
-.objects-card::-webkit-scrollbar-thumb:hover {
-    background: #217cde;
+#isCover{
+    text-align: center;
+    margin-bottom: 15px;
 }
 </style>
 
