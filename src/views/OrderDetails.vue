@@ -522,10 +522,10 @@ export default {
         async addAssignment(e) {
             let callPath = "/Assignment/createAssignment";
             let body = {
-                IdWorker: e.newWorker.idWorker,
+                IdWorker: e.idWorker,
                 IdOrder: this.id,
-                OrderLeader: e.newWorker.isLeader,
-                HoursWorked: e.newWorker.hoursWorker,
+                OrderLeader: e.isLeader,
+                HoursWorked: e.hoursWorker,
             };
 
             await CallAPI.post(callPath, body)
@@ -548,10 +548,10 @@ export default {
         async editAssignment(e) {
             let callPath = "/Assignment/updateAssignment";
             let body = {
-                IdWorker: e.newWorker.idWorker,
+                IdWorker: e.idWorker,
                 IdOrder: this.id,
-                OrderLeader: e.newWorker.isLeader,
-                HoursWorked: e.newWorker.hoursWorker,
+                OrderLeader: e.isLeader,
+                HoursWorked: e.hoursWorker,
             };
 
             await CallAPI.post(callPath, body)
@@ -698,20 +698,20 @@ export default {
             let callPath = "/OrderItem/createOrderItem";
             let body = {
                 IdOrder: this.id,
-                Circulation: e.newOrderItem.circulation,
-                Capacity: e.newOrderItem.capacity,
-                Name: e.newOrderItem.name,
-                Comments: e.newOrderItem.comments,
-                ExpectedCompletionDate: e.newOrderItem.expectedCompletionDate,
-                CompletionDate: e.newOrderItem.completionDate,
-                InsideFormat: e.newOrderItem.insideFormat,
-                CoverFormat: e.newOrderItem.coverFormat,
-                IdDeliveryType: e.newOrderItem.selectedDeliveryType,
-                IdBindingType: e.newOrderItem.selectedBindingTypes,
-                IdOrderItemType: e.newOrderItem.selectedOrderItemType,
-                Colors: e.newOrderItem.colors,
-                Services: e.newOrderItem.services,
-                Papers: e.newOrderItem.papers,
+                Circulation: e.circulation,
+                Capacity: e.capacity,
+                Name: e.name,
+                Comments: e.comments,
+                ExpectedCompletionDate: e.expectedCompletionDate,
+                CompletionDate: e.completionDate,
+                InsideFormat: e.insideFormat,
+                CoverFormat: e.coverFormat,
+                IdDeliveryType: e.selectedDeliveryType,
+                IdBindingType: e.selectedBindingTypes,
+                IdOrderItemType: e.selectedOrderItemType,
+                Colors: e.colors,
+                Services: e.services,
+                Papers: e.papers,
             };
 
             await CallAPI.post(callPath, body)
@@ -734,22 +734,22 @@ export default {
         async editOrderItem(e) {
             let callPath = "/OrderItem/updateOrderItem";
             let body = {
-                IdOrderItem: e.newOrderItem.idOrderItem,
-                Circulation: e.newOrderItem.circulation,
-                Capacity: e.newOrderItem.capacity,
-                Name: e.newOrderItem.name,
-                Comments: e.newOrderItem.comments,
-                ExpectedCompletionDate: e.newOrderItem.expectedCompletionDate,
-                CompletionDate: e.newOrderItem.completionDate,
-                InsideFormat: e.newOrderItem.insideFormat,
-                CoverFormat: e.newOrderItem.coverFormat,
-                IdDeliveryType: e.newOrderItem.selectedDeliveryType,
-                IdBindingType: e.newOrderItem.selectedBindingTypes,
-                IdOrderItemType: e.newOrderItem.selectedOrderItemType,
-                IdSelectedValuation: e.newOrderItem.selectedValuation,
-                Colors: e.newOrderItem.colors,
-                Services: e.newOrderItem.services,
-                Papers: e.newOrderItem.papers,
+                IdOrderItem: e.idOrderItem,
+                Circulation: e.circulation,
+                Capacity: e.capacity,
+                Name: e.name,
+                Comments: e.comments,
+                ExpectedCompletionDate: e.expectedCompletionDate,
+                CompletionDate: e.completionDate,
+                InsideFormat: e.insideFormat,
+                CoverFormat: e.coverFormat,
+                IdDeliveryType: e.selectedDeliveryType,
+                IdBindingType: e.selectedBindingTypes,
+                IdOrderItemType: e.selectedOrderItemType,
+                IdSelectedValuation: e.selectedValuation,
+                Colors: e.colors,
+                Services: e.services,
+                Papers: e.papers,
             };
 
             await CallAPI.post(callPath, body)
@@ -772,7 +772,7 @@ export default {
         async deleteOrderItem() {
             let callPath = "/OrderItem/deleteOrderItem";
             let body = { data: {
-                IdOrderItem: this.selectedOrderItem.idOrderItem
+                IdOrderItem: this.idOrderItem
             } };
 
             await CallAPI.delete(callPath, body)

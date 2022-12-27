@@ -111,8 +111,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="person in contactPepole"
-                        :key="person.IdForRepresentativeTable"
+                        v-for="(person, index) in contactPepole"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="person" />
@@ -130,16 +130,16 @@
 
                         <va-list-item-section icon>
                             <va-popover message="Edytuj dane osoby" v-if="!readOnlyMode">
-                                <va-button flat icon="edit" @click="editContactInModal(person)" />
+                                <va-button flat icon="edit" @click="editContactInModal(index)" />
                             </va-popover>
                             <va-popover message="Usuń osobę" v-if="!readOnlyMode">
-                                <va-button flat icon="delete" @click="removeContact(person.IdForRepresentativeTable)" />
+                                <va-button flat icon="delete" @click="removeItem(contactPepole, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button id="addRepresentative" @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
-                <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
+                <RepresentativeModal :person="contactPepole[editedContactIndex]" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addItem(contactPepole, $event)" @editRepresentative="editContact($event)"/>
             </div>
         </div>
         <div id="adressesCoOuter">
@@ -152,8 +152,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="address in customerAddresses"
-                        :key="address.IdForAddressTable"
+                        v-for="(address, index) in customerAddresses"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="home" />
@@ -171,16 +171,16 @@
 
                         <va-list-item-section icon>
                             <va-popover message="Edytuj dane adresu" v-if="!readOnlyMode">
-                                <va-button flat icon="edit" @click="editAddressInModal(address)" />
+                                <va-button flat icon="edit" @click="editAddressInModal(index)" />
                             </va-popover>
                             <va-popover message="Usuń adres" v-if="!readOnlyMode">
-                                <va-button flat icon="delete" @click="removeAddress(address.IdForAddressTable)" />
+                                <va-button flat icon="delete" @click="removeItem(customerAddresses, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button id="addAddress" @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
-                <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+                <AddressModal :addr="customerAddresses[editedAddressIndex]" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addItem(customerAddresses, $event)" @editAddress="editAddress($event)"/>
             </div>
         </div>
 	</div>
@@ -197,8 +197,6 @@ export default {
   name: 'AddCustomer',
 	data() {
 		return {
-            addressCounter: 0,
-            contactCounter: 0,
 			customerName: "",
             customerLastName: "",
             customerEmail: "",
@@ -215,13 +213,21 @@ export default {
 			contactPepole: [],
 			customerAddresses: [],
             showAddressModal: false,
-            editedAddress: null,
+            editedAddressIndex: null,
             showContactModal: false,
-            editedContact: null,
+            editedContactIndex: null,
 		}
 	},
     components: { AddressModal, RepresentativeModal },
 	methods: {
+        addItem(array, e) {
+            array.push(e);
+        },
+        removeItem(array, index) {
+            if (index > -1) {
+                array.splice(index, 1);
+            }
+        },
         async submitForm() {
             if(this.validateForm(this.selectedRadioOption === 'Firma')){
                 var contactPeopleAPI = this.contactPepole.map(function(item) {
@@ -323,60 +329,27 @@ export default {
         },
         closeAddressModal() {
             this.showAddressModal=false;
-            this.editedAddress=null;
-        },
-        addAddress(e) {
-            e.newAddress.IdForAddressTable = this.addressCounter;
-            this.customerAddresses.push(e.newAddress);
-            this.addressCounter++;
+            this.editedAddressIndex=null;
         },
         editAddress(e) {
-            for(const obj of this.customerAddresses){
-                if (obj.IdForAddressTable === e.newAddress.IdForAddressTable) {
-                    obj.name = e.newAddress.name;
-                    obj.country = e.newAddress.country;
-                    obj.city = e.newAddress.city;
-                    obj.postCode = e.newAddress.postCode;
-                    obj.streetName = e.newAddress.streetName;
-                    obj.streetNumber = e.newAddress.streetNumber;
-                    obj.apartmentNumber = e.newAddress.apartmentNumber;
-                    break;
-                }
-            }
+            this.customerAddresses[this.editedAddressIndex] = e;
+            this.closeAddressModal();
         },
-        editAddressInModal(address) {
-            this.editedAddress = address;
+        editAddressInModal(index) {
+            this.editedAddressIndex = index;
             this.showAddressModal = true;
-        },
-        removeAddress(id) {
-            this.customerAddresses = this.customerAddresses.filter(item => item.IdForAddressTable !== id);
         },
         closeContactModal() {
             this.showContactModal = false;
-            this.editedContact = null;
-        },
-        addContact(e) {
-            e.newRepresentative.IdForRepresentativeTable = this.contactCounter;
-            this.contactPepole.push(e.newRepresentative);
-            this.contactCounter++;
+            this.editedContactIndex = null;
         },
         editContact(e) {
-            for(const obj of this.contactPepole){
-                if (obj.IdForRepresentativeTable === e.newRepresentative.IdForRepresentativeTable) {
-                    obj.name = e.newRepresentative.name;
-                    obj.lastName = e.newRepresentative.lastName;
-                    obj.phoneNumber = e.newRepresentative.phoneNumber;
-                    obj.addressEmail = e.newRepresentative.addressEmail;
-                    break;
-                }
-            }
+            this.contactPepole[this.editedContactIndex] = e;
+            this.closeContactModal();
         },
-        editContactInModal(contact) {
-            this.editedContact = contact;
+        editContactInModal(index) {
+            this.editedContactIndex = index;
             this.showContactModal = true;
-        },
-        removeContact(id) {
-            this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
         },
 	},
 }

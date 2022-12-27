@@ -446,7 +446,6 @@ export default {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
 
-        this.selectedRadioOption = "Bez okładki";
         this.showColorModal = false;
         this.showPaperModal = false;
         this.showServiceModal = false;
@@ -461,6 +460,7 @@ export default {
         this.isOrderItemCoverFormValidate = false;
 
         if(this.orderItem === null) {
+            this.selectedRadioOption = "Bez okładki";
             this.showValuationSelect = false;
             this.orderItemName = "";
             this.comments = "";
@@ -476,7 +476,7 @@ export default {
             this.selectedValuation = "";
             this.colors = [];
             this.papers = [];
-            this.service = [];
+            this.services = [];
             this.coverColors = [];
             this.coverPapers = [];
             this.coverServices = [];
@@ -484,7 +484,11 @@ export default {
             this.newItemMode = true;
             this.buttonMessage = "Dodaj przedmiot zamówienia";
         } else {
-            this.showValuationSelect = true;
+            if(this.orderItem.coverFormat === '' || this.orderItem.coverFormat === null || this.orderItem.coverFormat === undefined) { 
+                this.selectedRadioOption = "Bez okładki";
+            } else {
+                this.selectedRadioOption = "Z okładką";
+            }
             this.orderItemName = this.orderItem.name;
             this.comments = this.orderItem.comments;
             this.insideFormat = this.orderItem.insideFormat;
@@ -496,7 +500,7 @@ export default {
             this.selectedBindingTypes = this.getNameById("bindingType", this.orderItem.idBindingType);
             this.colors = this.getItems("inside", this.orderItem.colors);
             this.papers = this.getItems("inside", this.orderItem.papers);
-            this.service = this.getItems("inside", this.orderItem.services);
+            this.services = this.getItems("inside", this.orderItem.services);
             this.coverColors = this.getItems("cover", this.orderItem.colors);
             this.coverPapers = this.getItems("cover", this.orderItem.papers);
             this.coverServices = this.getItems("cover", this.orderItem.services);
@@ -512,25 +516,31 @@ export default {
                 this.expectedCompletionDate = null;
             }
 
-            let valuationWithoutOrderItem = await CallAPI.get("/Valuation/getValuationsWithoutOrderItem")
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
+            if(this.orderItem.idOrderItem !== null && this.orderItem.idOrderItem !== undefined) {
+                this.showValuationSelect = true;
 
-            let callPath = "/Valuation/getValuationsByOrderItem?id=" + this.orderItem.idOrderItem;
-            let valuationByOrderItem = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
+                let valuationWithoutOrderItem = await CallAPI.get("/Valuation/getValuationsWithoutOrderItem")
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
 
-            this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
-            this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
+                let callPath = "/Valuation/getValuationsByOrderItem?id=" + this.orderItem.idOrderItem;
+                let valuationByOrderItem = await CallAPI.get(callPath)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+
+                this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
+                this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
+            }else{
+                this.showValuationSelect = false;
+            }
 
             this.newItemMode = false;
             this.buttonMessage = "Edytuj przedmiot zamówienia";
@@ -546,7 +556,8 @@ export default {
             }
         },
         getNameById(what, id) {
-            switch(what) {
+            if(id != null && id != undefined){
+                switch(what) {
                 case "orderItemType":
                     return this.rawOrderItemTypes.find(element => element.idOrderItemType == id).name;
                 case "deliveryType":
@@ -558,9 +569,10 @@ export default {
                         return this.rawBindingTypes.find(element => element.idBindingType == id).name;
                     }
             }
+            }
         },
         getIdByName(what, objName){
-            if(objName !== ''){
+            if(objName !== '' && objName != null && objName != undefined){
                 switch(what) {
                 case "orderItemType":
                     return this.rawOrderItemTypes.find(element => element.name == objName).idOrderItemType;
@@ -580,9 +592,9 @@ export default {
         getItems(what, array) {
             switch(what) {
                 case "inside":
-                    return array.find(element => element.isForCover == false);
+                    return array.filter(element => element.isForCover == false);
                 case "cover":
-                    return array.find(element => element.isForCover == true);
+                    return array.filter(element => element.isForCover == true);
             }
         },
         submitForm() {
@@ -670,23 +682,21 @@ export default {
 
                 //create order item
                 let data = {
-                    newOrderItem: {
-                        name: this.orderItemName,
-                        comments: this.comments,
-                        insideFormat: this.insideFormat,
-                        coverFormat: this.coverFormat,
-                        capacity: this.capacity,
-                        circulation: this.circulation,
-                        completionDate: this.completionDate,
-                        expectedCompletionDate: this.expectedCompletionDate,
-                        selectedOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
-                        selectedDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
-                        selectedBindingTypes: this.getIdByName("bindingType", this.selectedBindingTypes),
-                        selectedValuation: this.getIdByName("valutaion", this.selectedValuation),
-                        colors: allColors.concat(allColorsCover),
-                        papers: allPapers.concat(allPapersCover),
-                        services: allServices.concat(allServicesCover),
-                    }
+                    name: this.orderItemName,
+                    comments: this.comments,
+                    insideFormat: this.insideFormat,
+                    coverFormat: this.coverFormat,
+                    capacity: this.capacity,
+                    circulation: this.circulation,
+                    completionDate: this.completionDate,
+                    expectedCompletionDate: this.expectedCompletionDate,
+                    idOrderItemType: this.getIdByName("orderItemType", this.selectedOrderItemType),
+                    idDeliveryType: this.getIdByName("deliveryType", this.selectedDeliveryType),
+                    idBindingType: this.getIdByName("bindingType", this.selectedBindingTypes),
+                    selectedValuation: this.getIdByName("valutaion", this.selectedValuation),
+                    colors: allColors.concat(allColorsCover),
+                    papers: allPapers.concat(allPapersCover),
+                    services: allServices.concat(allServicesCover),
                 };
 
                 if(!this.newItemMode) {

@@ -92,7 +92,6 @@ export default {
             addressStreet: "",
             addressStreetNumber: "",
             addressApartmentNumber: "",
-            IdForAddressTable: null,
             IdAddress: null,
 		}
 	},
@@ -100,20 +99,17 @@ export default {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newAddress: {
-                        idAddress: this.IdAddress,
-                        name: this.addressName,
-                        country: this.addressCountry,
-                        city: this.addressCity,
-                        postCode: this.addressPostCode,
-                        streetName: this.addressStreet,
-                        streetNumber: this.addressStreetNumber,
-                        apartmentNumber: this.addressApartmentNumber
-                    }
+                    idAddress: this.IdAddress,
+                    name: this.addressName,
+                    country: this.addressCountry,
+                    city: this.addressCity,
+                    postCode: this.addressPostCode,
+                    streetName: this.addressStreet,
+                    streetNumber: this.addressStreetNumber,
+                    apartmentNumber: this.addressApartmentNumber
                 };
 
-                if(this.IdForAddressTable !== null) {
-                    data.newAddress.IdForAddressTable = this.IdForAddressTable;
+                if(this.addr !== null) {
                     this.$emit('editAddress', data);
                 } else {
                     this.$emit('createAddress', data);
@@ -150,7 +146,6 @@ export default {
             this.addressStreet = this.addr.streetName;
             this.addressStreetNumber = this.addr.streetNumber;
             this.addressApartmentNumber = this.addr.apartmentNumber;
-            this.IdForAddressTable = this.addr.idForAddressTable;
             this.IdAddress = this.addr.idAddress;
         }
     }

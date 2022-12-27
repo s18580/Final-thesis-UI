@@ -517,10 +517,10 @@ export default {
         async addContact(e) {
             let callPath = "/Representative/createRepresentative";
             let body = {
-                Name: e.newRepresentative.name,
-                LastName: e.newRepresentative.lastName,
-                PhoneNumber: e.newRepresentative.phoneNumber,
-                EmailAddress: e.newRepresentative.emailAddress,
+                Name: e.name,
+                LastName: e.lastName,
+                PhoneNumber: e.phoneNumber,
+                EmailAddress: e.emailAddress,
                 IdSupplier: null,
                 IdCustomer: this.id,
             };
@@ -544,11 +544,11 @@ export default {
         async editContact(e) {
             let callPath = "/Representative/updateRepresentative";
             let body = {
-                IdRepresentative: e.newRepresentative.idRepresentative,
-                Name: e.newRepresentative.name,
-                LastName: e.newRepresentative.lastName,
-                PhoneNumber: e.newRepresentative.phoneNumber,
-                EmailAddress: e.newRepresentative.emailAddress,
+                IdRepresentative: e.idRepresentative,
+                Name: e.name,
+                LastName: e.lastName,
+                PhoneNumber: e.phoneNumber,
+                EmailAddress: e.emailAddress,
             };
             await CallAPI.post(callPath, body)
             .then(res => {
@@ -580,13 +580,13 @@ export default {
         async addAddress(e) {
             let callPath = "/Address/createAddress";
             let body = {
-                Name: e.newAddress.name,
-                City: e.newAddress.city,
-                Country: e.newAddress.country,
-                PostCode: e.newAddress.postCode,
-                StreetName: e.newAddress.streetName,
-                StreetNumber: e.newAddress.streetNumber,
-                ApartmentNumber: e.newAddress.apartmentNumber,
+                Name: e.name,
+                City: e.city,
+                Country: e.country,
+                PostCode: e.postCode,
+                StreetName: e.streetName,
+                StreetNumber: e.streetNumber,
+                ApartmentNumber: e.apartmentNumber,
                 IdSupplier: null,
                 IdCustomer: this.id,
             };
@@ -610,14 +610,14 @@ export default {
         async editAddress(e) {
             let callPath = "/Address/updateAddress";
             let body = {
-                IdAddress: e.newAddress.idAddress,
-                Name: e.newAddress.name,
-                City: e.newAddress.city,
-                Country: e.newAddress.country,
-                PostCode: e.newAddress.postCode,
-                StreetName: e.newAddress.streetName,
-                StreetNumber: e.newAddress.streetNumber,
-                ApartmentNumber: e.newAddress.apartmentNumber,
+                IdAddress: e.idAddress,
+                Name: e.name,
+                City: e.city,
+                Country: e.country,
+                PostCode: e.postCode,
+                StreetName: e.streetName,
+                StreetNumber: e.streetNumber,
+                ApartmentNumber: e.apartmentNumber,
             };
             await CallAPI.post(callPath, body)
             .then(res => {
