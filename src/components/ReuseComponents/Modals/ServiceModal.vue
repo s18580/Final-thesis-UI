@@ -51,6 +51,13 @@ export default {
             selectedService: "",
 		}
 	},
+    watch: {
+        selectedService(newValue, oldValue) {
+            if(newValue !== '' || newValue !== null || newValue !== undefined || newValue !== oldValue){
+                this.servicePrice = this.rawServices.find(element => element.name == newValue).defaultPrice
+            }
+        },
+    },  
     computed: {
         services(){
             let resultArr = this.rawServices.map(function(item) {
@@ -111,13 +118,9 @@ export default {
             this.selectedService = "";
             this.servicePrice = 0.0;
         }else {
-            console.log(this.service);
-            console.log(this.selectedService);
-
             this.buttonMessage = "Edytuj usługę";
             this.servicePrice = this.service.price;
             this.selectedService = this.getServiceNameById(this.service.idServiceName);
-            console.log(this.selectedService);
         }
     }
 }
