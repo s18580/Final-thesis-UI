@@ -273,7 +273,7 @@ export default {
             return result;
         },
         async getRepresentativesData(clientName) {
-            let callPath = "/Representative/getRepresentativesByCustomer?id=" + this.getClientIdByName(clientName);
+            let callPath = "/Representative/getCustomerActiveRepresentatives?id=" + this.getClientIdByName(clientName);
             this.rawReprsentatives = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
@@ -303,9 +303,9 @@ export default {
                         CompletionDate: item["completionDate"],
                         InsideFormat: item["insideFormat"],
                         CoverFormat: item["coverFormat"],
-                        IdDeliveryType: item["selectedDeliveryType"],
-                        IdBindingType: item["selectedBindingTypes"],
-                        IdOrderItemType: item["selectedOrderItemType"],
+                        IdDeliveryType: item["idDeliveryType"],
+                        IdBindingType: item["idBindingType"],
+                        IdOrderItemType: item["idOrderItemType"],
                         Colors : item["colors"],
                         Services : item["services"],
                         Papers : item["papers"],

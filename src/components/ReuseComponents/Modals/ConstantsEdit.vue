@@ -10,6 +10,7 @@
                 class="mb-3"
                 v-model="constantNewName"
                 label="Nowa nazwa"
+                :readonly="priceListType"
             />
             <div v-if="orderStatusType">
                 <h3 id="paletteTitle">Kolor w tabeli</h3>

@@ -14,6 +14,7 @@
                         :options="orders"
                         label="Zamówienie"
                         noOptionsText="Brak zamówień do wybrania"
+                        @update:model-value="getOrderItems($event)"
                     />
                     <va-select
                         v-if="selectedOrder != ''"
@@ -22,6 +23,7 @@
                         :options="orderItems"
                         label="Przedmiot zamówienia"
                         noOptionsText="Brak przedmiotów do wybrania"
+                        @update:model-value="getOrderItemDetails($event)"
                     />
                     <va-button @click="withoutOrdrItem()" color="info" gradient class="my-3">Wycena bez przedmiotu zamówienia</va-button>
                 </div>
@@ -140,8 +142,8 @@
                             </va-list-label>
 
                             <va-list-item
-                                v-for="insideColor in insideColors"
-                                :key="insideColor.IdColor"
+                                v-for="(insideColor, index) in insideColors"
+                                :key="index"
                             >
 
                                 <va-list-item-section avatar>
@@ -156,7 +158,7 @@
 
                                 <va-list-item-section icon>
                                     <va-popover message="Usuń kolor">
-                                        <va-button flat icon="delete" @click="deleteInsideColor(insideColor)" />
+                                        <va-button flat icon="delete" @click="removeItem(insideColors, index)" />
                                     </va-popover>
                                 </va-list-item-section>
                             </va-list-item>
@@ -235,8 +237,8 @@
                             </va-list-label>
 
                             <va-list-item
-                                v-for="coverColor in coverColors"
-                                :key="coverColor.IdColor"
+                                v-for="(coverColor, index) in coverColors"
+                                :key="index"
                             >
                                 <va-list-item-section avatar>
                                     <va-avatar color="#6B5B95" icon="palette" />
@@ -250,7 +252,7 @@
 
                                 <va-list-item-section icon>
                                     <va-popover message="Usuń kolor okładki">
-                                        <va-button flat icon="delete" @click="deleteCoverColor(coverColor)" />
+                                        <va-button flat icon="delete" @click="removeItem(coverColors, index)" />
                                     </va-popover>
                                 </va-list-item-section>
                             </va-list-item>
@@ -260,16 +262,16 @@
                 </div>
             </div>
         </div>
-        <ColorModal v-if="showInsideColorModal" :withSelect="false" @close="closeInsideColorModal()" @createColor="addInsideColor($event)"/>
-        <ColorModal v-if="showCoverColorModal" :withSelect="false" @close="closeCoverColorModal()" @createColor="addCoverColor($event)"/>
+        <ColorModal v-if="showInsideColorModal" :withSelect="false" @close="showInsideColorModal=false" @createColor="addItem(insideColors, $event)"/>
+        <ColorModal v-if="showCoverColorModal" :withSelect="false" @close="showCoverColorModal=false" @createColor="addItem(coverColors, $event)"/>
         <div v-if="showValuationForm" id="papersCo">
             <div>
                 <h5>Lista papierów</h5>
                 <div id="papers">
                     <va-list id="papersList">
                         <va-list-item
-                            v-for="paper in papers"
-                            :key="paper.IdPaper"
+                            v-for="(paper, index) in papers"
+                            :key="index"
                         >
                             <va-list-item-section avatar>
                                 <va-avatar color="#6B5B95" icon="newspaper" />
@@ -299,10 +301,10 @@
 
                             <va-list-item-section icon>
                                 <va-popover message="Edytuj papier">
-                                    <va-button flat icon="edit" @click="editPaperInModal(paper)" />
+                                    <va-button flat icon="edit" @click="editPaperInModal(index)" />
                                 </va-popover>
                                 <va-popover message="Usuń papier">
-                                    <va-button flat icon="delete" @click="deletePaper(paper)" />
+                                    <va-button flat icon="delete" @click="removeItem(papers, index)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
@@ -315,8 +317,8 @@
                 <div id="papers">
                     <va-list id="papersList">
                         <va-list-item
-                            v-for="paper in coverPapers"
-                            :key="paper.IdPaper"
+                            v-for="(paper, index) in coverPapers"
+                            :key="index"
                         >
                             <va-list-item-section avatar>
                                 <va-avatar color="#6B5B95" icon="newspaper" />
@@ -346,10 +348,10 @@
 
                             <va-list-item-section icon>
                                 <va-popover message="Edytuj papier">
-                                    <va-button flat icon="edit" @click="editCoverPaperInModal(paper)" />
+                                    <va-button flat icon="edit" @click="editCoverPaperInModal(index)" />
                                 </va-popover>
                                 <va-popover message="Usuń papier">
-                                    <va-button flat icon="delete" @click="deleteCoverPaper(paper)" />
+                                    <va-button flat icon="delete" @click="removeItem(coverPapers, index)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
@@ -358,16 +360,16 @@
                 </div>
             </div>
         </div>
-        <PaperModal v-if="showPaperModal" :paper="editedPaper" @close="closePaperModal()" @createPaper="addPaper($event)" @editPaper="editPaper($event)"/>
-        <PaperModal v-if="showCoverPaperModal" :paper="editedCoverPaper" @close="closeCoverPaperModal()" @createPaper="addCoverPaper($event)" @editPaper="editCoverPaper($event)"/>
+        <PaperModal v-if="showPaperModal" :paper="papers[editedPaperIndex]" @close="closePaperModal()" @createPaper="addItem(papers, $event)" @editPaper="editPaper($event)"/>
+        <PaperModal v-if="showCoverPaperModal" :paper="coverPapers[editedCoverPaperIndex]" @close="closeCoverPaperModal()" @createPaper="addItem(coverPapers, $event)" @editPaper="editCoverPaper($event)"/>
         <div v-if="showValuationForm" id="servicesCo">
             <div>
                 <h5>Usługi i ceny</h5>
                 <div id="services">
                     <va-list id="servicesList">
                         <va-list-item
-                            v-for="service in services"
-                            :key="service.IdService"
+                            v-for="(service, index) in services"
+                            :key="index"
                         >
                             <va-list-item-section avatar>
                                 <va-avatar color="#6B5B95" icon="receipt_long" />
@@ -375,7 +377,7 @@
 
                             <va-list-item-section>
                                 <va-list-item-label>
-                                    {{ service.serviceName }}
+                                    {{ service.serviceName.name }}
                                 </va-list-item-label>
                             </va-list-item-section>
 
@@ -387,10 +389,10 @@
 
                             <va-list-item-section icon>
                                 <va-popover message="Edytuj pozycję">
-                                    <va-button flat icon="edit" @click="editServiceInModal(service)" />
+                                    <va-button flat icon="edit" @click="editServiceInModal(index)" />
                                 </va-popover>
                                 <va-popover message="Usuń pozycję">
-                                    <va-button flat icon="delete" @click="deleteService(service)" />
+                                    <va-button flat icon="delete" @click="removeItem(services, index)" />
                                 </va-popover>
                             </va-list-item-section>
                         </va-list-item>
@@ -398,8 +400,46 @@
                     <va-button class="modalButton" @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
                 </div>
             </div>
+            <div v-if="showCoverForm">
+                <h5>Usługi i ceny okładki</h5>
+                <div id="services">
+                    <va-list id="servicesList">
+                        <va-list-item
+                            v-for="(service, index) in coverServices"
+                            :key="index"
+                        >
+                            <va-list-item-section avatar>
+                                <va-avatar color="#6B5B95" icon="receipt_long" />
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ service.serviceName.name }}
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ service.price }} zł
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section icon>
+                                <va-popover message="Edytuj pozycję">
+                                    <va-button flat icon="edit" @click="editCoverServiceInModal(index)" />
+                                </va-popover>
+                                <va-popover message="Usuń pozycję">
+                                    <va-button flat icon="delete" @click="removeItem(coverServices, index)" />
+                                </va-popover>
+                            </va-list-item-section>
+                        </va-list-item>
+                    </va-list>
+                    <va-button class="modalButton" @click="showCoverServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
+                </div>
+            </div>
         </div>
-        <ServiceModal v-if="showServiceModal" :service="editedService" @close="closeServiceModal()" @createService="addService($event)" @editService="editService($event)"/>
+        <ServiceModal v-if="showServiceModal" :service="services[editedServiceIndex]" @close="closeServiceModal()" @createService="addItem(services, $event)" @editService="editService($event)"/>
+        <ServiceModal v-if="showCoverServiceModal" :service="coverServices[editedCoverServiceIndex]" @close="closeCoverServiceModal()" @createService="addItem(coverServices, $event)" @editService="editCoverService($event)"/>
         <div v-if="showValuationForm" id="summaryCo">
             <div>
                 <h5>Podsumowanie cenowe</h5>
@@ -486,57 +526,25 @@ export default {
             showInsideColorModal: false,
             showCoverColorModal: false,
             showPaperModal: false,
-            showServiceModal: false,
             showCoverPaperModal: false,
-            editedPaper: null,
-            editedService: null,
-            editedCoverPaper: null,
+            showServiceModal: false,
+            showCoverServiceModal: false,
+            editedPaperIndex: null,
+            editedCoverPaperIndex: null,
+            editedServiceIndex: null,
+            editedCoverServiceIndex: null,
             insideColors: [],
             coverColors: [],
             papers: [],
             coverPapers: [],
             services: [],
-            serviceCounter: 0,
-            paperCounter: 0,
-            paperCoverCounter: 0,
-            insideColorCounter: 0,
-            coverColorCounter: 0,
+            coverServices: [],
 
             printCalcConstant: 0.015,
+            platePrice: 0,
             saveButtonMessage: "",
 		}
 	},
-    watch: {
-        async selectedOrder() {
-            if(this.selectedOrder != '') {
-                let callPath = "/OrderItem/getOrderItemsByOrder?id=" + this.rawOrders.find(element => element.name == this.selectedOrder).idOrder;
-                this.rawOrderItems = await CallAPI.get(callPath)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
-            }
-        },
-        async selectedOrderItem() {
-            if(this.selectedOrderItem != '') {
-                let callPath = "/OrderItem/getOrderItem?id=" + this.rawOrderItems.find(element => element.name == this.selectedOrderItem).idOrderItem;
-                this.selectedOrderItemData = await CallAPI.get(callPath)
-                .then(res => {
-                    return res.data;
-                })
-                .catch(err => {
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
-                this.saveButtonMessage = "Zapisz wycenę";
-                this.showOrderPicker = false;
-                this.showValuationPicker = true;
-
-                this.loadOrderItemData();
-            }
-        },
-    },
     async mounted() {
         const userStore = useUserStore();
         this.authorName = userStore.userName;
@@ -554,6 +562,15 @@ export default {
         this.rawBindingType = await CallAPI.get(callPath)
         .then(res => {
             return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
+
+        callPath = "/PriceList/getPriceList?id=1";
+        this.platePrice = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data.price;
         })
         .catch(err => {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
@@ -597,6 +614,103 @@ export default {
             result.setDate(result.getDate() + days);
             return result;
         },
+        addItem(array, e) {
+            array.push(e);
+        },
+        removeItem(array, index) {
+            if (index > -1) {
+                array.splice(index, 1);
+            }
+        },
+        closePaperModal() {
+            this.showPaperModal = false;
+            this.editedPaperIndex = null;
+        },
+        closeCoverPaperModal() {
+            this.showCoverPaperModal = false;
+            this.editedCoverPaperIndex = null;
+        },
+        closeServiceModal() {
+            this.showServiceModal = false;
+            this.editedServiceIndex = null;
+        },
+        closeCoverServiceModal() {
+            this.showCoverServiceModal = false;
+            this.editedCoverServiceIndex = null;
+        },
+        editPaperInModal(index) {
+            this.editedPaperIndex = index;
+            this.showPaperModal = true;
+        },
+        editCoverPaperInModal(index) {
+            this.editedCoverPaperIndex = index;
+            this.showCoverPaperModal = true;
+        },
+        editServiceInModal(index) {
+            this.editedServiceIndex = index;
+            this.showServiceModal = true;
+        },
+        editCoverServiceInModal(index) {
+            this.editedCoverServiceIndex = index;
+            this.showCoverServiceModal = true;
+        },
+        editPaper(e){
+            this.papers[this.editedPaperIndex].name = e.name;
+            this.papers[this.editedPaperIndex].kind = e.kind;
+            this.papers[this.editedPaperIndex].sheetFormat = e.sheetFormat;
+            this.papers[this.editedPaperIndex].fiberDirection = e.fiberDirection;
+            this.papers[this.editedPaperIndex].opacity = e.opacity;
+            this.papers[this.editedPaperIndex].pricePerKilogram = e.pricePerKilogram;
+            this.papers[this.editedPaperIndex].quantity = e.quantity;
+        },
+        editCoverPaper(e) {
+            this.coverPapers[this.editedCoverPaperIndex].name = e.name;
+            this.coverPapers[this.editedCoverPaperIndex].kind = e.kind;
+            this.coverPapers[this.editedCoverPaperIndex].sheetFormat = e.sheetFormat;
+            this.coverPapers[this.editedCoverPaperIndex].fiberDirection = e.fiberDirection;
+            this.coverPapers[this.editedCoverPaperIndex].opacity = e.opacity;
+            this.coverPapers[this.editedCoverPaperIndex].pricePerKilogram = e.pricePerKilogram;
+            this.coverPapers[this.editedCoverPaperIndex].quantity = e.quantity;
+        },
+        editService(e) {
+            this.services[this.editedServiceIndex].serviceName = e.serviceName;
+            this.services[this.editedServiceIndex].price = e.price;
+            this.services[this.editedServiceIndex].name = e.name;
+        },
+        editCoverService(e) {
+            this.coverServices[this.editedCoverServiceIndex].serviceName = e.serviceName;
+            this.coverServices[this.editedCoverServiceIndex].price = e.price;
+            this.coverServices[this.editedCoverServiceIndex].name = e.name;
+        },
+        async getOrderItems(selectedName) {
+            if(this.selectedOrder != '') {
+                let callPath = "/OrderItem/getOrderItemsByOrder?id=" + this.rawOrders.find(element => element.name == selectedName).idOrder;
+                this.rawOrderItems = await CallAPI.get(callPath)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+            }
+        },
+        async getOrderItemDetails(selectedName) {
+            if(this.selectedOrderItem != '') {
+                let callPath = "/OrderItem/getOrderItem?id=" + this.rawOrderItems.find(element => element.name == selectedName).idOrderItem;
+                this.selectedOrderItemData = await CallAPI.get(callPath)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(err => {
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+                this.saveButtonMessage = "Zapisz wycenę";
+                this.showOrderPicker = false;
+                this.showValuationPicker = true;
+
+                this.loadOrderItemData();
+            }
+        },
         loadOrderItemData(){
             this.insideFormat = this.selectedOrderItemData.insideFormat;
             this.insideCirculation = this.selectedOrderItemData.circulation;
@@ -612,24 +726,14 @@ export default {
             }
 
             for(let i=0; i < this.selectedOrderItemData.colors.length; i++) {
-                if(!this.selectedOrderItemData.colors[i].isForCover) {
-                    let newColor = {
-                        name: this.selectedOrderItemData.colors[i].name,
-                        isForCover: this.selectedOrderItemData.colors[i].isForCover,
-                    };
+                let newColor = {
+                    name: this.selectedOrderItemData.colors[i].name,
+                };
 
-                    this.addInsideColor({ newColor });
-                }
-            }
-
-            for(let i=0; i < this.selectedOrderItemData.colors.length; i++) {
                 if(this.selectedOrderItemData.colors[i].isForCover) {
-                    let newColor = {
-                        name: this.selectedOrderItemData.colors[i].name,
-                        isForCover: this.selectedOrderItemData.colors[i].isForCover,
-                    };
-
-                    this.addCoverColor({ newColor });
+                    this.addItem(this.coverColors, newColor);
+                }else{
+                    this.addItem(this.insideColors, newColor);
                 }
             }
 
@@ -644,17 +748,26 @@ export default {
                     quantity: this.selectedOrderItemData.papers[i].quantity
                 };
 
-                this.addPaper({ newPaper });
+                if(this.selectedOrderItemData.papers[i].isForCover) {
+                    this.addItem(this.coverPapers, newPaper);
+                }else{
+                    this.addItem(this.papers, newPaper);
+                }
             }
 
             for(let i=0; i < this.selectedOrderItemData.services.length; i++) {
                 let newService = {
-                    serviceName: this.selectedOrderItemData.services[i].serviceName.name,
+                    idServiceName: this.selectedOrderItemData.services[i].idServiceName,
+                    serviceName: this.selectedOrderItemData.services[i].serviceName,
                     name: this.selectedOrderItemData.services[i].name,
                     price: this.selectedOrderItemData.services[i].price,
                 };
 
-                this.addService({ newService });
+                if(this.selectedOrderItemData.services[i].isForCover) {
+                    this.addItem(this.coverServices, newService);
+                }else{
+                    this.addItem(this.services, newService);
+                }
             }
         },
         loadCopiedData() {
@@ -664,8 +777,6 @@ export default {
             this.insidePlateNumber = savedValuation.insidePlateNumber;
             this.coverPlateNumber = savedValuation.coverPlateNumber;
             this.showCoverForm = savedValuation.showCoverForm;
-            this.selectedOrder = "";
-            this.selectedOrderItem = "";
             this.valuationName = savedValuation.valuationName;
             this.valuationRecipient = savedValuation.valuationRecipient;
             this.offerValidity = new Date(Date.parse(savedValuation.offerValidity));
@@ -681,58 +792,26 @@ export default {
             this.coverSheetNumber = savedValuation.coverSheetNumber;
             this.coverOther = savedValuation.coverOther;
             this.mainCirculation = savedValuation.mainCirculation;
-            this.serviceCounter = 0;
-            this.paperCounter = 0;
-            this.insideColorCounter = 0;
-            this.coverColorCounter = 0;
             this.selectedBinding = savedValuation.selectedBinding;
 
-            for(let i=0; i < savedValuation.insideColors.length; i++) {
-                let newColor = {
-                    name: savedValuation.insideColors[i].name,
-                };
-
-                this.addInsideColor({ newColor });
-            }
-
-            for(let i=0; i < savedValuation.coverColors.length; i++) {
-                let newColor = {
-                    name: savedValuation.coverColors[i].name,
-                    isForCover: savedValuation.coverColors[i].isForCover,
-                };
-
-                this.addCoverColor({ newColor });
-            }
-
-            for(let i=0; i < savedValuation.papers.length; i++) {
-                let newPaper = {
-                    name: savedValuation.papers[i].name,
-                    kind: savedValuation.papers[i].kind,
-                    sheetFormat: savedValuation.papers[i].sheetFormat,
-                    fiberDirection: savedValuation.papers[i].fiberDirection,
-                    opacity: savedValuation.papers[i].opacity,
-                    pricePerKilogram: savedValuation.papers[i].pricePerKilogram,
-                    quantity: savedValuation.papers[i].quantity
-                };
-
-                this.addPaper({ newPaper });
-            }
-
-            for(let i=0; i < savedValuation.services.length; i++) {
-                let newService = {
-                    serviceName: savedValuation.services[i].serviceName.name,
-                    name: savedValuation.services[i].name,
-                    price: savedValuation.services[i].price,
-                };
-
-                this.addService({ newService });
-            }
+            this.insideColors = savedValuation.insideColors;
+            this.coverColors = savedValuation.coverColors;
+            this.papers = savedValuation.papers;
+            this.coverPapers = savedValuation.coverPapers;
+            this.services = savedValuation.services;
+            this.coverServices = savedValuation.coverServices;
 
             this.showValuationPicker = false;
             this.showValuationForm = true;
         },
         calcPrices() {
             let resultPrice = 0;
+
+            // color price
+            resultPrice += parseFloat(this.insidePlateNumber) * parseFloat(this.platePrice);
+
+            // cover color price
+            if(this.showCoverForm && this.coverColors.length !== 0) resultPrice += parseFloat(this.coverPlateNumber) * parseFloat(this.platePrice);
 
             // paper and print price
             for(let i=0; i<this.papers.length; i++){
@@ -768,91 +847,17 @@ export default {
             for(let i=0; i<this.services.length; i++){
                 resultPrice += parseFloat(this.services[i].price);
             }
-            
+
+            // cover services price
+            if(this.showCoverForm && this.coverServices.length !== 0) {
+                for(let i=0; i<this.coverServices.length; i++){
+                    resultPrice += parseFloat(this.coverServices[i].price);
+                }
+            }
+
             this.finalPrice = resultPrice.toFixed(4);
             if(this.mainCirculation != '' && this.mainCirculation != null && this.mainCirculation > 0 && this.mainCirculation != undefined) {
                 this.unitPrice = this.finalPrice / this.mainCirculation;
-            }
-        },
-        async submitForm() {
-            if(this.validateForm) {
-                const userStore = useUserStore();
-
-                let orderItemId = "";
-                if(this.saveButtonMessage == 'Zapisz wycenę bez przedmiotu zamówienia') {
-                    orderItemId = null;
-                } else {
-                    orderItemId = this.rawOrderItems.find(element => element.name == this.selectedOrderItem).idOrderItem;
-                }
-
-                let callPath = "/Valuation/createValuation";
-                let body = {};
-
-                if(this.showCoverForm) {
-                    body = {
-                    Name: this.valuationName,
-                    Recipient: this.valuationRecipient,
-                    OfferValidityDate: this.offerValidity,
-                    InsideCirculation: this.insideCirculation,
-                    Capacity: this.insideCapacity,
-                    InsideFormat: this.insideFormat,
-                    CoverFormat: this.coverFormat,
-                    InsideSheetFormat: this.insideFormatSheet,
-                    CoverSheetFormat: this.coverFormatSheet,
-                    InsideSheetNumber: this.insideSheetNumber,
-                    CoverSheetNumber: this.coverSheetNumber,
-                    InsideOther: this.isnideOther,
-                    CoverOther: this.coverOther,
-                    CoverCirculation: this.coverCirculation,
-                    InsidePlateNumber: this.insidePlateNumber,
-                    CoverPlateNumber: this.coverPlateNumber,
-                    MainCirculation: this.mainCirculation,
-                    FinalPrice: this.finalPrice,
-                    IdAuthor: userStore.userId,
-                    IdOrderItem: orderItemId,
-                    IdBindingType: this.rawBindingType.find(element => element.name == this.selectedBinding).idBindingType,
-                };
-                } else {
-                    body = {
-                    Name: this.valuationName,
-                    Recipient: this.valuationRecipient,
-                    OfferValidityDate: this.offerValidity,
-                    InsideCirculation: this.insideCirculation,
-                    Capacity: this.insideCapacity,
-                    InsideFormat: this.insideFormat,
-                    CoverFormat: "",
-                    InsideSheetFormat: this.insideFormatSheet,
-                    CoverSheetFormat: "",
-                    InsideSheetNumber: this.insideSheetNumber,
-                    CoverSheetNumber: null,
-                    InsideOther: this.isnideOther,
-                    CoverOther: "",
-                    CoverCirculation: null,
-                    InsidePlateNumber: this.insidePlateNumber,
-                    CoverPlateNumber: null,
-                    MainCirculation: this.mainCirculation,
-                    FinalPrice: this.finalPrice,
-                    IdAuthor: userStore.userId,
-                    IdOrderItem: orderItemId,
-                    IdBindingType: this.rawBindingType.find(element => element.name == this.selectedBinding).idBindingType,
-                };
-                }
-
-                await CallAPI.post(callPath, body)
-                .then(res => {
-                    this.$vaToast.init({ message: 'Wycena została zapisana.', color: 'success', duration: 3000 });
-                    this.$router.push({ name: "ValuationDetails", params: { id: res.data, mode: 'edit' } });
-                    return res.data;
-                })
-                .catch(err => {
-                    if(err.message.includes("422")) {
-                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
-                    }else{
-                        this.$vaToast.init({ message: 'Błąd zapisu wyceny.', color: 'danger', duration: 3000 })
-                    }
-
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
             }
         },
         validateForm(){
@@ -867,147 +872,174 @@ export default {
 
             return (this.isPreDetailsFormValidate && this.isDetailsInsideFormValidate && this.isDetailsCoverFormValidate);
         },
-        closeServiceModal() {
-            this.showServiceModal = false;
-            this.editedService = null;
-        },
-        addService(e) {
-            let newService = {
-                IdForServiceTable: this.serviceCounter,
-                idServiceName: e.newService.idServiceName,
-                serviceName: e.newService.serviceName,
-                name: e.newService.name,
-                price: e.newService.price,
-            };
-            this.services.push(newService);
-            this.serviceCounter++;
-        },
-        editService(e) {
-            for(const obj of this.services){
-                if (obj.IdForServiceTable === e.newService.IdForServiceTable) {
-                    obj.serviceName = e.newService.serviceName;
-                    obj.price = e.newService.price;
-                    obj.name = e.newService.name;
-                    break;
-                }
-            }
+        async submitForm() {
+            if(this.validateForm) {
+                const userStore = useUserStore();
 
-            this.showServiceModal = false;
-        },
-        editServiceInModal(service) {
-            this.editedService = service;
-            this.showServiceModal = true;
-        },
-        deleteService(service) {
-            this.services = this.services.filter(item => item.IdForServiceTable !== service.IdForServiceTable);
-        },
-        closePaperModal() {
-            this.showPaperModal = false;
-            this.editedPaper = null;
-        },
-        addPaper(e) {
-            let newPaper = {
-                IdForPaperTable: this.paperCounter,
-                idPaper: e.newPaper.IdPaper,
-                name: e.newPaper.name,
-                kind: e.newPaper.kind,
-                sheetFormat: e.newPaper.sheetFormat,
-                fiberDirection: e.newPaper.fiberDirection,
-                opacity: e.newPaper.opacity,
-                pricePerKilogram: e.newPaper.pricePerKilogram,
-                quantity: e.newPaper.quantity
-            };
-            this.papers.push(newPaper);
-            this.paperCounter++;
-        },
-        editPaper(e){
-            for(const obj of this.papers){
-                if (obj.IdForPaperTable === e.newPaper.IdForPaperTable) {
-                    obj.name = e.newPaper.name;
-                    obj.kind = e.newPaper.kind;
-                    obj.sheetFormat = e.newPaper.sheetFormat;
-                    obj.fiberDirection = e.newPaper.fiberDirection;
-                    obj.opacity = e.newPaper.opacity;
-                    obj.pricePerKilogram = e.newPaper.pricePerKilogram;
-                    obj.quantity = e.newPaper.quantity;
-                    break;
+                let orderItemId = "";
+                if(this.saveButtonMessage == 'Zapisz wycenę bez przedmiotu zamówienia') {
+                    orderItemId = null;
+                } else {
+                    orderItemId = this.rawOrderItems.find(element => element.name == this.selectedOrderItem).idOrderItem;
                 }
-            }
 
-            this.showPaperModal = false;
-        },
-        editPaperInModal(paper) {
-            this.editedPaper = paper;
-            this.showPaperModal = true;
-        },
-        deletePaper(paper) {
-            this.papers = this.papers.filter(item => item.IdForPaperTable !== paper.IdForPaperTable);
-        },
-        editCoverPaperInModal(paper) {
-            this.editedCoverPaper = paper;
-            this.showCoverPaperModal = true;
-        },
-        deleteCoverPaper(paper) {
-            this.coverPapers = this.coverPapers.filter(item => item.IdForPaperTable !== paper.IdForPaperTable);
-        },
-        addCoverPaper(e) {
-            let newPaper = {
-                IdForPaperTable: this.paperCounter,
-                idPaper: e.newPaper.IdPaper,
-                name: e.newPaper.name,
-                kind: e.newPaper.kind,
-                sheetFormat: e.newPaper.sheetFormat,
-                fiberDirection: e.newPaper.fiberDirection,
-                opacity: e.newPaper.opacity,
-                pricePerKilogram: e.newPaper.pricePerKilogram,
-                quantity: e.newPaper.quantity
-            };
-            this.coverPapers.push(newPaper);
-            this.paperCoverCounter++;
-        },
-        editCoverPaper(e) {
-            for(const obj of this.coverPapers){
-                if (obj.IdForPaperTable === e.newPaper.IdForPaperTable) {
-                    obj.name = e.newPaper.name;
-                    obj.kind = e.newPaper.kind;
-                    obj.sheetFormat = e.newPaper.sheetFormat;
-                    obj.fiberDirection = e.newPaper.fiberDirection;
-                    obj.opacity = e.newPaper.opacity;
-                    obj.pricePerKilogram = e.newPaper.pricePerKilogram;
-                    obj.quantity = e.newPaper.quantity;
-                    break;
+                let callPath = "/Valuation/createValuation";
+                let body = {};
+                let allColorsCover = [];
+                let allPapersCover = [];
+                let allServicesCover = [];
+
+                //create colors, papers, and services
+                let allColors = this.insideColors.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        isForCover: false,
+                    }
+
+                    return result;
+                });
+
+                let allPapers = this.papers.map(function(item) {
+                    let result = {
+                        name: item["name"],
+                        kind: item["kind"],
+                        sheetFormat: item["sheetFormat"],
+                        fiberDirection: item["fiberDirection"],
+                        opacity: item["opacity"],
+                        pricePerKilogram: item["pricePerKilogram"],
+                        quantity: item["quantity"],
+                        isForCover: false,
+                    }
+
+                    return result;
+                });
+
+                let allServices = this.services.map(function(item) {
+                    let result = {
+                        idServiceName: item["idServiceName"],
+                        serviceName: item["serviceName"],
+                        name: item["name"],
+                        price: item["price"],
+                        isForCover: false,
+                    }
+
+                    return result;
+                });
+
+                if(this.showCoverForm) {
+                    allColorsCover = this.coverColors.map(function(item) {
+                        let result = {
+                            name: item["name"],
+                            isForCover: true,
+                        }
+
+                        return result;
+                    });
+
+                    allPapersCover = this.coverPapers.map(function(item) {
+                        let result = {
+                            name: item["name"],
+                            kind: item["kind"],
+                            sheetFormat: item["sheetFormat"],
+                            fiberDirection: item["fiberDirection"],
+                            opacity: item["opacity"],
+                            pricePerKilogram: item["pricePerKilogram"],
+                            quantity: item["quantity"],
+                            isForCover: true,
+                        }
+
+                        return result;
+                    });
+
+                    allServicesCover = this.coverServices.map(function(item) {
+                        let result = {
+                            idServiceName: item["idServiceName"],
+                            serviceName: item["serviceName"],
+                            name: item["name"],
+                            price: item["price"],
+                            isForCover: true,
+                        }
+
+                        return result;
+                    });
                 }
-            }
 
-            this.showCoverPaperModal = false;
-        },
-        closeCoverPaperModal() {
-            this.showCoverPaperModal = false;
-            this.editedCoverPaper = null;
-        },
-        closeInsideColorModal() {
-            this.showInsideColorModal = false;
-        },
-        addInsideColor(e) {
-            e.newColor.IdForColorTable = this.insideColorCounter;
-            this.insideColors.push(e.newColor);
-            this.insideColorCounter++;
-            this.showColorModal = false;
-        },
-        deleteInsideColor(color) {
-            this.insideColors = this.insideColors.filter(item => item.IdForColorTable !== color.IdForColorTable);
-        },
-        closeCoverColorModal() {
-            this.showCoverColorModal = false;
-        },
-        addCoverColor(e) {
-            e.newColor.IdForColorTable = this.coverColorCounter;
-            this.coverColors.push(e.newColor);
-            this.coverColorCounter++;
-            this.showColorModal = false;
-        },
-        deleteCoverColor(color) {
-            this.coverColors = this.coverColors.filter(item => item.IdForColorTable !== color.IdForColorTable);
+                if(this.showCoverForm) {
+                    body = {
+                        Name: this.valuationName,
+                        Recipient: this.valuationRecipient,
+                        OfferValidityDate: this.offerValidity,
+                        InsideCirculation: this.insideCirculation,
+                        Capacity: parseFloat(this.insideCapacity),
+                        InsideFormat: this.insideFormat,
+                        CoverFormat: this.coverFormat,
+                        InsideSheetFormat: this.insideFormatSheet,
+                        CoverSheetFormat: this.coverFormatSheet,
+                        InsideSheetNumber: this.insideSheetNumber,
+                        CoverSheetNumber: this.coverSheetNumber,
+                        InsideOther: this.isnideOther,
+                        CoverOther: this.coverOther,
+                        CoverCirculation: this.coverCirculation,
+                        InsidePlateNumber: this.insidePlateNumber,
+                        CoverPlateNumber: this.coverPlateNumber,
+                        MainCirculation: this.mainCirculation,
+                        FinalPrice: this.finalPrice,
+                        IdAuthor: userStore.userId,
+                        IdOrderItem: orderItemId,
+                        IdBindingType: this.rawBindingType.find(element => element.name == this.selectedBinding).idBindingType,
+                        Colors: allColors.concat(allColorsCover),
+                        Papers: allPapers.concat(allPapersCover),
+                        Services: allServices.concat(allServicesCover),
+                        ValuationPriceLists: [{ IdPriceList: 1, UsedPrice: this.platePrice }, { IdPriceList: 2, UsedPrice: this.printCalcConstant }],
+                    };
+                } else {
+                    body = {
+                        Name: this.valuationName,
+                        Recipient: this.valuationRecipient,
+                        OfferValidityDate: this.offerValidity,
+                        InsideCirculation: this.insideCirculation,
+                        Capacity: parseFloat(this.insideCapacity),
+                        InsideFormat: this.insideFormat,
+                        CoverFormat: "",
+                        InsideSheetFormat: this.insideFormatSheet,
+                        CoverSheetFormat: "",
+                        InsideSheetNumber: this.insideSheetNumber,
+                        CoverSheetNumber: null,
+                        InsideOther: this.isnideOther,
+                        CoverOther: "",
+                        CoverCirculation: null,
+                        InsidePlateNumber: this.insidePlateNumber,
+                        CoverPlateNumber: null,
+                        MainCirculation: this.mainCirculation,
+                        FinalPrice: this.finalPrice,
+                        IdAuthor: userStore.userId,
+                        IdOrderItem: orderItemId,
+                        IdBindingType: null,
+                        Colors: allColors,
+                        Papers: allPapers,
+                        Services: allServices,
+                        ValuationPriceLists: [{ IdPriceList: 1, UsedPrice: this.platePrice }, { IdPriceList: 2, UsedPrice: this.printCalcConstant }],
+                    };
+                }
+
+                console.log(body);
+                await CallAPI.post(callPath, body)
+                .then(res => {
+                    this.$vaToast.init({ message: 'Wycena została zapisana.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "ValuationDetails", params: { id: res.data, mode: 'edit' } });
+                    return res.data;
+                })
+                .catch(err => {
+                    console.log(err);
+                    if(err.message.includes("422")) {
+                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
+                    }else{
+                        this.$vaToast.init({ message: 'Błąd zapisu wyceny.', color: 'danger', duration: 3000 })
+                    }
+
+                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+                });
+            }
         },
     },
 }

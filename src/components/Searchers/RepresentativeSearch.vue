@@ -45,7 +45,7 @@
       </div>
       <div v-if="largeMode" class="search-box">
             <div class="search-input-box">
-                <label>Szukaj wśród dezaktywowanych osób:</label>
+                <label>Osoba dezaktywowana:</label>
                 <div>
                     <input v-model="showDisabled" type="checkbox">
                 </div>

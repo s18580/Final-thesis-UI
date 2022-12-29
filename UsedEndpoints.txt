@@ -118,6 +118,8 @@ RepresentativeController
     GetRepresentativesByCustomer
     GetSupplierRepresentatives
     GetCustomerRepresentatives
+    GetCustomerActiveRepresentatives
+    GetSupplierActiveRepresentatives
     CreateRepresentative
     UpdateRepresentative
     DisableRepresentative

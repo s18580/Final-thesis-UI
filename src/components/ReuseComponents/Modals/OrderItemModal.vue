@@ -421,7 +421,7 @@ export default {
             return resultArr;
         }
     },
-    async mounted() { 
+    async mounted() {
         this.rawBindingTypes = await CallAPI.get("/BindingType/getBindingTypes")
         .then(res => {
             return res.data;
@@ -516,6 +516,7 @@ export default {
                 this.expectedCompletionDate = null;
             }
 
+            /*
             if(this.orderItem.idOrderItem !== null && this.orderItem.idOrderItem !== undefined) {
                 this.showValuationSelect = true;
 
@@ -541,7 +542,8 @@ export default {
             }else{
                 this.showValuationSelect = false;
             }
-
+            */
+            this.showValuationSelect = false;
             this.newItemMode = false;
             this.buttonMessage = "Edytuj przedmiot zamówienia";
         }

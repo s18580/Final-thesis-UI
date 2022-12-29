@@ -303,7 +303,7 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    z-index: 99999;
+    z-index: 2;
     border-radius: 25px;
 }
 
@@ -311,7 +311,7 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    z-index: 99999;
+    z-index: 2;
     border: solid 1px red;
 }
 

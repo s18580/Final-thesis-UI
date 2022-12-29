@@ -31,7 +31,9 @@ export const useValuationStore = defineStore('ValuationStore', {
             insideColors: [],
             coverColors: [],
             papers: [],
+            coverPapers: [],
             services: [],
+            coverServices: [],
         }
     },
 
@@ -60,7 +62,9 @@ export const useValuationStore = defineStore('ValuationStore', {
                 insideColors: this.insideColors,
                 coverColors: this.coverColors,
                 papers: this.papers,
+                coverPapers: this.coverPapers,
                 services: this.services,
+                coverServices: this.coverServices,
                 finalPrice: this.finalPrice,
             }
         }
@@ -90,7 +94,9 @@ export const useValuationStore = defineStore('ValuationStore', {
             this.insideColors = [];
             this.coverColors = [];
             this.papers = [];
+            this.coverPapers = [];
             this.services = [];
+            this.coverServices = [],
             this.finalPrice = "";
         }
     },

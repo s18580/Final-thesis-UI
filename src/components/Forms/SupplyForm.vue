@@ -17,6 +17,7 @@
                             :options="orders"
                             label="Zamówienie"
                             noOptionsText="Brak zamówień do wybrania"
+                            @update:model-value="getOrderItems()"
                         />
                         <va-select
                             v-if="selectedOrder != ''"
@@ -62,6 +63,16 @@
                         />
                         <va-select
                             class="gridFirstC gridFourthR inputWidth"
+                            v-model="selectedSupplier"
+                            :options="suppliers"
+                            :rules="[(v) => v != '' || `Dostawca musi byc wybrany`]"
+                            label="Dostawca"
+                            noOptionsText="Brak dostawców do wybrania"
+                            @update:model-value="getRepresentativesData($event)"
+                        />
+                        <va-select
+                            v-if="selectedSupplier !== ''"
+                            class="gridFirstC gridFifthR inputWidth"
                             v-model="selectedRepresentative"
                             :options="representatives"
                             :rules="[(v) => v != '' || `Reprezentant musi byc wybrany`]"
@@ -146,6 +157,8 @@ export default {
             rawSupplyItemTypes: [],
             selectedRepresentative: "",
             rawRepresentatives: [],
+            selectedSupplier: "",
+            rawSuppliers:[],
             selectedOrder: "",
             rawOrders: [],
             selectedOrderItem: "",
@@ -184,19 +197,14 @@ export default {
             });
 
             return resultArr;
-        }
-    },
-    watch: {
-        async selectedOrder() {
-            let callPath = "/OrderItem/getOrderItemsByOrder?id=" + this.getIdByName("order", this.selectedOrder);
-            this.rawOrderItems = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
         },
+        suppliers () {
+            let resultArr = this.rawSuppliers.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        }
     },
     async mounted() {
         let callPath = "/Order/getOrders";
@@ -208,8 +216,8 @@ export default {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
         
-        callPath = "/Representative/getSupplierRepresentatives";
-        this.rawRepresentatives = await CallAPI.get(callPath)
+        callPath = "/Supplier/getSuppliers";
+        this.rawSuppliers = await CallAPI.get(callPath)
         .then(res => {
             return res.data;
         })
@@ -296,6 +304,8 @@ export default {
                     return this.rawOrderItems.find(element => element.name == name).idOrderItem;
                 case "order":
                     return this.rawOrders.find(element => element.name == name).idOrder;
+                case "supplier":
+                    return this.rawSuppliers.find(element => element.name == name).idSupplier;
             }
         },
         closeAddressModal() {
@@ -309,7 +319,27 @@ export default {
             if (index > -1) {
                 this.deliveryAddresses.splice(index, 1);
             }
-        }
+        },
+        async getRepresentativesData(supplierName) {
+            let callPath = "/Representative/getSupplierActiveRepresentatives?id=" + this.getIdByName('supplier', supplierName);
+            this.rawRepresentatives = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        },
+        async getOrderItems() {
+            let callPath = "/OrderItem/getOrderItemsByOrder?id=" + this.getIdByName("order", this.selectedOrder);
+            this.rawOrderItems = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        },
 	},
 }
 </script>
@@ -369,7 +399,7 @@ export default {
 #form {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
     height: 360px;
@@ -382,7 +412,7 @@ export default {
 
 .gridSpreadR {
     grid-row-start: 2;
-    grid-row-end: 5;
+    grid-row-end: 6;
 }
 
 .gridFirstC {
@@ -413,6 +443,11 @@ export default {
 .gridFourthR {
     grid-row-start: 4;
     grid-row-end: 4;
+}
+
+.gridFifthR {
+    grid-row-start: 5;
+    grid-row-end: 5;
 }
 
 #submitButtonContainer {

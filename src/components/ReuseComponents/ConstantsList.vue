@@ -13,7 +13,7 @@
                     </template>
                     <template #cell(actions)="{ rowIndex }">
                         <va-button flat icon="edit" @click="openEditModal(rowIndex)" />
-                        <va-button flat icon="delete" @click="openDeleteModal(rowIndex)" />
+                        <va-button v-if="!priceListType" flat icon="delete" @click="openDeleteModal(rowIndex)" />
                     </template>
                     <template #bodyAppend>
                     <tr><td colspan="6" class="table-pagination">
