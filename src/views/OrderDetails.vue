@@ -138,9 +138,9 @@
                     <OrderItemModal :orderItem="selectedOrderItem" v-if="showOrderItemModal" @close="closeEditOrderItem()" @editOrderItem="editOrderItem($event)" @createOrderItem="addOrderItem($event)" />
                     <va-modal
                         v-model="showDeleteOrderItemModal"
-                        message="Czy napewno chcesz usunąć ten adres ?"
+                        message="Czy napewno chcesz usunąć ten przedmiot zamówienia ?"
                         size="small"
-                        title="Usuń adres"
+                        title="Usuń przedmiot zamówienia"
                         cancel-text="Anuluj"
                         ok-text="Usuń"
                         @cancel="closeDeleteOrderItemModal()"
@@ -732,6 +732,8 @@ export default {
             this.updateOrderItemList();
         },
         async editOrderItem(e) {
+            console.log(e);
+
             let callPath = "/OrderItem/updateOrderItem";
             let body = {
                 IdOrderItem: e.idOrderItem,
@@ -743,9 +745,9 @@ export default {
                 CompletionDate: e.completionDate,
                 InsideFormat: e.insideFormat,
                 CoverFormat: e.coverFormat,
-                IdDeliveryType: e.selectedDeliveryType,
-                IdBindingType: e.selectedBindingTypes,
-                IdOrderItemType: e.selectedOrderItemType,
+                IdDeliveryType: e.idDeliveryType,
+                IdBindingType: e.idBindingType,
+                IdOrderItemType: e.idOrderItemType,
                 IdSelectedValuation: e.selectedValuation,
                 Colors: e.colors,
                 Services: e.services,

@@ -92,13 +92,19 @@ export default {
                     name: this.paperName,
                     kind: this.paperKind,
                     sheetFormat: this.sheetFormat,
-                    fiberDirection: this.selectedFiberDirection,
                     opacity: this.paperOpacity,
                     pricePerKilogram: this.pricePerKilogram,
                     quantity: this.paperQuantity
                 };
 
+                if(this.selectedFiberDirection === "Pionowy"){
+                    data.fiberDirection = 0;
+                }else{
+                    data.fiberDirection = 1;
+                }
+
                 if(this.paper !== null) {
+                    if(this.paper.idPaper !== null || this.paper.idPaper !== undefined) data.IdPaper = this.paper.idPaper;
                     this.$emit('editPaper', data);
                 } else {
                     this.$emit('createPaper', data);
@@ -130,10 +136,15 @@ export default {
             this.paperName = this.paper.name;
             this.paperKind = this.paper.kind;
             this.sheetFormat = this.paper.sheetFormat;
-            this.selectedFiberDirection = this.paper.fiberDirection;
             this.paperOpacity = this.paper.opacity;
             this.paperQuantity = this.paper.quantity;
             this.pricePerKilogram = this.paper.pricePerKilogram;
+
+            if(this.paper.fiberDirection === 0){
+                this.selectedFiberDirection = "Pionowy";
+            }else{
+                this.selectedFiberDirection = "Poziomy";
+            }
         }
     }
 }

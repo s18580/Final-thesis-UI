@@ -49,13 +49,15 @@ export default {
             servicePrice: 0.0,
             rawServices: [],
             selectedService: "",
+            isMounted: false,
 		}
 	},
     watch: {
         selectedService(newValue, oldValue) {
-            if(newValue !== '' || newValue !== null || newValue !== undefined || newValue !== oldValue){
+            if((newValue !== '' || newValue !== null || newValue !== undefined || newValue !== oldValue) && this.isMounted){
                 this.servicePrice = this.rawServices.find(element => element.name == newValue).defaultPrice
             }
+            this.isMounted = true;
         },
     },  
     computed: {
@@ -78,6 +80,7 @@ export default {
                 };
 
                 if(this.service !== null) {
+                    if(this.service.idService !== null || this.service.idService  !== undefined) data.idService = this.service.idService;
                     this.$emit('editService', data);
                 } else {
                     this.$emit('createService', data);
@@ -119,8 +122,8 @@ export default {
             this.servicePrice = 0.0;
         }else {
             this.buttonMessage = "Edytuj usługę";
-            this.servicePrice = this.service.price;
             this.selectedService = this.getServiceNameById(this.service.idServiceName);
+            this.servicePrice = this.service.price;
         }
     }
 }

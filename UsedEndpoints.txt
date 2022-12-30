@@ -175,8 +175,6 @@ ValuationController
     GetValuation
     GetSearchValuations
     CreateValuation
-    UpdateValuation
-    DeleteValuation
 
 
 ValuationPriceListController

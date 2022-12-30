@@ -341,6 +341,7 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
+            idOrderItem: null,
             orderItemName: "",
             insideFormat: "",
             circulation: 1,
@@ -484,6 +485,9 @@ export default {
             this.newItemMode = true;
             this.buttonMessage = "Dodaj przedmiot zamówienia";
         } else {
+            if(this.orderItem.idOrderItem !== null && this.orderItem.idOrderItem !== undefined) {
+                this.idOrderItem = this.orderItem.idOrderItem;
+            }
             if(this.orderItem.coverFormat === '' || this.orderItem.coverFormat === null || this.orderItem.coverFormat === undefined) { 
                 this.selectedRadioOption = "Bez okładki";
             } else {
@@ -516,7 +520,6 @@ export default {
                 this.expectedCompletionDate = null;
             }
 
-            /*
             if(this.orderItem.idOrderItem !== null && this.orderItem.idOrderItem !== undefined) {
                 this.showValuationSelect = true;
 
@@ -538,12 +541,17 @@ export default {
                 });
 
                 this.rawValuations = valuationWithoutOrderItem.concat(valuationByOrderItem);
-                this.selectedValuation = this.rawValuations.find(element => element.idValuation == this.orderItem.idSelectedValuation).name;
+                let selectedValuation = valuationByOrderItem.find(element => element.isSelectedValuation == true);
+
+                if(selectedValuation !== null && selectedValuation !== undefined) {
+                    this.selectedValuation = selectedValuation.name;
+                } else {
+                    this.selectedValuation = "";
+                }
             }else{
                 this.showValuationSelect = false;
             }
-            */
-            this.showValuationSelect = false;
+
             this.newItemMode = false;
             this.buttonMessage = "Edytuj przedmiot zamówienia";
         }
@@ -610,6 +618,7 @@ export default {
                 //create colors, papers, and services
                 let allColors = this.colors.map(function(item) {
                     let result = {
+                        idColor: item['idColor'],
                         name: item["name"],
                         isForCover: false,
                     }
@@ -619,6 +628,7 @@ export default {
 
                 let allPapers = this.papers.map(function(item) {
                     let result = {
+                        idPaper: item['idPaper'],
                         name: item["name"],
                         kind: item["kind"],
                         sheetFormat: item["sheetFormat"],
@@ -634,6 +644,7 @@ export default {
 
                 let allServices = this.services.map(function(item) {
                     let result = {
+                        idService: item['idService'],
                         idServiceName: item["idServiceName"],
                         serviceName: item["serviceName"],
                         name: item["name"],
@@ -643,10 +654,12 @@ export default {
 
                     return result;
                 });
+                console.log(allServices);
 
                 if(this.showCoverDetails) {
                     allColorsCover = this.coverColors.map(function(item) {
                         let result = {
+                            idColor: item['idColor'],
                             name: item["name"],
                             isForCover: true,
                         }
@@ -656,6 +669,7 @@ export default {
 
                     allPapersCover = this.coverPapers.map(function(item) {
                         let result = {
+                            idPaper: item['idPaper'],
                             name: item["name"],
                             kind: item["kind"],
                             sheetFormat: item["sheetFormat"],
@@ -671,6 +685,7 @@ export default {
 
                     allServicesCover = this.coverServices.map(function(item) {
                         let result = {
+                            idService: item['idService'],
                             idServiceName: item["idServiceName"],
                             serviceName: item["serviceName"],
                             name: item["name"],
@@ -684,6 +699,7 @@ export default {
 
                 //create order item
                 let data = {
+                    idOrderItem: this.idOrderItem,
                     name: this.orderItemName,
                     comments: this.comments,
                     insideFormat: this.insideFormat,

@@ -70,7 +70,7 @@
 </template>
 
 <script>
-//import CallAPI from '@/axios/axios-connection.js';
+import CallAPI from '@/axios/axios-connection.js';
 import CallSeq from '@/logging/seq-logger.js';
 import FileModal from '@/components/ReuseComponents/Modals/FileModal.vue';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -158,7 +158,7 @@ export default {
             awsClient.destroy();
         },
         async addFile(e){
-            //let uploadedToAws = false;
+            let uploadedToAws = false;
 
             // create s3 object
             const awsClient = this.createNewAwsClient();
@@ -170,14 +170,13 @@ export default {
             // send command and handle it correctly
             try{
                 await awsClient.send(command);
-                //uploadedToAws = true;
+                uploadedToAws = true;
             }catch(err) {
                 this.$vaToast.init({ message: 'Błąd wysyłania pliku.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             }
 
             // if file loaded, send info to API
-            /*
             if(uploadedToAws){
                 let callPath = "/File/createFile";
                 let body = {};
@@ -212,13 +211,13 @@ export default {
                     this.deleteFile(e)
                 });
             }
-            */
+
             awsClient.destroy();
 
             this.updateFileList();
         },
         async deleteFile(e){
-            //let deletedFromAws = false;
+            let deletedFromAws = false;
 
             // create s3 object
             const awsClient = this.createNewAwsClient();
@@ -230,14 +229,13 @@ export default {
             // send command and handle it correctly
             try{
                 await awsClient.send(command)
-                //deletedFromAws = true;
+                deletedFromAws = true;
             }catch(err) {
                 console.log(err);
                 this.$vaToast.init({ message: 'Błąd usuwania pliku.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             }
 
-            /*
             // if file deleted, send info to API
             if(deletedFromAws){
                 let callPath = "/File/deleteFile";
@@ -255,13 +253,12 @@ export default {
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
                 });
             }
-            */
+            
             awsClient.destroy();
 
             this.updateFileList();
         },
         async downloadFile(e){
-            console.log(e);
             // create s3 object
             const awsClient = this.createNewAwsClient();
 

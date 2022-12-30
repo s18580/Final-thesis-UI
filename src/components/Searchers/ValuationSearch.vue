@@ -87,8 +87,6 @@
           <va-data-table v-else :items="results" :columns="columns" striped hoverable :per-page="perPage" :current-page="currentPage" :no-data-filtered-html="resultMessage">
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
-                <va-button flat icon="edit" @click="editItemById(rowIndex)" />
-                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
             </template>
             <template #bodyAppend>
                 <tr><td colspan="12" class="table-pagination">
@@ -288,7 +286,8 @@ export default {
             if(this.results == []) {
                 this.resultMessage = "Brak wyników do wyświetlenia";
             }
-
+            
+            console.log(this.results);
             this.showResults = true;
         },
         showThatPicker(id) {
@@ -300,22 +299,7 @@ export default {
             }
         },
         viewItemById(row) {
-            this.$router.push({ name: "ValuationDetails", params: { id: this.results[row].idValuation, mode: 'read' } });
-        },
-        editItemById(row) {
-            this.$router.push({ name: "ValuationDetails", params: { id: this.results[row].idValuation, mode: 'edit' } });
-        },
-        async deleteItemById(row) {
-            let callPath = "/Valuation/deleteValuation";
-            let body = { data: { IdValuation: this.results[row].idValuation } };
-
-            await CallAPI.delete(callPath, body)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
+            this.$router.push({ name: "ValuationDetails", params: { id: this.results[row].idValuation } });
         },
 	},
 }

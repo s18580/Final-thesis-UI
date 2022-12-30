@@ -266,6 +266,43 @@
                     </va-list>
                 </div>
             </div>
+            <div v-if="showCoverForm">
+                <h5>Lista papierów okładki</h5>
+                <div id="papers">
+                    <va-list id="papersList">
+                        <va-list-item
+                            v-for="paper in coverPapers"
+                            :key="paper.IdPaper"
+                        >
+                            <va-list-item-section avatar>
+                                <va-avatar color="#6B5B95" icon="newspaper" />
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ paper.name }}
+                                </va-list-item-label>
+
+                                <va-list-item-label>
+                                    {{ paper.kind }}
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ paper.sheetFormat }}
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ paper.quantity }} szt.
+                                </va-list-item-label>
+                            </va-list-item-section>
+                        </va-list-item>
+                    </va-list>
+                </div>
+            </div>
         </div>
         <div id="servicesCo">
             <div>
@@ -282,7 +319,34 @@
 
                             <va-list-item-section>
                                 <va-list-item-label>
-                                    {{ service.serviceName }}
+                                    {{ service.serviceName.name }}
+                                </va-list-item-label>
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ service.price }} zł
+                                </va-list-item-label>
+                            </va-list-item-section>
+                        </va-list-item>
+                    </va-list>
+                </div>
+            </div>
+            <div v-if="showCoverForm">
+                <h5>Usługi i ceny okładki</h5>
+                <div id="services">
+                    <va-list id="servicesList">
+                        <va-list-item
+                            v-for="service in coverServices"
+                            :key="service.IdService"
+                        >
+                            <va-list-item-section avatar>
+                                <va-avatar color="#6B5B95" icon="receipt_long" />
+                            </va-list-item-section>
+
+                            <va-list-item-section>
+                                <va-list-item-label>
+                                    {{ service.serviceName.name }}
                                 </va-list-item-label>
                             </va-list-item-section>
 
@@ -321,10 +385,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="!isReadOnly" id="addOrderButtonCo">
-            <va-button @click="submitForm()" color="info" gradient class="my-3">Zapisz zmiany</va-button>
-        </div>
-        <FileList :mode="mode" :awsData="awsData" parentType="valuation" :id="id"/>
+        <FileList v-if="awsData != null" :mode="mode" :awsData="awsData" parentType="valuation" :id="Number(id)"/>
     </div>
 </template>
 
@@ -341,11 +402,6 @@ export default {
     id: {
         type: String,
         required: true,
-    },
-    mode: {
-        type: String,
-        required: false,
-        default: "read"
     },
   },
   components: { FileList },
@@ -388,17 +444,23 @@ export default {
             insideColors: [],
             coverColors: [],
             papers: [],
+            coverPapers: [],
             services: [],
+            coverServices: [],
 		}
 	},
     async mounted() {
-        if(this.mode === "read") {
-            this.isReadOnly = true;
-        } else if(this.mode === "edit") {
-            this.isReadOnly = false;
-        }
+        const userStore = useUserStore();
+        let callPath = "/Worker/getAWS?id=" + userStore.userId;
+        this.awsData = await CallAPI.get(callPath)
+        .then(res => {
+            return res.data;
+        })
+        .catch(err => {
+            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+        });
 
-        let callPath = "/Valuation/getValuation?id=" + this.id;
+        callPath = "/Valuation/getValuation?id=" + this.id;
         let valuationData = await CallAPI.get(callPath)
         .then(res => {
             return res.data;
@@ -416,7 +478,7 @@ export default {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
 
-        this.authorName = valuationData.author.name + valuationData.author.lastName;
+        this.authorName = valuationData.author.name + " " + valuationData.author.lastName;
         this.insidePlateNumber = valuationData.insidePlateNumber;
         this.coverPlateNumber = valuationData.coverPlateNumber ?? '';
         this.valuationName = valuationData.name;
@@ -436,52 +498,21 @@ export default {
         this.mainCirculation = valuationData.mainCirculation;
         this.insideColors = valuationData.colors.filter(element => element.isForCover == false);
         this.coverColors = valuationData.colors.filter(element => element.isForCover == true);
-        this.papers = valuationData.papers;
-        this.services = valuationData.services;
-        this.selectedBinding = this.rawBindingType.find(element => element.idBindingType == valuationData.idBindingType).name;
+        this.papers = valuationData.papers.filter(element => element.isForCover == false);
+        this.coverPapers = valuationData.papers.filter(element => element.isForCover == true);
+        this.services = valuationData.services.filter(element => element.isForCover == false);
+        this.coverServices = valuationData.services.filter(element => element.isForCover == true);
         this.showCoverForm = valuationData.coverFormat != '';
         this.finalPrice = valuationData.finalPrice;
         this.creationDate = new Date(Date.parse(valuationData.creationDate));
 
-        const userStore = useUserStore();
-        callPath = "/Worker/getAWS?id=" + userStore.userId;
-        this.awsData = await CallAPI.get(callPath)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-        });
+        if(valuationData.idBindingType !== null){
+            this.selectedBinding = this.rawBindingType.find(element => element.idBindingType == valuationData.idBindingType).name;
+        } else {
+            this.selectedBinding = "";
+        }
     },
     methods: {
-        async submitForm() {
-            if(this.validateForm) {
-                let callPath = "/Valuation/updateValuation";
-                let body = {};
-
-                await CallAPI.post(callPath, body)
-                .then(res => {
-                    this.$vaToast.init({ message: 'Wycena została edytowana.', color: 'success', duration: 3000 })
-                    return res.data;
-                })
-                .catch(err => {
-                    if(err.message.includes("422")) {
-                        this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
-                    }else{
-                        this.$vaToast.init({ message: 'Błąd edycji wyceny.', color: 'danger', duration: 3000 })
-                    }
-
-                    CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-                });
-            }
-        },
-        validateForm(){
-            this.$refs.preDetailsform.validate();
-            this.$refs.detailsInsideform.validate();
-            this.$refs.detailsCoverform.validate();
-
-            return (this.isPreDetailsFormValidate && this.isDetailsInsideFormValidate && this.isDetailsCoverFormValidate);
-        },
         copyValuation() {
             const valuationStore = useValuationStore();
             valuationStore.resetData();
@@ -509,6 +540,8 @@ export default {
                 coverColors: this.coverColors,
                 papers: this.papers,
                 services: this.services,
+                coverPapers: this.coverPapers,
+                coverServices: this.coverServices,
                 selectedBinding: this.selectedBinding,
                 finalPrice: this.finalPrice,
             });
