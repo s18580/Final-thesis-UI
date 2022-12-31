@@ -12,8 +12,8 @@
                     <div class="search-input-box">
                         <label>Zamówienie jest przetargiem:</label>
                         <div id="isAuctionCo">
-                            <va-icon v-if="!isAuction" color="success" class="material-icons">done</va-icon>
-                            <va-icon v-if="isAuction" color="danger" class="material-icons">close</va-icon>
+                            <va-icon v-if="isAuction" color="success" class="material-icons">done</va-icon>
+                            <va-icon v-if="!isAuction" color="danger" class="material-icons">close</va-icon>
                             <va-icon v-if="!readOnlyMode" @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
                         </div> 
                     </div>
@@ -149,7 +149,7 @@
                     />
                 </div>
             </div>
-            <FileList :mode="mode" :awsData="awsData" parentType="order" :id="id"/>
+            <FileList v-if="awsData != null" :mode="mode" :awsData="awsData" parentType="order" :id="Number(id)"/>
             <div id="workersCo">
                 <h3>Przypisani pracownicy</h3>
                 <va-divider />
@@ -487,7 +487,7 @@ export default {
                 case "status":
                     return this.rawOrderStatuses.find(element => element.name == selectedName).idStatus;
                 case "representative":
-                    return this.rawRepresentatives.find(element => element.name == selectedName).idRepresentative;
+                    return this.rawRepresentatives.find(element => element.name + " " + element.lastName == selectedName).idRepresentative;
             }
         },
         async getSelectListData() {
@@ -706,9 +706,9 @@ export default {
                 CompletionDate: e.completionDate,
                 InsideFormat: e.insideFormat,
                 CoverFormat: e.coverFormat,
-                IdDeliveryType: e.selectedDeliveryType,
-                IdBindingType: e.selectedBindingTypes,
-                IdOrderItemType: e.selectedOrderItemType,
+                IdDeliveryType: e.idDeliveryType,
+                IdBindingType: e.idBindingType,
+                IdOrderItemType: e.idOrderItemType,
                 Colors: e.colors,
                 Services: e.services,
                 Papers: e.papers,
@@ -774,7 +774,7 @@ export default {
         async deleteOrderItem() {
             let callPath = "/OrderItem/deleteOrderItem";
             let body = { data: {
-                IdOrderItem: this.idOrderItem
+                IdOrderItem: this.selectedOrderItem.idOrderItem
             } };
 
             await CallAPI.delete(callPath, body)

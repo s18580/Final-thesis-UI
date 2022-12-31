@@ -129,10 +129,10 @@
                         </va-list-item-section>
 
                         <va-list-item-section icon>
-                            <va-popover message="Edytuj dane osoby" v-if="!readOnlyMode">
+                            <va-popover message="Edytuj dane osoby">
                                 <va-button flat icon="edit" @click="editContactInModal(index)" />
                             </va-popover>
-                            <va-popover message="Usuń osobę" v-if="!readOnlyMode">
+                            <va-popover message="Usuń osobę">
                                 <va-button flat icon="delete" @click="removeItem(contactPepole, index)" />
                             </va-popover>
                         </va-list-item-section>
@@ -170,10 +170,10 @@
                         </va-list-item-section>
 
                         <va-list-item-section icon>
-                            <va-popover message="Edytuj dane adresu" v-if="!readOnlyMode">
+                            <va-popover message="Edytuj dane adresu">
                                 <va-button flat icon="edit" @click="editAddressInModal(index)" />
                             </va-popover>
-                            <va-popover message="Usuń adres" v-if="!readOnlyMode">
+                            <va-popover message="Usuń adres">
                                 <va-button flat icon="delete" @click="removeItem(customerAddresses, index)" />
                             </va-popover>
                         </va-list-item-section>

@@ -84,14 +84,14 @@
                                     class="inputWidth"
                                     v-model="insideFormat"
                                     label="Format użytku (w mm)"
-                                    :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v.length > 0 || `Pole nie może byc puste.`, (v) => v.length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
                                     placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
                                     v-model="insideFormatSheet"
                                     label="Format arkusza (w mm)"
-                                    :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v.length > 0 || `Pole nie może byc puste.`, (v) => v.length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
                                     placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
@@ -1022,7 +1022,6 @@ export default {
                     };
                 }
 
-                console.log(body);
                 await CallAPI.post(callPath, body)
                 .then(res => {
                     this.$vaToast.init({ message: 'Wycena została zapisana.', color: 'success', duration: 3000 });

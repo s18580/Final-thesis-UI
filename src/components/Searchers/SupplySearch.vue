@@ -194,9 +194,11 @@ export default {
 
             await CallAPI.delete(callPath, body)
             .then(res => {
+                this.$vaToast.init({ message: 'Dostawa została usunięta.', color: 'success', duration: 3000 });
                 return res.data;
             })
             .catch(err => {
+                this.$vaToast.init({ message: 'Błąd usuwania dostawy.', color: 'danger', duration: 3000 });
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
 

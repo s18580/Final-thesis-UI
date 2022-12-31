@@ -47,10 +47,8 @@ export default {
 	data() {
 		return {
 			dictionaryData: [
-                { title: 'Status pliku' },
-                { title: 'Typ pliku', active: true },
                 { title: 'Typ wiązania' },
-                { title: 'Sposób dostawy' },
+                { title: 'Sposób dostawy', active: true },
                 { title: 'Status zamówienia' },
                 { title: 'Stanowisko pracy' },
                 { title: 'Typ przedmiotu dostawy' },
@@ -65,9 +63,9 @@ export default {
 	},
     components: { ConstantsList },
     async mounted() {
-        this.constantData = await this.callApiForData('/FileType/getFileTypes');
-        this.constantTitle = "Typy plików";
-        this.activeConstant = "Typ pliku";
+        this.constantData = await this.callApiForData('/BindingType/getBindingTypes');
+        this.constantTitle = "Typy wiązań";
+        this.activeConstant = "Typ wiązania";
     },
 	methods: {
         async activeSwitch(e) {
@@ -130,16 +128,6 @@ export default {
         },
         async showSelectedTable(selectedTitle) {
             switch(selectedTitle) {
-                case 'Status pliku':
-                    this.constantData = await this.callApiForData('/FileStatus/getFileStatuses');
-                    this.constantTitle = "Statusy plików";
-                    this.activeConstant = "Status pliku";
-                    break;
-                case 'Typ pliku':
-                    this.constantData = await this.callApiForData('/FileType/getFileTypes');
-                    this.constantTitle = "Typy plików";
-                    this.activeConstant = "Typ pliku";
-                    break;
                 case 'Typ wiązania':
                     this.constantData = await this.callApiForData('/BindingType/getBindingTypes');
                     this.constantTitle = "Typy wiązań";
@@ -187,12 +175,6 @@ export default {
         },
         async deleteElement(e) {
             switch(this.activeConstant) {
-                case 'Status pliku':
-                    await this.callApiForAction('/FileStatus/deleteFileStatus', 'delete', { idFileStatus: e.Constant.idFileStatus });
-                    break;
-                case 'Typ pliku':
-                    await this.callApiForAction('/FileType/deleteFileType', 'delete', { idFileType: e.Constant.idFileType });
-                    break;
                 case 'Typ wiązania':
                     await this.callApiForAction('/BindingType/deleteBindingType', 'delete', { idBindingType: e.Constant.idBindingType });
                     break;
@@ -226,12 +208,6 @@ export default {
         },
         async editElement(e) {
             switch(this.activeConstant) {
-                case 'Status pliku':
-                    await this.callApiForAction('/FileStatus/updateFileStatus', 'edit', { idFileStatus: e.Constant.idFileStatus, name: e.NewValues.Name });
-                    break;
-                case 'Typ pliku':
-                    await this.callApiForAction('/FileType/updateFileType', 'edit', { idFileType: e.Constant.idFileType, name: e.NewValues.Name });
-                    break;
                 case 'Typ wiązania':
                     await this.callApiForAction('/BindingType/updateBindingType', 'edit', { idBindingType: e.Constant.idBindingType, name: e.NewValues.Name });
                     break;
@@ -265,12 +241,6 @@ export default {
         },
         async addElement(e) {
             switch(this.activeConstant) {
-                case 'Status pliku':
-                    await this.callApiForAction('/FileStatus/createFileStatus', 'add', { name: e.Name });
-                    break;
-                case 'Typ pliku':
-                    await this.callApiForAction('/FileType/createFileType', 'add', { name: e.Name });
-                    break;
                 case 'Typ wiązania':
                     await this.callApiForAction('/BindingType/createBindingType', 'add', { name: e.Name });
                     break;

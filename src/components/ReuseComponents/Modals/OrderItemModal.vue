@@ -654,7 +654,6 @@ export default {
 
                     return result;
                 });
-                console.log(allServices);
 
                 if(this.showCoverDetails) {
                     allColorsCover = this.coverColors.map(function(item) {
