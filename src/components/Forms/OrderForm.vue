@@ -385,11 +385,6 @@ export default {
         getRepresentativeIdByName(name){
             return this.rawReprsentatives.find(element => (element.name + " " + element.lastName) == name).idRepresentative;
         },
-
-
-
-
-
         closeOrderItemModal() {
             this.showOrderItemModal = false;
             this.editedOrderItemIndex = null;

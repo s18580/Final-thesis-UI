@@ -306,10 +306,6 @@ select option {
     max-width: 170px;
 }
 
-#deliveryDatePicker {
-    cursor: pointer;
-}
-
 .table-pagination {
     padding-top: 40px;
     text-align: center;

@@ -1029,7 +1029,6 @@ export default {
                     return res.data;
                 })
                 .catch(err => {
-                    console.log(err);
                     if(err.message.includes("422")) {
                         this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
                     }else{
@@ -1045,22 +1044,6 @@ export default {
 </script>
 
 <style scoped>
-#backgroundd {
-    display: grid;
-    grid-template-columns: 50px 1fr 1fr 1fr 50px;
-    grid-template-rows: auto;
-    grid-template-areas: 
-    ". header header header ."
-    ". preDetailsCo preDetailsCo preDetailsCo ."
-    ". detailsA detailsA detailsA ."
-    ". detailsB detailsB detailsB ."
-    ". papers papers papers ."
-    ". service service service ."
-    ". summary summary summary ."
-    ". footer footer footer .";
-    grid-gap: 30px;
-}
-
 #headerCo {
     grid-area: header;
     padding: 20px;
@@ -1083,14 +1066,6 @@ export default {
     padding-bottom: 20px;
     display: flex;
     justify-content: space-evenly;
-}
-
-#selectValuationCo {
-    grid-area: detailsA;
-    padding-top: 20px;
-    margin-top: 30px;
-    background: white;
-	border-radius: 25px;
 }
 
 #preDetailsCo {
@@ -1180,10 +1155,6 @@ export default {
     margin-bottom: 20px;
 }
 
-
-
-
-
 #servicesCo {
     grid-area: service;
     padding-top: 20px;
@@ -1230,25 +1201,8 @@ export default {
     gap: 100px;
 }
 
-
-
-
-
-
-#orderDetailsCoInner {
-    padding: 20px;
-    background: white;
-	border-radius: 25px;
-}
-
 #orderItemsCo {
     grid-area: sidebarC;
-}
-
-#orderItemsCoInner {
-    padding: 20px;
-    background: white;
-	border-radius: 25px;
 }
 
 #form {
@@ -1265,11 +1219,6 @@ export default {
 .longInputWidth {
     margin: 10px;
     width: 500px;
-    align-self: center;
-}
-
-#editButton{
-    width: 150px;
     align-self: center;
 }
 </style>

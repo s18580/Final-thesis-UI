@@ -234,7 +234,6 @@ export default {
 	padding: 20px;
 }
 
-.search-input-box input,
 .search-box textarea {
 	text-align: center;
 	margin-top: 10px;
@@ -242,10 +241,6 @@ export default {
     border-radius: 100vw;
     min-width: 250px;
     background: #f4f8fa;
-}
-
-.search-input-box label {
-	color: #2C82E0;
 }
 
 #show-more {

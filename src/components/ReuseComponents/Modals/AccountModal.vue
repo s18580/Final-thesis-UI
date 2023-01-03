@@ -93,22 +93,5 @@ export default {
     margin-top: 40px;
     margin-bottom: 0px;
 }
-
-.search-input-box label {
-	color: #2C82E0;
-}
-
-.search-input-box {
-	text-align: center;
-    min-width: 250px;
-    margin-bottom: 20px;
-}
-
-.buttonCo {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    align-content: center;
-}
 </style>
 

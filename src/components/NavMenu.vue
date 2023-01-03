@@ -339,12 +339,4 @@ svg {
   margin-left: 15px;
 }
 
-.rotated {
-  transform: rotate(90deg)
-}
-
-.exact-active-link div{
-  color: white;
-}
-
 </style>

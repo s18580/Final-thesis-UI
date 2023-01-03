@@ -423,46 +423,4 @@ export default {
     background: white;
 	border-radius: 25px;
 }
-
-.objects-card-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 20px;
-	padding-bottom: 20px;
-}
-
-.objects-card {
-	border-color: rgb(226, 226, 226);
-	border-style: solid;
-    border-radius: 10px;
-	width: 250px;
-	max-height: 300px;
-	margin-bottom: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-    max-height: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.card-items {
-    background: #d3e5f8;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin: 5px;
-    width: 240px;
-    border-radius: 50px;
-    border: solid 1px #1b63b1;
-    display: grid;
-    grid-template-columns: 1fr 80px;
-    grid-template-rows: 1fr;
-}
-
-.card-icons svg{
-    margin-left: 5px;
-    cursor: pointer;
-}
-
 </style>

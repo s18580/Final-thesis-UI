@@ -187,7 +187,6 @@ export default {
             try{
                 await awsClient.send(command)
             }catch(err) {
-                console.log(err);
                 this.$vaToast.init({ message: 'Błąd usuwania pliku.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             }

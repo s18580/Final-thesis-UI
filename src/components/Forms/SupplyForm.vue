@@ -405,11 +405,6 @@ export default {
     height: 360px;
 }
 
-.gridSpreadC {
-    grid-column-start: 1;
-    grid-column-end: end;
-}
-
 .gridSpreadR {
     grid-row-start: 2;
     grid-row-end: 6;
@@ -460,10 +455,4 @@ export default {
 .inputWidth {
     width: 250px;
 }
-
-.background-modal {
-    min-height: 600px;
-    min-width: 600px;
-}
-
 </style>

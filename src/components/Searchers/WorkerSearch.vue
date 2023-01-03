@@ -154,47 +154,10 @@ export default {
 	padding: 20px;
 }
 
-.search-input-box input,
-.search-input-box select {
-	text-align: center;
-    margin-top: 10px;
-	margin-bottom: 10px;
-    border-radius: 100vw;
-    min-width: 250px;
-    background: #f4f8fa;
-}
-
-.search-input-box select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-position-x: 100%;
-    background-position-y: 5px;
-    background-repeat: no-repeat;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-}
-
 select option {
   background: #f4f8fa;
   color: #2C82E0;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
-}
-
-.search-input-box label {
-	color: #2C82E0;
-}
-
-#show-more {
-    color: #2C82E0;
-    position: relative;
-    text-align: right;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-#inner-show-more {
-    cursor: pointer;
-    max-width: 170px;
 }
 
 .table-pagination {

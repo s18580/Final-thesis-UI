@@ -67,10 +67,5 @@ export default {
     justify-content: center;
 }
 
-#checkboxCo {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
 </style>
 

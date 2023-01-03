@@ -269,10 +269,6 @@ export default {
 	padding: 20px;
 }
 
-.search-input-box label {
-	color: #2C82E0;
-}
-
 #show-more {
     color: #2C82E0;
     position: relative;

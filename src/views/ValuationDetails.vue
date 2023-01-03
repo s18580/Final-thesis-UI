@@ -685,10 +685,6 @@ export default {
     gap: 10px;
 }
 
-.modalButton { 
-    margin-bottom: 20px;
-}
-
 
 
 
@@ -796,42 +792,6 @@ export default {
     right: 0;
     z-index: 99999;
     border: solid 1px red;
-}
-
-.file-container-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.file-container {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
-
-.file-item {
-    display: flex;
-	flex-direction: column;
-	align-items: center;
-    justify-content: center;
-    min-width: 100px;
-    min-height: 100px;
-    border-radius: 15px;
-    margin: 10px;
-    position: relative;
-    border: lightgray 1px solid;
-    box-shadow: 1px 1px lightgray;
-}
-
-.file-item:hover {
-    box-shadow: 10px 10px 5px lightblue;
-}
-
-.file-icons {
-    display: block;
-    margin-bottom: 10px;
 }
 
 #filesCo {

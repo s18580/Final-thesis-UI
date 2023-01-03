@@ -43,12 +43,6 @@ export default {
 	border-radius: 25px;
 }
 
-#yoursOrderHeader {
-    margin-right: 100px;
-    margin-left: 100px;
-    margin-top: 20px;
-}
-
 #closestOrderHeader {
     margin-right: 100px;
     margin-left: 100px;

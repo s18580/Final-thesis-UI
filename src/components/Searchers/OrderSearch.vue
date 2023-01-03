@@ -352,11 +352,6 @@ export default {
     max-width: 170px;
 }
 
-#createDatePicker,
-#deliveryDatePicker {
-    cursor: pointer;
-}
-
 .table-pagination {
     padding-top: 40px;
     text-align: center;

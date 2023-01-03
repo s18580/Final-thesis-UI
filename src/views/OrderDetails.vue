@@ -732,8 +732,6 @@ export default {
             this.updateOrderItemList();
         },
         async editOrderItem(e) {
-            console.log(e);
-
             let callPath = "/OrderItem/updateOrderItem";
             let body = {
                 IdOrderItem: e.idOrderItem,
@@ -867,12 +865,6 @@ export default {
 
 #filesCo {
     grid-area: sidebarD;
-}
-
-#filesCoInner {
-    padding: 20px;
-    background: white;
-	border-radius: 25px;
 }
 
 #workersCo {

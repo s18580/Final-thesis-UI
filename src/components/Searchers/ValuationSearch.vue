@@ -286,8 +286,7 @@ export default {
             if(this.results == []) {
                 this.resultMessage = "Brak wyników do wyświetlenia";
             }
-            
-            console.log(this.results);
+
             this.showResults = true;
         },
         showThatPicker(id) {
@@ -343,10 +342,6 @@ export default {
 #inner-show-more {
     cursor: pointer;
     max-width: 170px;
-}
-
-#createDatePicker {
-    cursor: pointer;
 }
 
 .table-pagination {
