@@ -158,7 +158,7 @@ export default {
             this.titleName = "Dodaj konto użytkownika";
             this.buttonName = "Dodaj";
             this.showModal = false;
-            this.passwordRules = [(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == this.passwordTwo || `Hasła nie są takie same.`];
+            this.passwordRules = [(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`];
         } else {
             let callPath = "/Worker/getWorker?id=" + this.id;
             let editedWorker = await CallAPI.get(callPath)

@@ -464,7 +464,7 @@ export default {
             await this.updateContactList();
         },
         async updateContactList() {
-            let callPath = "/Representative/getSupplierRepresentatives?id=" + this.id;
+            let callPath = "/Representative/getRepresentativesBySupplier?id=" + this.id;
             this.representatives = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
