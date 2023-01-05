@@ -84,14 +84,16 @@
                                     class="inputWidth"
                                     v-model="insideFormat"
                                     label="Format użytku (w mm)"
-                                    :rules="[(v) => v.length > 0 || `Pole nie może byc puste.`, (v) => v.length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v.length > 0 || `Pole nie może byc puste.`, (v) => v.length < 21 || `Pole przekroczyło maksymalną ilość znaków.`,
+                                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                                     placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
                                     v-model="insideFormatSheet"
                                     label="Format arkusza (w mm)"
-                                    :rules="[(v) => v.length > 0 || `Pole nie może byc puste.`, (v) => v.length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v.length > 0 || `Pole nie może byc puste.`, (v) => v.length < 21 || `Pole przekroczyło maksymalną ilość znaków.`,
+                                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                                     placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
@@ -120,7 +122,7 @@
                                     v-model="isnideOther"
                                     type="textarea"
                                     label="Inne (opcjonalnie)"
-                                    :rules="[(v) => v .length < 201 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v .length < 256 || `Pole przekroczyło maksymalną ilość znaków.`]"
                                 />
                             </div>
                         </div>
@@ -179,14 +181,16 @@
                                     class="inputWidth"
                                     v-model="coverFormat"
                                     label="Format użytku (w mm)"
-                                    :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 21 || `Pole przekroczyło maksymalną ilość znaków.`,
+                                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                                     placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
                                     class="inputWidth"
                                     v-model="coverFormatSheet"
                                     label="Format arkusza (w mm)"
-                                    :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 101 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v .length > 0 || `Pole nie może byc puste.`, (v) => v .length < 21 || `Pole przekroczyło maksymalną ilość znaków.`,
+                                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                                     placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
@@ -215,7 +219,7 @@
                                     v-model="coverOther"
                                     type="textarea"
                                     label="Inne (opcjonalnie)"
-                                    :rules="[(v) => v .length < 201 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v .length < 256 || `Pole przekroczyło maksymalną ilość znaków.`]"
                                 />
                             </div>
                         </div>
@@ -484,6 +488,7 @@ export default {
   components: { ColorModal, PaperModal, ServiceModal },
   data() {
 		return {
+            formatRegex: /^\d+x\d+$/,
             showOrderPicker: true,
             showValuationPicker: false,
             showValuationForm: false,

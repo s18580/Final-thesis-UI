@@ -35,7 +35,7 @@
                     id="addressPostCode"
                     class="some-space mb-4"
                     v-model="addressPostCode"
-                    :rules="[(v) => v.length < 7 || `Pole kod pocztowy przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length < 12 || `Pole kod pocztowy przekroczyło limit znaków.`]"
                     label="Kod pocztowy (opcjonalne)"
                     placeholder="Kod pocztowy np. 00-000"
                 />

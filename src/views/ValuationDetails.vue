@@ -98,7 +98,7 @@
                                     v-model="isnideOther"
                                     type="textarea"
                                     label="Inne (opcjonalnie)"
-                                    :rules="[(v) => v .length < 201 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v .length < 256 || `Pole przekroczyło maksymalną ilość znaków.`]"
                                     :readonly="isReadOnly"
                                 />
                             </div>
@@ -187,7 +187,7 @@
                                     v-model="coverOther"
                                     type="textarea"
                                     label="Inne (opcjonalnie)"
-                                    :rules="[(v) => v .length < 201 || `Pole przekroczyło maksymalną ilość znaków.`]"
+                                    :rules="[(v) => v .length < 256 || `Pole przekroczyło maksymalną ilość znaków.`]"
                                     :readonly="isReadOnly"
                                 />
                             </div>
@@ -407,7 +407,8 @@ export default {
   components: { FileList },
   data() {
 		return {
-            isReadOnly: false,
+            formatRegex: /^\d+x\d+$/,
+            isReadOnly: true,
             showCoverForm: false,
             awsData: null,
 

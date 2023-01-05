@@ -32,7 +32,7 @@
                             class="inputWidth"
                             v-if="isCompanyCustomer"
                             v-model="companyName"
-                            :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                            :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                             label="Nazwa"
                             placeholder="Nazwa firmy klienta"
                             :readonly="readOnlyMode"

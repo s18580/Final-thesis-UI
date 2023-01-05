@@ -19,14 +19,15 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="orderItemName"
-                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa przedmiotu zamówienia"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="insideFormat"
-                    :rules="[(v) => v.length > 0 || `Pole format nie może być puste.`, (v) => v.length < 101 || `Pole format przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole format nie może być puste.`, (v) => v.length < 21 || `Pole format przekroczyło limit znaków.`,
+                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                     label="Format"
                     placeholder="Format przedmiotu zamówienia"
                 />
@@ -191,7 +192,7 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="coverFormat"
-                    :rules="[(v) => v.length < 101 || `Pole format okładki przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length < 21 || `Pole format okładki przekroczyło limit znaków.`, (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                     label="Format okładki"
                     placeholder="Format okładki przedmiotu zamówienia"
                 />
@@ -341,6 +342,7 @@ export default {
   emits: ["createOrderItem", "editOrderItem", "close"],
 	data() {
 		return {
+            formatRegex: /^\d+x\d+$/,
             idOrderItem: null,
             orderItemName: "",
             insideFormat: "",

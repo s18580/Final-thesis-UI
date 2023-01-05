@@ -21,7 +21,7 @@
                         <va-input
                             class="inputWidth"
                             v-model="orderName"
-                            :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                            :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                             label="Nazwa"
                             placeholder="Nazwa zamówienia"
                             :readonly = "readOnlyMode"

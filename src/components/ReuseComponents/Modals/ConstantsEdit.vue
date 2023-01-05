@@ -10,6 +10,7 @@
                 class="mb-3"
                 v-model="constantNewName"
                 label="Nowa nazwa"
+                :rules="[(v) => v.length > 0 || `Wprowadź nazwę.`, (v) => v.length < 31 || `Nazwa nie może być dłuższa niż 30 znaków.`]"
                 :readonly="priceListType"
             />
             <div v-if="orderStatusType">
@@ -24,24 +25,28 @@
                 class="mb-3"
                 v-if="priceListType"
                 v-model="constantPrice"
+                :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.` ]"
                 label="Nowa cena"
             />
             <va-input
                 class="mb-3"
                 v-if="serviceNameType"
                 v-model="constantDefaultPrice"
+                :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.` ]"
                 label="Nowa cena domyślna"
             />
             <va-input
                 class="mb-3"
                 v-if="serviceNameType"
                 v-model="constantMinPrice"
+                :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.` ]"
                 label="Nowa cena minimalna"
             />
             <va-input
                 class="mb-3"
                 v-if="serviceNameType"
                 v-model="constantMinCirculation"
+                :rules="[ (v) => v >= 0 || `Nakład nie może być ujemny.` ]"
                 label="Nowy nakład minimalny"
             />
         </div>

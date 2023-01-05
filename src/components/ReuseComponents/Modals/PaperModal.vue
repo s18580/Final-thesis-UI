@@ -10,21 +10,22 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="paperName"
-                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="paperKind"
-                    :rules="[(v) => v.length < 51 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Rodzaj"
                     placeholder="Rodzaj papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="sheetFormat"
-                    :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 21 || `Pole nazwa przekroczyło limit znaków.`,
+                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                     label="Format arkusza (w mm)"
                     placeholder="Format arkusza (w mm)"
                 />
@@ -72,6 +73,7 @@ export default {
   emits: ["createPaper", "editPaper", "close"],
 	data() {
 		return {
+            formatRegex: /^\d+x\d+$/,
             buttonMessage: "",
             isPaperFormValidate: false,
             showPaperModal: true,
