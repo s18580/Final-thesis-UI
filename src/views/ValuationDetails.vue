@@ -385,7 +385,7 @@
                 </div>
             </div>
         </div>
-        <FileList v-if="awsData != null" :mode="mode" :awsData="awsData" parentType="valuation" :id="Number(id)"/>
+        <FileList v-if="awsData != null" :awsData="awsData" parentType="valuation" :id="Number(id)"/>
     </div>
 </template>
 

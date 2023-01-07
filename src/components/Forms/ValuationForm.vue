@@ -266,8 +266,8 @@
                 </div>
             </div>
         </div>
-        <ColorModal v-if="showInsideColorModal" :withSelect="false" @close="showInsideColorModal=false" @createColor="addItem(insideColors, $event)"/>
-        <ColorModal v-if="showCoverColorModal" :withSelect="false" @close="showCoverColorModal=false" @createColor="addItem(coverColors, $event)"/>
+        <ColorModal v-if="showInsideColorModal" @close="showInsideColorModal=false" @createColor="addItem(insideColors, $event)"/>
+        <ColorModal v-if="showCoverColorModal" @close="showCoverColorModal=false" @createColor="addItem(coverColors, $event)"/>
         <div v-if="showValuationForm" id="papersCo">
             <div>
                 <h5>Lista papierów</h5>
