@@ -95,25 +95,25 @@ const children = [
     path: '/orderForm',
     name: 'OrderForm',
     component: OrderForm,
-    meta: { requiresAuth: true, authorize: ['Basic'] }
+    meta: { requiresAuth: true, authorize: ['Office'] }
   },
   {
     path: '/supplierForm',
     name: 'SupplierForm',
     component: SupplierForm,
-    meta: { requiresAuth: true, authorize: ['Basic'] }
+    meta: { requiresAuth: true, authorize: ['Office'] }
   },
   {
     path: '/customerForm',
     name: 'CustomerForm',
     component: CustomerForm,
-    meta: { requiresAuth: true, authorize: ['Basic'] }
+    meta: { requiresAuth: true, authorize: ['Office'] }
   },
   {
     path: '/valuationForm',
     name: 'ValuationForm',
     component: ValuationForm,
-    meta: { requiresAuth: true, authorize: ['Basic'] }
+    meta: { requiresAuth: true, authorize: ['Office'] }
   },
   {
     path: '/workerForm:id?',
@@ -132,7 +132,7 @@ const children = [
     path: '/supplyForm',
     name: 'SupplyForm',
     component: SupplyForm,
-    meta: { requiresAuth: true, authorize: ['Basic'] }
+    meta: { requiresAuth: true, authorize: ['Office'] }
   },
   {
     path: '/supplySearch',
@@ -144,7 +144,7 @@ const children = [
     path: '/workerSearch',
     name: 'WorkerSearch',
     component: WorkerSearch,
-    meta: { requiresAuth: true, authorize: ['Accountant'] }
+    meta: { requiresAuth: true, authorize: ['Manager'] }
   },
   {
     path: '/representativeSearch',
@@ -181,7 +181,7 @@ const children = [
     path: '/valuationDetails:id',
     name: 'ValuationDetails',
     component: ValuationDetails,
-    meta: { requiresAuth: true, authorize: ['Basic'] },
+    meta: { requiresAuth: true, authorize: ['Office'] },
     props: true,
   },
   {
