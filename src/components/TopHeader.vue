@@ -58,6 +58,7 @@
 import HelpModal from '@/components/ReuseComponents/Modals/HelpModal.vue'
 import AccountModal from '@/components/ReuseComponents/Modals/AccountModal.vue'
 import { useUserStore } from '@/stores/UserStore';
+import { useValuationStore } from '@/stores/ValuationStore';
 
 export default {
   name: 'TopHeader',
@@ -82,6 +83,8 @@ export default {
     logout() {
       const userStore = useUserStore();
       userStore.$reset();
+      const valuationStore = useValuationStore();
+      valuationStore.$reset();
       this.$router.push({ name: 'LoginPage' });
       this.$vaToast.init({ message: 'Wylogowano pomyślnie.', color: 'success', duration: 3000 })
     },

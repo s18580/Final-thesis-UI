@@ -62,6 +62,7 @@ export default {
                 let body = { email : this.login, password: this.password };
                 let callPath = "/User/login";
 
+
                 await CallAPI.post(callPath, body)
                 .then(res => {
                     const userStore = useUserStore();
@@ -72,7 +73,11 @@ export default {
                         roles: res.data.userRoles,
                     })
 
-                    this.$router.push({ name: 'home' });
+                    if(userStore.isUserAuthenticated) {
+                        this.$router.push({ name: 'home' });
+                    }else{
+                        this.$vaToast.init({ message: 'Nieprawidłowe dane logowania.', color: 'danger', duration: 3000 })
+                    }
                 })
                 .catch(err => {
                     if(err.message.includes("401")) {

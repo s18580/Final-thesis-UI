@@ -82,7 +82,7 @@
             </svg>
           </div>
           <div class="collapse" id="collapseOrders" name="addOrder">
-          <router-link :to="{ name: 'OrderForm'}">
+          <router-link v-if="checkIfAuthorized('Office')" :to="{ name: 'OrderForm'}">
           <div class="px-2 py-3 item-content inner">
             Dodaj zamówienie
           </div>
@@ -112,7 +112,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseClients">
-          <router-link :to="{ name: 'CustomerForm'}" name="addCustomer">
+          <router-link v-if="checkIfAuthorized('Office')" :to="{ name: 'CustomerForm'}" name="addCustomer">
           <div class="px-2 py-3 item-content inner">
             Dodaj klienta
           </div>
@@ -138,7 +138,7 @@
           </svg>
         </div>
         <div class="collapse" id="collapseSuppliers">
-          <router-link :to="{ name: 'SupplierForm'}" name="addSupplier">
+          <router-link v-if="checkIfAuthorized('Office')" :to="{ name: 'SupplierForm'}" name="addSupplier">
           <div class="px-2 py-3 item-content inner">
             Dodaj dostawcę
           </div>
@@ -148,7 +148,7 @@
             Wyszukaj dostawcę
           </div>
           </router-link>
-          <router-link :to="{ name: 'SupplyForm'}" name="addSupply">
+          <router-link v-if="checkIfAuthorized('Office')" :to="{ name: 'SupplyForm'}" name="addSupply">
           <div class="px-2 py-3 item-content inner">
             Dodaj dostawę
           </div>
@@ -188,7 +188,7 @@
           </router-link>
         </div>
       </li>
-      <li class="nav-menu-item" v-if="checkIfAuthorized('Accountant')" id="workersSection">
+      <li class="nav-menu-item" v-if="checkIfAuthorized('Manager')" id="workersSection">
         <div class="px-2 py-3 item-content nonclicable item-content2" data-bs-toggle="collapse" data-bs-target="#collapseWorker" role="button" aria-expanded="false" aria-controls="collapseExample">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-workspace" viewBox="0 0 16 16">
@@ -337,14 +337,6 @@ svg {
 
 .inner {
   margin-left: 15px;
-}
-
-.rotated {
-  transform: rotate(90deg)
-}
-
-.exact-active-link div{
-  color: white;
 }
 
 </style>

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import jwt_decode from "jwt-decode";
 
 export const useUserStore = defineStore('UserStore', {
     state: () => {
@@ -25,11 +26,18 @@ export const useUserStore = defineStore('UserStore', {
             return this.token;
         },
         isUserAuthenticated() {
-            if(this.userToken) {
-                return true;
-            }else{
+            try{
+                let decodedToken = jwt_decode(this.userToken);
+                let expDate = new Date(decodedToken.exp*1000);
+                let currentDate = new Date();
+
+                if(expDate < currentDate) return false; //check if date is valid
+
+            }catch(err) {
                 return false;
             }
+
+            return true;
         },
     },
 

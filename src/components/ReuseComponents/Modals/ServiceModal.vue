@@ -49,9 +49,17 @@ export default {
             servicePrice: 0.0,
             rawServices: [],
             selectedService: "",
-            IdForServiceTable: null,
+            isMounted: false,
 		}
 	},
+    watch: {
+        selectedService(newValue, oldValue) {
+            if((newValue !== '' || newValue !== null || newValue !== undefined || newValue !== oldValue) && this.isMounted){
+                this.servicePrice = this.rawServices.find(element => element.name == newValue).defaultPrice
+            }
+            this.isMounted = true;
+        },
+    },  
     computed: {
         services(){
             let resultArr = this.rawServices.map(function(item) {
@@ -65,16 +73,14 @@ export default {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newService: {
-                        idServiceName: this.getServiceIdByName(this.selectedService),
-                        serviceName : { name: this.selectedService },
-                        name: this.selectedService,
-                        price: this.servicePrice,
-                    }
+                    idServiceName: this.getServiceIdByName(this.selectedService),
+                    serviceName : { name: this.selectedService },
+                    name: this.selectedService,
+                    price: this.servicePrice,
                 };
 
-                if(this.IdForServiceTable !== null) {
-                    data.newService.IdForServiceTable = this.IdForServiceTable;
+                if(this.service !== null) {
+                    if(this.service.idService !== null || this.service.idService  !== undefined) data.idService = this.service.idService;
                     this.$emit('editService', data);
                 } else {
                     this.$emit('createService', data);
@@ -95,21 +101,12 @@ export default {
         },
         getServiceIdByName(serviceName) {
             return this.rawServices.find(element => element.name == serviceName).idServiceName;
+        },
+        getServiceNameById(idService) {
+            return this.rawServices.find(element => element.idServiceName == idService).name;
         }
 	},
     async mounted() {
-        if(this.service === null) {
-            this.buttonMessage = "Dodaj usługę";
-            this.selectedService = "";
-            this.servicePrice = 0.0;
-            this.IdForFileTable = null;
-        }else {
-            this.buttonMessage = "Edytuj usługę";
-            this.servicePrice = this.newService.price;
-            this.selectedService = this.newService.selectedService;
-            this.IdForServiceTable = this.newService.IdForServiceTable;
-        }
-
         let callPath = "/ServiceName/getServiceNames";
         this.rawServices = await CallAPI.get(callPath)
         .then(res => {
@@ -118,6 +115,16 @@ export default {
         .catch(err => {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
+
+        if(this.service === null) {
+            this.buttonMessage = "Dodaj usługę";
+            this.selectedService = "";
+            this.servicePrice = 0.0;
+        }else {
+            this.buttonMessage = "Edytuj usługę";
+            this.selectedService = this.getServiceNameById(this.service.idServiceName);
+            this.servicePrice = this.service.price;
+        }
     }
 }
 </script>

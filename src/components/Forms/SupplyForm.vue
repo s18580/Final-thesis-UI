@@ -17,6 +17,7 @@
                             :options="orders"
                             label="Zamówienie"
                             noOptionsText="Brak zamówień do wybrania"
+                            @update:model-value="getOrderItems()"
                         />
                         <va-select
                             v-if="selectedOrder != ''"
@@ -62,6 +63,16 @@
                         />
                         <va-select
                             class="gridFirstC gridFourthR inputWidth"
+                            v-model="selectedSupplier"
+                            :options="suppliers"
+                            :rules="[(v) => v != '' || `Dostawca musi byc wybrany`]"
+                            label="Dostawca"
+                            noOptionsText="Brak dostawców do wybrania"
+                            @update:model-value="getRepresentativesData($event)"
+                        />
+                        <va-select
+                            v-if="selectedSupplier !== ''"
+                            class="gridFirstC gridFifthR inputWidth"
                             v-model="selectedRepresentative"
                             :options="representatives"
                             :rules="[(v) => v != '' || `Reprezentant musi byc wybrany`]"
@@ -146,6 +157,8 @@ export default {
             rawSupplyItemTypes: [],
             selectedRepresentative: "",
             rawRepresentatives: [],
+            selectedSupplier: "",
+            rawSuppliers:[],
             selectedOrder: "",
             rawOrders: [],
             selectedOrderItem: "",
@@ -184,19 +197,14 @@ export default {
             });
 
             return resultArr;
-        }
-    },
-    watch: {
-        async selectedOrder() {
-            let callPath = "/OrderItem/getOrderItemsByOrder?id=" + this.getIdByName("order", this.selectedOrder);
-            this.rawOrderItems = await CallAPI.get(callPath)
-            .then(res => {
-                return res.data;
-            })
-            .catch(err => {
-                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
-            });
         },
+        suppliers () {
+            let resultArr = this.rawSuppliers.map(function(item) {
+                return item["name"];
+            });
+
+            return resultArr;
+        }
     },
     async mounted() {
         let callPath = "/Order/getOrders";
@@ -208,8 +216,8 @@ export default {
             CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
         });
         
-        callPath = "/Representative/getSupplierRepresentatives";
-        this.rawRepresentatives = await CallAPI.get(callPath)
+        callPath = "/Supplier/getSuppliers";
+        this.rawSuppliers = await CallAPI.get(callPath)
         .then(res => {
             return res.data;
         })
@@ -254,8 +262,8 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.resetData();
-                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 })
+                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "SupplyDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
                 .catch(err => {
@@ -296,10 +304,9 @@ export default {
                     return this.rawOrderItems.find(element => element.name == name).idOrderItem;
                 case "order":
                     return this.rawOrders.find(element => element.name == name).idOrder;
+                case "supplier":
+                    return this.rawSuppliers.find(element => element.name == name).idSupplier;
             }
-        },
-        resetData() {
-            window.location.reload(true);
         },
         closeAddressModal() {
             this.showAddressModal = false;
@@ -310,9 +317,29 @@ export default {
         deleteDeliveryAddress(address) {
             const index = this.deliveryAddresses.indexOf(address);
             if (index > -1) {
-            this.deliveryAddresses.splice(index, 1);
+                this.deliveryAddresses.splice(index, 1);
             }
-        }
+        },
+        async getRepresentativesData(supplierName) {
+            let callPath = "/Representative/getSupplierActiveRepresentatives?id=" + this.getIdByName('supplier', supplierName);
+            this.rawRepresentatives = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        },
+        async getOrderItems() {
+            let callPath = "/OrderItem/getOrderItemsByOrder?id=" + this.getIdByName("order", this.selectedOrder);
+            this.rawOrderItems = await CallAPI.get(callPath)
+            .then(res => {
+                return res.data;
+            })
+            .catch(err => {
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+        },
 	},
 }
 </script>
@@ -372,20 +399,15 @@ export default {
 #form {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
     height: 360px;
 }
 
-.gridSpreadC {
-    grid-column-start: 1;
-    grid-column-end: end;
-}
-
 .gridSpreadR {
     grid-row-start: 2;
-    grid-row-end: 5;
+    grid-row-end: 6;
 }
 
 .gridFirstC {
@@ -418,6 +440,11 @@ export default {
     grid-row-end: 4;
 }
 
+.gridFifthR {
+    grid-row-start: 5;
+    grid-row-end: 5;
+}
+
 #submitButtonContainer {
     grid-column-start: 1;
     grid-column-end: end;
@@ -428,10 +455,4 @@ export default {
 .inputWidth {
     width: 250px;
 }
-
-.background-modal {
-    min-height: 600px;
-    min-width: 600px;
-}
-
 </style>

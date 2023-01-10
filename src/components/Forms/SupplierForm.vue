@@ -12,7 +12,7 @@
                     <va-input
                         class="gridFirstC gridFirstR inputWidth"
                         v-model="supplierName"
-                        :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                        :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                         label="Nazwa"
                         placeholder="Nazwa dostawcy"
                     />
@@ -54,8 +54,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="person in contactPepole"
-                        :key="person.IdForRepresentativeTable"
+                        v-for="(person, index) in contactPepole"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="person" />
@@ -69,16 +69,16 @@
 
                         <va-list-item-section icon>
                             <va-popover message="Edytuj osobę kontaktową">
-                                <va-button flat icon="edit" @click="editContactInModal(person)" />
+                                <va-button flat icon="edit" @click="editContactInModal(index)" />
                             </va-popover>
                             <va-popover message="Usuń osobę kontaktową">
-                                <va-button flat icon="delete" @click="removeContact(person.IdForRepresentativeTable)" />
+                                <va-button flat icon="delete" @click="removeItem(contactPepole, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
-                <RepresentativeModal :person="editedContact" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addContact($event)" @editRepresentative="editContact($event)"/>
+                <RepresentativeModal :person="contactPepole[editedContactIndex]" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addItem(contactPepole, $event)" @editRepresentative="editContact($event)"/>
             </div>
         </div>
         <div id="adressesCoOuter">
@@ -91,8 +91,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="address in suplierAddresses"
-                        :key="address.IdForAddressTable"
+                        v-for="(address, index) in suplierAddresses"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="home" />
@@ -106,16 +106,16 @@
 
                         <va-list-item-section icon>
                             <va-popover message="Edytuj adres">
-                                <va-button flat icon="edit" @click="editAddressInModal(address)" />
+                                <va-button flat icon="edit" @click="editAddressInModal(index)" />
                             </va-popover>
                             <va-popover message="Usuń adres">
-                                <va-button flat icon="delete" @click="removeAddress(address.IdForAddressTable)" />
+                                <va-button flat icon="delete" @click="removeItem(suplierAddresses, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
-                    <AddressModal :addr="editedAddress" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addAddress($event)" @editAddress="editAddress($event)"/>
+                    <AddressModal :addr="suplierAddresses[editedAddressIndex]" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addItem(suplierAddresses, $event)" @editAddress="editAddress($event)"/>
             </div>
         </div>
 	</div>
@@ -131,8 +131,6 @@ export default {
   name: 'SupplierForm',
 	data() {
 		return {
-            addressCounter: 0,
-            contactCounter: 0,
 			supplierName: "",
             supplierEmail: "",
             supplierPhone: "",
@@ -141,9 +139,9 @@ export default {
 			contactPepole: [],
 			suplierAddresses: [],
             showAddressModal: false,
-            editedAddress: null,
+            editedAddressIndex: null,
             showContactModal: false,
-            editedContact: null,
+            editedContactIndex: null,
 		}
 	},
     components: { AddressModal, RepresentativeModal },
@@ -155,7 +153,7 @@ export default {
                         name: item["name"],
                         lastName: item["lastName"],
                         phoneNumber: item["phoneNumber"],
-                        emailAddress: item["addressEmail"]
+                        emailAddress: item["emailAddress"]
                     }
 
                     return result;
@@ -186,8 +184,8 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.resetData();
-                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 })
+                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "SupplierDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
                 .catch(err => {
@@ -211,63 +209,35 @@ export default {
         },
         closeAddressModal() {
             this.showAddressModal=false;
-            this.editedAddress=null;
-        },
-        addAddress(e) {
-            e.newAddress.IdForAddressTable = this.addressCounter;
-            this.suplierAddresses.push(e.newAddress);
-            this.addressCounter++;
+            this.editedAddressIndex=null;
         },
         editAddress(e) {
-            for(const obj of this.suplierAddresses){
-                if (obj.IdForAddressTable === e.newAddress.IdForAddressTable) {
-                    obj.name = e.newAddress.name;
-                    obj.country = e.newAddress.country;
-                    obj.city = e.newAddress.city;
-                    obj.postCode = e.newAddress.postCode;
-                    obj.streetName = e.newAddress.streetName;
-                    obj.streetNumber = e.newAddress.streetNumber;
-                    obj.apartmentNumber = e.newAddress.apartmentNumber;
-                    break;
-                }
-            }
+            this.suplierAddresses[this.editedAddressIndex] = e;
+            this.closeAddressModal();
         },
-        editAddressInModal(address) {
-            this.editedAddress = address;
+        editAddressInModal(index) {
+            this.editedAddressIndex = index;
             this.showAddressModal = true;
-        },
-        removeAddress(id) {
-            this.suplierAddresses = this.suplierAddresses.filter(item => item.IdForAddressTable !== id);
         },
         closeContactModal() {
             this.showContactModal = false;
-            this.editedContact = null;
-        },
-        addContact(e) {
-            e.newRepresentative.IdForRepresentativeTable = this.contactCounter;
-            this.contactPepole.push(e.newRepresentative);
-            this.contactCounter++;
+            this.editedContactIndex = null;
         },
         editContact(e) {
-            for(const obj of this.contactPepole){
-                if (obj.IdForRepresentativeTable === e.newRepresentative.IdForRepresentativeTable) {
-                    obj.name = e.newRepresentative.name;
-                    obj.lastName = e.newRepresentative.lastName;
-                    obj.phoneNumber = e.newRepresentative.phoneNumber;
-                    obj.addressEmail = e.newRepresentative.addressEmail;
-                    break;
-                }
-            }
+            this.contactPepole[this.editedContactIndex] = e;
+            this.closeContactModal();
         },
-        editContactInModal(contact) {
-            this.editedContact = contact;
+        editContactInModal(index) {
+            this.editedContactIndex = index;
             this.showContactModal = true;
         },
-        removeContact(id) {
-            this.contactPepole = this.contactPepole.filter(item => item.IdForRepresentativeTable !== id);
+        addItem(array, e) {
+            array.push(e);
         },
-        resetData() {
-            window.location.reload(true);
+        removeItem(array, index) {
+            if (index > -1) {
+                array.splice(index, 1);
+            }
         },
 	},
 }
@@ -342,11 +312,6 @@ export default {
     padding: 20px;
 }
 
-.gridSpreadC {
-    grid-column-start: 1;
-    grid-column-end: end;
-}
-
 .gridSpreadR {
     grid-row-start: 1;
     grid-row-end: 4;
@@ -387,64 +352,4 @@ export default {
 .inputWidth {
     width: 250px;
 }
-
-.objects-card-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 20px;
-	padding-bottom: 20px;
-}
-
-.objects-card {
-	border-color: rgb(226, 226, 226);
-	border-style: solid;
-    border-radius: 10px;
-	width: 250px;
-	max-height: 300px;
-	margin-bottom: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-    max-height: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.card-items {
-    background: #d3e5f8;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin: 5px;
-    width: 240px;
-    border-radius: 50px;
-    border: solid 1px #1b63b1;
-    display: grid;
-    grid-template-columns: 1fr 80px;
-    grid-template-rows: 1fr;
-}
-
-.card-icons svg{
-    margin-left: 5px;
-    cursor: pointer;
-}
-
-.objects-card::-webkit-scrollbar {
-    width: 0.25rem;
-}
-
-.objects-card::-webkit-scrollbar-thumb {
-    background: #1b63b1;
-    border-radius: 100vw;
-}
-
-.objects-card::-webkit-scrollbar-thumb:hover {
-    background: #217cde;
-}
-
-.background-modal {
-    min-height: 600px;
-    min-width: 600px;
-}
-
 </style>

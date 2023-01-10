@@ -5,7 +5,7 @@
       <div id="mainContent">
         <TopHeader/>
         <div id="view">
-          <router-view/>
+          <router-view :key="$route.path"/>
         </div>
       </div>
     </div>

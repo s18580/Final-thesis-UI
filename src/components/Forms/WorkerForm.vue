@@ -103,7 +103,7 @@
                         </va-list-item-section>
 
                         <va-list-item-section icon>
-                            <va-popover message="Usuń rolę" v-if="!readOnlyMode">
+                            <va-popover message="Usuń rolę">
                                 <va-button flat icon="delete" @click="removeRole(role)" />
                             </va-popover>
                         </va-list-item-section>
@@ -158,7 +158,7 @@ export default {
             this.titleName = "Dodaj konto użytkownika";
             this.buttonName = "Dodaj";
             this.showModal = false;
-            this.passwordRules = [(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`, (v) => v == this.passwordTwo || `Hasła nie są takie same.`];
+            this.passwordRules = [(v) => v.length > 8 || `Hasło musi mieć min. 8 znaków.`, (v) => v.length < 25 || `Hasło przekroczyło limit znaków.`];
         } else {
             let callPath = "/Worker/getWorker?id=" + this.id;
             let editedWorker = await CallAPI.get(callPath)
@@ -190,7 +190,7 @@ export default {
             if(editedWorker.worksite != null) {
                 this.selectedWorksite = editedWorker.worksite.name;
             } else {
-                this.selectedWorksite = null;
+                this.selectedWorksite = "Bez stanowiska";
             }
 
             this.titleName = "Edytuj konto użytkownika";
@@ -423,46 +423,4 @@ export default {
     background: white;
 	border-radius: 25px;
 }
-
-.objects-card-wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 20px;
-	padding-bottom: 20px;
-}
-
-.objects-card {
-	border-color: rgb(226, 226, 226);
-	border-style: solid;
-    border-radius: 10px;
-	width: 250px;
-	max-height: 300px;
-	margin-bottom: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-    max-height: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.card-items {
-    background: #d3e5f8;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin: 5px;
-    width: 240px;
-    border-radius: 50px;
-    border: solid 1px #1b63b1;
-    display: grid;
-    grid-template-columns: 1fr 80px;
-    grid-template-rows: 1fr;
-}
-
-.card-icons svg{
-    margin-left: 5px;
-    cursor: pointer;
-}
-
 </style>

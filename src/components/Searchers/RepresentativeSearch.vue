@@ -43,6 +43,14 @@
             noOptionsText="Brak dostawców do wybrania"
         />
       </div>
+      <div v-if="largeMode" class="search-box">
+            <div class="search-input-box">
+                <label>Osoba dezaktywowana:</label>
+                <div>
+                    <input v-model="showDisabled" type="checkbox">
+                </div>
+            </div>
+        </div>
       <div id="show-more">
             <div @click="changeMode()" id="inner-show-more">
                 Pokaż więcej filtrów
@@ -63,7 +71,8 @@
             <template #cell(actions)="{ rowIndex }">
                 <va-button flat icon="visibility" @click="viewItemById(rowIndex)" />
                 <va-button flat icon="edit" @click="editItemById(rowIndex)" />
-                <va-button flat icon="delete" @click="deleteItemById(rowIndex)" />
+                <va-button v-if="!showDisabled" flat icon="delete" @click="disableRepresentative(rowIndex)" />
+                <va-button v-if="showDisabled" flat icon="restore_from_trash" @click="activateRepresentative(rowIndex)" />
             </template>
             <template #bodyAppend>
                 <tr><td colspan="8" class="table-pagination">
@@ -97,6 +106,7 @@ export default {
             rawCustomers: [],
             largeMode: false,
             showResults: false,
+            showDisabled: false,
             results: [],
             resultMessage: "Brak wyników do wyświetlenia",
             columns: [
@@ -164,6 +174,7 @@ export default {
             let representativeEmail = null;
             let seledtedSupplier = null;
             let selectedCustomer = null;
+            let showDisabled = this.showDisabled;
             if(this.representativeName !== "") {
                 representativeName = this.representativeName;
             }
@@ -183,7 +194,7 @@ export default {
                 selectedCustomer = this.selectedCustomer;
             }
 
-            let callPath = "/Representative/getSearchRepresentatives?name=" + representativeName + "&lastName=" + representativeLastName + "&email=" + representativeEmail + "&phone=" + representativePhone + "&customer=" + selectedCustomer + "&supplier=" + seledtedSupplier;
+            let callPath = "/Representative/getSearchRepresentatives?name=" + representativeName + "&lastName=" + representativeLastName + "&email=" + representativeEmail + "&phone=" + representativePhone + "&customer=" + selectedCustomer + "&supplier=" + seledtedSupplier + "&isDisabled=" + showDisabled;
             this.results = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
@@ -205,17 +216,37 @@ export default {
         editItemById(row) {
             this.$router.push({ name: "RepresentativeDetails", params: { id: this.results[row].idRepresentative, mode: 'edit' } });
         },
-        async deleteItemById(row) {
-            let callPath = "/Representative/deleteRepresentative";
-            let body = { data: { IdSupply: this.results[row].idRepresentative } };
+        async activateRepresentative(row){
+            let callPath = "/Representative/disableRepresentative";
+            let body = { Id: this.results[row].idRepresentative, IsDisabled: false };
 
-            await CallAPI.delete(callPath, body)
+            await CallAPI.post(callPath, body)
             .then(res => {
+                this.$vaToast.init({ message: 'Aktywowano osobę.', color: 'success', duration: 3000 })
                 return res.data;
             })
             .catch(err => {
+                this.$vaToast.init({ message: 'Błąd aktywacji osoby kontaktowej.', color: 'danger', duration: 3000 })
                 CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
             });
+
+            await this.searchForResults();
+        },
+        async disableRepresentative(row){
+            let callPath = "/Representative/disableRepresentative";
+            let body = { Id: this.results[row].idRepresentative, IsDisabled: true };
+
+            await CallAPI.post(callPath, body)
+            .then(res => {
+                this.$vaToast.init({ message: 'Dezaktywowano osobę.', color: 'success', duration: 3000 })
+                return res.data;
+            })
+            .catch(err => {
+                this.$vaToast.init({ message: 'Błąd dezaktywacji osoby kontaktowej.', color: 'danger', duration: 3000 })
+                CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
+            });
+
+            await this.searchForResults();
         },
 	}
 }

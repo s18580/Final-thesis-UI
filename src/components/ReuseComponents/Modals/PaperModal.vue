@@ -10,21 +10,22 @@
                 <va-input
                     class="some-space mb-4"
                     v-model="paperName"
-                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="paperKind"
-                    :rules="[(v) => v.length < 51 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Rodzaj"
                     placeholder="Rodzaj papieru"
                 />
                 <va-input
                     class="some-space mb-4"
                     v-model="sheetFormat"
-                    :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 21 || `Pole nazwa przekroczyło limit znaków.`,
+                            (v) => formatRegex.test(v) || `Niepoprawny format.`]"
                     label="Format arkusza (w mm)"
                     placeholder="Format arkusza (w mm)"
                 />
@@ -72,6 +73,7 @@ export default {
   emits: ["createPaper", "editPaper", "close"],
 	data() {
 		return {
+            formatRegex: /^\d+x\d+$/,
             buttonMessage: "",
             isPaperFormValidate: false,
             showPaperModal: true,
@@ -83,26 +85,28 @@ export default {
             paperOpacity: 0,
             paperQuantity: 0,
             pricePerKilogram: 0.0,
-            IdForPaperTable: null,
 		}
 	},
 	methods: {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newPaper: {
-                        name: this.paperName,
-                        kind: this.paperKind,
-                        sheetFormat: this.sheetFormat,
-                        fiberDirection: this.selectedFiberDirection,
-                        opacity: this.paperOpacity,
-                        pricePerKilogram: this.pricePerKilogram,
-                        quantity: this.paperQuantity
-                    }
+                    name: this.paperName,
+                    kind: this.paperKind,
+                    sheetFormat: this.sheetFormat,
+                    opacity: this.paperOpacity,
+                    pricePerKilogram: this.pricePerKilogram,
+                    quantity: this.paperQuantity
                 };
 
-                if(this.IdForPaperTable !== null) {
-                    data.newPaper.IdForPaperTable = this.IdForPaperTable;
+                if(this.selectedFiberDirection === "Pionowy"){
+                    data.fiberDirection = 0;
+                }else{
+                    data.fiberDirection = 1;
+                }
+
+                if(this.paper !== null) {
+                    if(this.paper.idPaper !== null || this.paper.idPaper !== undefined) data.IdPaper = this.paper.idPaper;
                     this.$emit('editPaper', data);
                 } else {
                     this.$emit('createPaper', data);
@@ -122,24 +126,27 @@ export default {
     mounted() {
         if(this.paper === null) {
             this.buttonMessage = "Dodaj papier";
-            this.paperName = "",
-            this.paperKind = "",
-            this.sheetFormat = "",
-            this.selectedFiberDirection = "Pionowy",
-            this.paperOpacity = 0,
-            this.paperQuantity = 0,
-            this.pricePerKilogram = 0.0,
-            this.IdForPaperTable = null;
+            this.paperName = "";
+            this.paperKind = "";
+            this.sheetFormat = "";
+            this.selectedFiberDirection = "Pionowy";
+            this.paperOpacity = 0;
+            this.paperQuantity = 0;
+            this.pricePerKilogram = 0.0;
         }else {
             this.buttonMessage = "Edytuj papier";
-            this.paperName = this.paper.name,
-            this.paperKind = this.paper.kind,
-            this.sheetFormat = this.paper.sheetFormat,
-            this.selectedFiberDirection = this.paper.fiberDirection,
-            this.paperOpacity = this.paper.opacity,
-            this.paperQuantity = this.paper.quantity,
-            this.pricePerKilogram = this.paper.pricePerKilogram,
-            this.IdForPaperTable = this.paper.IdForPaperTable;
+            this.paperName = this.paper.name;
+            this.paperKind = this.paper.kind;
+            this.sheetFormat = this.paper.sheetFormat;
+            this.paperOpacity = this.paper.opacity;
+            this.paperQuantity = this.paper.quantity;
+            this.pricePerKilogram = this.paper.pricePerKilogram;
+
+            if(this.paper.fiberDirection === 0){
+                this.selectedFiberDirection = "Pionowy";
+            }else{
+                this.selectedFiberDirection = "Poziomy";
+            }
         }
     }
 }

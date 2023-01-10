@@ -77,14 +77,12 @@ export default {
             return this.myArray[row].statusColor;
         },
         viewItem(row, mode){
-            let id = this.myArray[row].idOrder;
             switch(mode){
                 case "read":
-                    console.log(id);
-                    // redirect to details page with read-only mode and properId
+                    this.$router.push({ name: "OrderDetails", params: { id: this.myArray[row].idOrder, mode: 'read' } });
                 break;
                 case "edit":
-                    // redirect to details page with edit mode and properId
+                    this.$router.push({ name: "OrderDetails", params: { id: this.myArray[row].idOrder, mode: 'edit' } });
                 break;
             }
         },

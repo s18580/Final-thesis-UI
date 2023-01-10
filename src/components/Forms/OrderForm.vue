@@ -11,8 +11,8 @@
                 <div class="search-input-box">
                     <label>Zamówienie jest przetargiem:</label>
                     <div id="isAuctionCo">
-                        <va-icon v-if="!isAuction" color="success" class="material-icons">done</va-icon>
-                        <va-icon v-if="isAuction" color="danger" class="material-icons">close</va-icon>
+                        <va-icon v-if="isAuction" color="success" class="material-icons">done</va-icon>
+                        <va-icon v-if="!isAuction" color="danger" class="material-icons">close</va-icon>
                         <va-icon @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
                     </div> 
                 </div>
@@ -20,21 +20,21 @@
                 <va-input
                     class="inputWidth"
                     v-model="orderName"
-                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 256 || `Pole nazwa przekroczyło limit znaków.`]"
+                    :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa zamówienia"
-                />
-                <va-date-input
-                    class="inputWidth"
-                    v-model="expectedDeliveryDate"
-                    label="Przewidywana data dostawy"
-                    placeholder="Pożądana data dostawy"
                 />
                 <va-date-input
                     class="inputWidth"
                     v-model="offerValidityDate"
                     label="Termin oferty"
                     placeholder="Termin ważności oferty"
+                />
+                <va-date-input
+                    class="inputWidth"
+                    v-model="expectedDeliveryDate"
+                    label="Przewidywana data dostawy"
+                    placeholder="Pożądana data dostawy"
                 />
                 <va-select
                     class="inputWidth"
@@ -45,6 +45,7 @@
                     @update:model-value="getRepresentativesData($event)"
                 />
                 <va-select
+                    v-if="isCustomerSelected"
                     class="inputWidth"
                     v-model="selectedRepresentative"
                     :options="representatives"
@@ -78,8 +79,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="orderItem in orderItems"
-                        :key="orderItem.IdForOrderItemTable"
+                        v-for="(orderItem, index) in orderItems"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="inventory_2" />
@@ -93,16 +94,16 @@
 
                         <va-list-item-section icon>
                             <va-popover message="Edytuj przemiot zamówienia">
-                                <va-button flat icon="edit" @click="editOrderItemInModal(orderItem)" />
+                                <va-button flat icon="edit" @click="editOrderItemInModal(index)" />
                             </va-popover>
                             <va-popover message="Usuń przemiot zamówienia">
-                                <va-button flat icon="delete" @click="removeOrderItem(orderItem.IdForOrderItemTable)" />
+                                <va-button flat icon="delete" @click="removeItem(orderItems, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
-                <OrderItemModal :orderItem="editedOrderItem" v-if="showOrderItemModal" @close="closeOrderItemModal()" @createOrderItem="addOrderItem($event)" @editOrderItem="editOrderItem($event)"/>
+                <OrderItemModal :orderItem="orderItems[editedOrderItemIndex]" v-if="showOrderItemModal" @close="closeOrderItemModal()" @createOrderItem="addItem(orderItems, $event)" @editOrderItem="editOrderItem($event)"/>
             </div>
         </div>
         <div id="workersCo">
@@ -115,8 +116,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="worker in assignmentWorkers"
-                        :key="worker.IdForWorkerTable"
+                        v-for="(worker, index) in assignmentWorkers"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="face" />
@@ -128,21 +129,21 @@
                             </va-list-item-label>
                         </va-list-item-section>
 
-                        <va-list-item-section icon v-if="!readOnlyMode">
+                        <va-list-item-section icon>
                             <va-popover message="Edytuj przypisanie">
-                                <va-button flat icon="edit" @click="editWorkerInModal(worker)" />
+                                <va-button flat icon="edit" @click="editWorkerInModal(index)" />
                             </va-popover>
                             <va-popover message="Usuń przypisanie">
-                                <va-button flat icon="delete" @click="removeWorker(worker.IdForWorkerTable)" />
+                                <va-button flat icon="delete" @click="removeItem(assignmentWorkers, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button @click="showWorkerModal=true" type="button" color="success" gradient>Przydziel pracownika</va-button>
-                <WorkerModal :worker="editedWorker" v-if="showWorkerModal" @close="closeWorkerModal()" @createWorker="addWorker($event)" @editWorker="editWorker($event)"/>
+                <WorkerModal :worker="assignmentWorkers[editedWorkerIndex]" v-if="showWorkerModal" @close="closeWorkerModal()" @createWorker="addItem(assignmentWorkers, $event)" @editWorker="editWorker($event)"/>
             </div>
         </div>
-        <div id="addressesCo" v-if="showAddresses">
+        <div id="addressesCo" v-if="isCustomerSelected">
             <h3>Adresy dostawy zamówienia</h3>
             <va-divider />
             <div id="addressesCoInner">
@@ -152,8 +153,8 @@
                     </va-list-label>
 
                     <va-list-item
-                        v-for="address in deliveryAddresses"
-                        :key="address.IdAddress"
+                        v-for="(address, index) in deliveryAddresses"
+                        :key="index"
                     >
                         <va-list-item-section avatar>
                             <va-avatar color="#6B5B95" icon="local_shipping" />
@@ -167,13 +168,13 @@
 
                         <va-list-item-section icon >
                             <va-popover message="Usuń adres">
-                                <va-button flat icon="delete" @click="removeAddress(address.IdAddress)" />
+                                <va-button flat icon="delete" @click="removeItem(deliveryAddresses, index)" />
                             </va-popover>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
                 <va-button @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres dostawy</va-button>
-                <DeliveryAddress :idCustomer="getClientIdByName(this.selectedClient)" v-if="showAddressModal" @createDeliveryAddress="addAddress($event)" @close="closeAddressModal()" />
+                <DeliveryAddress :idCustomer="getClientIdByName(this.selectedClient)" v-if="showAddressModal" @createDeliveryAddress="addItem(deliveryAddresses, $event)" @close="closeAddressModal()" />
             </div>
         </div>
         <div id="addOrderButtonCo">
@@ -207,23 +208,19 @@ export default {
             showWorkerModal: false,
             showAddressModal: false,
             showOrderItemModal: false,
-            editedWorker: null,
+            editedWorkerIndex: null,
             assignmentWorkers: [],
-            workerCounter: 0,
-            editedDeliveryAddress: null,
             deliveryAddresses: [],
-            addressCounter: 0,
-            editedOrderItem: null,
+            editedOrderItemIndex: null,
             orderItems: [],
-            orderItemsCounter: 0,
             orderNote: "",
-            showAddresses: false,
+            isCustomerSelected: false,
 		}
 	},
     watch: {
         selectedClient() {
             if(this.selectedClient !== ""){
-                this.showAddresses = true;
+                this.isCustomerSelected = true;
             }
         },
     },
@@ -276,7 +273,7 @@ export default {
             return result;
         },
         async getRepresentativesData(clientName) {
-            let callPath = "/Representative/getRepresentativesByCustomer?id=" + this.getClientIdByName(clientName);
+            let callPath = "/Representative/getCustomerActiveRepresentatives?id=" + this.getClientIdByName(clientName);
             this.rawReprsentatives = await CallAPI.get(callPath)
             .then(res => {
                 return res.data;
@@ -306,9 +303,9 @@ export default {
                         CompletionDate: item["completionDate"],
                         InsideFormat: item["insideFormat"],
                         CoverFormat: item["coverFormat"],
-                        IdDeliveryType: item["selectedDeliveryType"],
-                        IdBindingType: item["selectedBindingTypes"],
-                        IdOrderItemType: item["selectedOrderItemType"],
+                        IdDeliveryType: item["idDeliveryType"],
+                        IdBindingType: item["idBindingType"],
+                        IdOrderItemType: item["idOrderItemType"],
                         Colors : item["colors"],
                         Services : item["services"],
                         Papers : item["papers"],
@@ -343,8 +340,8 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    //this.resetData();
-                    this.$vaToast.init({ message: 'Zamówienie zostało dodane.', color: 'success', duration: 3000 })
+                    this.$vaToast.init({ message: 'Zamówienie zostało dodane.', color: 'success', duration: 3000 });
+                    this.$router.push({ name: "OrderDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
                 .catch(err => {
@@ -390,79 +387,51 @@ export default {
         },
         closeOrderItemModal() {
             this.showOrderItemModal = false;
-            this.editedOrderItem = null;
-        },
-        addOrderItem(e) {
-            e.newOrderItem.IdForOrderItemTable = this.orderItemsCounter;
-            this.orderItems.push(e.newOrderItem);
-            this.orderItemsCounter++;
+            this.editedOrderItemIndex = null;
         },
         editOrderItem(e) {
-            for(const obj of this.orderItems){
-                if (obj.IdForOrderItemTable === e.newOrderItem.IdForOrderItemTable) {
-                    obj.name = e.newOrderItem.name;
-                    obj.comments = e.newOrderItem.comments;
-                    obj.insideFormat = e.newOrderItem.insideFormat;
-                    obj.coverFormat = e.newOrderItem.coverFormat;
-                    obj.capacity = e.newOrderItem.capacity;
-                    obj.circulation = e.newOrderItem.circulation;
-                    obj.selectedOrderItemType = e.newOrderItem.selectedOrderItemType;
-                    obj.selectedDeliveryType = e.newOrderItem.selectedDeliveryType;
-                    obj.selectedBindingTypes = e.newOrderItem.selectedBindingTypes;
-                    obj.IdForOrderItemTable = e.newOrderItem.IdForOrderItemTable;
-                    obj.orderItemColors = e.newOrderItem.orderItemColors;
-                    obj.orderItemPapers = e.newOrderItem.orderItemPapers;
-                    obj.orderItemService = e.newOrderItem.orderItemService;
-                    obj.services = e.newOrderItem.services;
-                    obj.papers = e.newOrderItem.papers;
-                    obj.colors = e.newOrderItem.colors;
-                    break;
-                }
-            }
+            this.orderItems[this.editedOrderItemIndex].name = e.name;
+            this.orderItems[this.editedOrderItemIndex].comments = e.comments;
+            this.orderItems[this.editedOrderItemIndex].insideFormat = e.insideFormat;
+            this.orderItems[this.editedOrderItemIndex].coverFormat = e.coverFormat;
+            this.orderItems[this.editedOrderItemIndex].capacity = e.capacity;
+            this.orderItems[this.editedOrderItemIndex].circulation = e.circulation;
+            this.orderItems[this.editedOrderItemIndex].selectedOrderItemType = e.selectedOrderItemType;
+            this.orderItems[this.editedOrderItemIndex].selectedDeliveryType = e.selectedDeliveryType;
+            this.orderItems[this.editedOrderItemIndex].selectedBindingTypes = e.selectedBindingTypes;
+            this.orderItems[this.editedOrderItemIndex].orderItemColors = e.orderItemColors;
+            this.orderItems[this.editedOrderItemIndex].orderItemPapers = e.orderItemPapers;
+            this.orderItems[this.editedOrderItemIndex].orderItemService = e.orderItemService;
+            this.orderItems[this.editedOrderItemIndex].services = e.services;
+            this.orderItems[this.editedOrderItemIndex].papers = e.papers;
+            this.orderItems[this.editedOrderItemIndex].colors = e.colors;
         },
-        editOrderItemInModal(orderItem) {
-            this.editedOrderItem = orderItem;
+        editOrderItemInModal(index) {
+            this.editedOrderItemIndex = index;
             this.showOrderItemModal = true;
-        },
-        removeOrderItem(id) {
-            this.orderItems = this.orderItems.filter(item => item.IdForOrderItemTable !== id);
         },
         closeAddressModal() {
             this.showAddressModal = false;
-            this.editedDeliveryAddress = null;
-        },
-        addAddress(e) {
-            console.log(e);
-            this.deliveryAddresses.push(e);
-        },
-        removeAddress(id) {
-            this.deliveryAddresses = this.deliveryAddresses.filter(item => item.IdAddress !== id);
         },
         closeWorkerModal() {
             this.showWorkerModal = false;
-            this.editedWorker = null;
+            this.editedWorkerIndex = null;
         },
-        addWorker(e) {
-            e.newWorker.IdForWorkerTable = this.workerCounter;
-            this.assignmentWorkers.push(e.newWorker);
-            this.workerCounter++;
+        addItem(array, e) {
+            array.push(e);
         },
         editWorker(e) {
-            for(const obj of this.assignmentWorkers){
-                if (obj.IdForWorkerTable === e.newWorker.IdForWorkerTable) {
-                    obj.worker = e.newWorker.worker;
-                    obj.hoursWorker = e.newWorker.hoursWorker;
-                    obj.isLeader = e.newWorker.isLeader;
-                    break;
-                }
-            }
+            this.assignmentWorkers[this.editedWorkerIndex].worker = e.worker
+            this.assignmentWorkers[this.editedWorkerIndex].isLeader = e.isLeader
         },
-        editWorkerInModal(worker) {
-            this.editedWorker = worker;
+        editWorkerInModal(index) {
+            this.editedWorkerIndex = index;
             this.showWorkerModal = true;
         },
-        removeWorker(id) {
-            this.assignmentWorkers = this.assignmentWorkers.filter(item => item.IdForWorkerTable !== id);
+        removeItem(array, index) {
+            if (index > -1) {
+                array.splice(index, 1);
+            }
         },
     },
 }

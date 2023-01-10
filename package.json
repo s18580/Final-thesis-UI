@@ -15,6 +15,7 @@
     "bootstrap-icons": "^1.8.1",
     "core-js": "^3.8.3",
     "jose": "^4.8.3",
+    "jwt-decode": "^3.1.2",
     "pinia": "^2.0.16",
     "pinia-plugin-persistedstate": "^2.1.0",
     "vue": "^3.2.13",

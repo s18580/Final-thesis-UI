@@ -13,21 +13,13 @@
                     :options="workers"
                     label="Pracownik"
                     noOptionsText="Brak pracowniów do wybrania"
-                    :readonly = "isReadOnly"
                  />
-                <va-input
-                    class="some-space mb-4"
-                    v-model="hoursWorked"
-                    :rules="[ (v) => v >= 0 || `Godziny nie mogą być ujemne.`]"
-                    label="Przepracowane godziny przy zamówieniu"
-                    placeholder="Przepracowane godziny przy zamówieniu"
-                />
                 <div class="search-input-box">
-                        <label>Pracownik jest liderem zamówienia:</label>
-                        <div id="isAuctionCo">
-                            <input v-model="isLeader" type="checkbox"/>
-                        </div> 
-                    </div>
+                    <label>Pracownik jest liderem zamówienia:</label>
+                    <div id="isAuctionCo">
+                        <input v-model="isLeader" type="checkbox"/>
+                    </div> 
+                </div>
                 <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
@@ -53,12 +45,9 @@ export default {
             buttonMessage: "",
             isWorkerFormValidate: false,
             showWorkerModal: true,
-            hoursWorked: 0,
             isLeader: false,
             rawWorkers: [],
             selectedWorker: "",
-            IdForWorkerTable: null,
-            isReadOnly: false,
 		}
 	},
     computed: {
@@ -74,16 +63,12 @@ export default {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newWorker: {
-                        idWorker: this.getIdByName(this.selectedWorker),
-                        name: this.selectedWorker,
-                        hoursWorker: this.hoursWorked,
-                        isLeader: this.isLeader
-                    }
+                    idWorker: this.getIdByName(this.selectedWorker),
+                    name: this.selectedWorker,
+                    isLeader: this.isLeader
                 };
 
-                if(this.IdForWorkerTable !== null) {
-                    data.newWorker.IdForWorkerTable = this.IdForWorkerTable;
+                if(this.worker !== null) {
                     this.$emit('editWorker', data);
                 } else {
                     this.$emit('createWorker', data);
@@ -109,18 +94,13 @@ export default {
 	},
     async mounted() {
         if(this.worker === null) {
-            this.isReadOnly = false;
             this.buttonMessage = "Przydziel pracownika";
-            this.hoursWorked = 0;
             this.isLeader = false;
             this.selectedWorker = "";
         }else {
             this.buttonMessage = "Edytuj przydział";
-            this.isReadOnly = true;
-            this.selectedWorker = this.worker.worker.name + " " + this.worker.worker.lastName;
-            this.hoursWorker = this.worker.hoursWorked;
-            this.isLeader = this.worker.orderLeader;
-            this.IdForWorkerTable = this.worker.IdForWorkerTable;
+            this.selectedWorker = this.worker.name;
+            this.isLeader = this.worker.isLeader;
         }
 
         let callPath = "/Worker/getWorkers";

@@ -65,7 +65,6 @@ export default {
             representativeLastName: "",
             representativePhone: "",
             representativeEmail: "",
-            IdForRepresentativeTable: null,
             IdRepresentative: null,
 		}
 	},
@@ -73,17 +72,14 @@ export default {
 		submitForm() {
             if(this.validateForm()) {
                 let data = {
-                    newRepresentative: {
-                        idRepresentative: this.IdRepresentative,
-                        name: this.representativeName,
-                        lastName: this.representativeLastName,
-                        phoneNumber: this.representativePhone,
-                        emailAddress: this.representativeEmail,
-                    }
+                    idRepresentative: this.IdRepresentative,
+                    name: this.representativeName,
+                    lastName: this.representativeLastName,
+                    phoneNumber: this.representativePhone,
+                    emailAddress: this.representativeEmail,
                 };
 
-                if(this.IdForRepresentativeTable !== null) {
-                    data.newRepresentative.IdForRepresentativeTable = this.IdForRepresentativeTable;
+                if(this.person !== null) {
                     this.$emit('editRepresentative', data);
                 } else {
                     this.$emit('createRepresentative', data);
@@ -114,7 +110,6 @@ export default {
             this.representativeLastName = this.person.lastName;
             this.representativePhone = this.person.phoneNumber;
             this.representativeEmail = this.person.emailAddress;
-            this.IdForRepresentativeTable = this.person.IdForRepresentativeTable;
             this.IdRepresentative = this.person.idRepresentative;
         }
     }
