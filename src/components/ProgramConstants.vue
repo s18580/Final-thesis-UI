@@ -9,7 +9,7 @@
             <va-sidebar-item 
                 class="clicableItem"
                 v-for="item in dictionaryData"
-                @click="activeSwitch($event)"
+                @click="activeSwitch(item.title)"
                 :key="item.title"
                 active-color="#217cde"
                 text-color="#ffffff"
@@ -47,8 +47,8 @@ export default {
 	data() {
 		return {
 			dictionaryData: [
-                { title: 'Typ wiązania' },
-                { title: 'Sposób dostawy', active: true },
+                { title: 'Sposób dostawy' },
+                { title: 'Typ wiązania', active: true },
                 { title: 'Status zamówienia' },
                 { title: 'Stanowisko pracy' },
                 { title: 'Typ przedmiotu dostawy' },
@@ -68,14 +68,9 @@ export default {
         this.activeConstant = "Typ wiązania";
     },
 	methods: {
-        async activeSwitch(e) {
-            let clickedItem = e.path.find(element => element.className.includes("clicableItem"));
-
-            if(!clickedItem.className.includes("active")) {
-                let title = clickedItem.textContent.replace("fiber_manual_record","");
-                this.changeActiveData(title);
-                await this.showSelectedTable(title);
-            }
+        async activeSwitch(title) {
+            this.changeActiveData(title);
+            await this.showSelectedTable(title);
         },
         changeActiveData(selectedTitle) {
             for(var i = 0; i < this.dictionaryData.length; i++) {
