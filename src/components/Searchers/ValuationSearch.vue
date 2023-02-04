@@ -3,12 +3,14 @@
       <h4>Wyszukaj wycenę</h4>
       <div id="search-params">
         <va-input
+            id="valuationName"
             class="search-box"
             v-model="valuationName"
             label="Nazwa wyceny:"
             placeholder="Nazwa wyceny"
         />
         <va-select
+            id="author"
             class="search-box"
             v-model="selectedAuthor"
             :options="authors"
@@ -16,12 +18,14 @@
             noOptionsText="Brak osób do wybrania"
         />
         <va-date-input
+            id="creationDate"
             class="search-box"
             v-model="creationDate"
             label="Data stworzenia:"
             placeholder="Data stworzenia"
         />
         <va-input
+            id="valuationPaper"
             v-if="largeMode"
             class="search-box"
             v-model="valuationPaper"
@@ -29,6 +33,7 @@
             placeholder="Papier"
         />
         <va-input
+            id="valuationColor"
             v-if="largeMode"
             class="search-box"
             v-model="valuationColor"
@@ -36,6 +41,7 @@
             placeholder="Kolorystyka"
         />
         <va-select
+            id="valuationService"
             v-if="largeMode"
             class="search-box"
             v-model="selectedService"
@@ -44,6 +50,7 @@
             noOptionsText="Brak usług do wybrania"
         />
         <va-select
+            id="bindingType"
             v-if="largeMode"
             class="search-box"
             v-model="selectedBindingTypes"
@@ -52,6 +59,7 @@
             noOptionsText="Brak rodzaji do wybrania"
         />
         <va-select
+            id="orderItemType"
             v-if="largeMode"
             class="search-box"
             v-model="selectedOrderItemType"
@@ -60,6 +68,7 @@
             noOptionsText="Brak typów do wybrania"
         />
         <va-select
+            id="order"
             v-if="largeMode"
             class="search-box"
             v-model="selectedOrder"
@@ -79,7 +88,7 @@
                 </svg>
           </div>
       </div>
-      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
+      <va-button id="search" @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">

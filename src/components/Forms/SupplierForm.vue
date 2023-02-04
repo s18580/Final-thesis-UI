@@ -10,6 +10,7 @@
             <div id="mainCoInner">
                 <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                     <va-input
+                        id="supplierName"
                         class="gridFirstC gridFirstR inputWidth"
                         v-model="supplierName"
                         :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -17,6 +18,7 @@
                         placeholder="Nazwa dostawcy"
                     />
                     <va-input
+                        id="supplierEmail"
                         class="gridFirstC gridSecondR inputWidth"
                         v-model="supplierEmail"
                         :rules="[(v) => v.length < 256 || `Pole email przekroczyło limit znaków.`]"
@@ -24,6 +26,7 @@
                         placeholder="Email dostawcy"
                     />
                     <va-input
+                        id="supplierPhone"
                         class="gridFirstC gridThirdR inputWidth"
                         v-model="supplierPhone"
                         :rules="[(v) => v.length < 33 || `Pole telefon przekroczyło limit znaków.`]"
@@ -31,6 +34,7 @@
                         placeholder="Telefon dostawcy"
                     />
                     <va-input
+                        id="supplierDesc"
                         class="gridSecondC gridSpreadR inputWidth"
                         v-model="supplierDescription"
                         type="textarea"
@@ -39,7 +43,7 @@
                         :min-rows="7"
                     />
                     <div id="submitButtonContainer">
-                        <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+                        <va-button id="addSupplier" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
                     </div>
                 </va-form>
             </div>
@@ -77,7 +81,7 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
+                <va-button id="addRepresentative" @click="showContactModal=true" type="button" color="success" gradient>Dodaj osobę</va-button>
                 <RepresentativeModal :person="contactPepole[editedContactIndex]" v-if="showContactModal" @close="closeContactModal()" @createRepresentative="addItem(contactPepole, $event)" @editRepresentative="editContact($event)"/>
             </div>
         </div>
@@ -114,8 +118,8 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
-                    <AddressModal :addr="suplierAddresses[editedAddressIndex]" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addItem(suplierAddresses, $event)" @editAddress="editAddress($event)"/>
+                <va-button id="addAddress" @click="showAddressModal=true" type="button" color="success" gradient>Dodaj adres</va-button>
+                <AddressModal :addr="suplierAddresses[editedAddressIndex]" v-if="showAddressModal" @close="closeAddressModal()" @createAddress="addItem(suplierAddresses, $event)" @editAddress="editAddress($event)"/>
             </div>
         </div>
 	</div>

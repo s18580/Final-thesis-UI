@@ -8,6 +8,7 @@
         <div class="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalWorkerForm" tag="form" ref="modalWorkerForm" @validation="isWorkerFormValidate = $event">
                 <va-select
+                    id="worker"
                     class="mb-4 some-space"
                     v-model="selectedWorker"
                     :options="workers"
@@ -17,10 +18,10 @@
                 <div class="search-input-box">
                     <label>Pracownik jest liderem zamówienia:</label>
                     <div id="isAuctionCo">
-                        <input v-model="isLeader" type="checkbox"/>
+                        <input id="isLeader" v-model="isLeader" type="checkbox"/>
                     </div> 
                 </div>
-                <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="addAssignment" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
     </va-modal>

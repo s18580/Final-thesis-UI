@@ -3,24 +3,28 @@
       <h4>Wyszukaj zamówienie</h4>
       <div id="search-params">
         <va-input
+            id="orderName"
             class="search-box"
             v-model="orderName"
             label="Nazwa zamówienia:"
             placeholder="Nazwa zamówienia"
         />
         <va-input
+            id="identifier"
             class="search-box"
             v-model="identifier"
             label="Identyfikator:"
             placeholder="Nazwa zamówienia"
         />
         <va-date-input
+            id="deliveryDate"
             class="search-box"
             v-model="deliveryDate"
             label="Przewidywana data dostawy:"
             placeholder="Przewidywana data dostawy"
         />
         <va-select
+            id="orderStatus"
             class="search-box"
             v-model="selectedStatus"
             :options="statuses"
@@ -28,6 +32,7 @@
             noOptionsText="Brak statusów do wybrania"
         />
         <va-select
+            id="customerRep"
             class="search-box"
             v-if="largeMode"
             v-model="selectedCustomerRep"
@@ -36,6 +41,7 @@
             noOptionsText="Brak osób do wybrania"
         />
         <va-select
+            id="supplierRep"
             class="search-box"
             v-if="largeMode"
             v-model="selectedSupplierRep"
@@ -47,11 +53,12 @@
             <div class="search-input-box">
                 <label>Przetarg:</label>
                 <div>
-                    <input v-model="isAuction" type="checkbox"> 
+                    <input id="isAuction" v-model="isAuction" type="checkbox"> 
                 </div> 
             </div>
         </div>
         <va-select
+            id="worker"
             class="search-box"
             v-if="largeMode"
             v-model="selectedWorker"
@@ -60,6 +67,7 @@
             noOptionsText="Brak osób do wybrania"
         />
         <va-select
+            id="orderItemType"
             class="search-box"
             v-if="largeMode"
             v-model="selectedOrderItemType"
@@ -79,7 +87,7 @@
             </svg>
         </div>
       </div>
-      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
+      <va-button id="search" @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">

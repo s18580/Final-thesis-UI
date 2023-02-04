@@ -13,11 +13,12 @@
                     <div id="isAuctionCo">
                         <va-icon v-if="isAuction" color="success" class="material-icons">done</va-icon>
                         <va-icon v-if="!isAuction" color="danger" class="material-icons">close</va-icon>
-                        <va-icon @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
+                        <va-icon id="isAuction" @click="isAuction=!isAuction" color="primary" class="material-icons">cached</va-icon>
                     </div> 
                 </div>
                 <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                 <va-input
+                    id="orderName"
                     class="inputWidth"
                     v-model="orderName"
                     :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -25,18 +26,21 @@
                     placeholder="Nazwa zamówienia"
                 />
                 <va-date-input
+                    id="offerValidityDate"
                     class="inputWidth"
                     v-model="offerValidityDate"
                     label="Termin oferty"
                     placeholder="Termin ważności oferty"
                 />
                 <va-date-input
+                    id="expectedDeliveryDate"
                     class="inputWidth"
                     v-model="expectedDeliveryDate"
                     label="Przewidywana data dostawy"
                     placeholder="Pożądana data dostawy"
                 />
                 <va-select
+                    id="customer"
                     class="inputWidth"
                     v-model="selectedClient"
                     :options="clients"
@@ -46,6 +50,7 @@
                 />
                 <va-select
                     v-if="isCustomerSelected"
+                    id="representative"
                     class="inputWidth"
                     v-model="selectedRepresentative"
                     :options="representatives"
@@ -53,6 +58,7 @@
                     noOptionsText="Brak osób do wybrania"
                 />
                 <va-select
+                    id="orderStatus"
                     class="inputWidth"
                     v-model="selectedOrderStatus"
                     :options="orderStatuses"
@@ -60,6 +66,7 @@
                     noOptionsText="Brak statusów do wybrania"
                 />
                 <va-input
+                    id="orderNote"
                     class="inputWidth"
                     v-model="orderNote"
                     type="textarea"
@@ -102,7 +109,7 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
+                <va-button id="addOrderItem" @click="showOrderItemModal=true" type="button" color="success" gradient>Dodaj przedmiot zamówienia</va-button>
                 <OrderItemModal :orderItem="orderItems[editedOrderItemIndex]" v-if="showOrderItemModal" @close="closeOrderItemModal()" @createOrderItem="addItem(orderItems, $event)" @editOrderItem="editOrderItem($event)"/>
             </div>
         </div>
@@ -139,7 +146,7 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showWorkerModal=true" type="button" color="success" gradient>Przydziel pracownika</va-button>
+                <va-button id="addWorker" @click="showWorkerModal=true" type="button" color="success" gradient>Przydziel pracownika</va-button>
                 <WorkerModal :worker="assignmentWorkers[editedWorkerIndex]" v-if="showWorkerModal" @close="closeWorkerModal()" @createWorker="addItem(assignmentWorkers, $event)" @editWorker="editWorker($event)"/>
             </div>
         </div>
@@ -173,12 +180,12 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres dostawy</va-button>
+                <va-button id="addAddress" @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres dostawy</va-button>
                 <DeliveryAddress :idCustomer="getClientIdByName(this.selectedClient)" v-if="showAddressModal" @createDeliveryAddress="addItem(deliveryAddresses, $event)" @close="closeAddressModal()" />
             </div>
         </div>
         <div id="addOrderButtonCo">
-            <va-button @click="submitForm()" color="info" gradient class="my-3">Dodaj zamówienie</va-button>
+            <va-button id="addOrder" @click="submitForm()" color="info" gradient class="my-3">Dodaj zamówienie</va-button>
         </div>
     </div>
 </template>

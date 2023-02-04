@@ -3,18 +3,21 @@
       <h4>Wyszukaj pracownika</h4>
       <div id="search-params">
         <va-input
+            id="workerName"
             class="search-box"
             v-model="workerName"
             label="Imie:"
             placeholder="Imie"
         />
         <va-input
+            id="workerLastName"
             class="search-box"
             v-model="workerLastName"
             label="Nazwisko:"
             placeholder="Nazwisko"
         />
         <va-select
+            id="worksite"
             class="search-box"
             v-model="selectedWorksite"
             :options="worksites"
@@ -22,7 +25,7 @@
             noOptionsText="Brak stanowisk do wybrania"
         />
       </div>
-      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
+      <va-button id="search" @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">

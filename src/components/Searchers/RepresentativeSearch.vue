@@ -3,30 +3,35 @@
       <h4>Wyszukaj osoby kontaktowej</h4>
       <div id="search-params">
         <va-input
+            id="repName"
             class="search-box"
             v-model="representativeName"
             label="Imie:"
             placeholder="Imie"
         />
         <va-input
+            id="repLastName"
             class="search-box"
             v-model="representativeLastName"
             label="Nazwisko:"
             placeholder="Nazwisko"
         />
         <va-input
+            id="repPhone"
             class="search-box"
             v-model="representativePhone"
             label="Telefon:"
             placeholder="Telefon"
         />
         <va-input
+            id="repEmail"
             class="search-box"
             v-model="representativeEmail"
             label="Email:"
             placeholder="Email"
         />
         <va-select
+            id="customer"
             v-if="largeMode"
             class="search-box"
             v-model="selectedCustomer"
@@ -35,6 +40,7 @@
             noOptionsText="Brak klientów do wybrania"
         />
         <va-select
+            id="supplier"
             v-if="largeMode"
             class="search-box"
             v-model="seledtedSupplier"
@@ -47,7 +53,7 @@
             <div class="search-input-box">
                 <label>Osoba dezaktywowana:</label>
                 <div>
-                    <input v-model="showDisabled" type="checkbox">
+                    <input id="isDeactivated" v-model="showDisabled" type="checkbox">
                 </div>
             </div>
         </div>
@@ -62,7 +68,7 @@
                 </svg>
             </div>
       </div>
-      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
+      <va-button id="search" @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">

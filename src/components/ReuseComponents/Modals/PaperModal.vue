@@ -8,6 +8,7 @@
         <div class="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalPaperForm" tag="form" ref="modalPaperForm" @validation="isPaperFormValidate = $event">
                 <va-input
+                    id="paperName"
                     class="some-space mb-4"
                     v-model="paperName"
                     :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -15,6 +16,7 @@
                     placeholder="Nazwa papieru"
                 />
                 <va-input
+                    id="paperKind"
                     class="some-space mb-4"
                     v-model="paperKind"
                     :rules="[(v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -22,6 +24,7 @@
                     placeholder="Rodzaj papieru"
                 />
                 <va-input
+                    id="sheetFormat"
                     class="some-space mb-4"
                     v-model="sheetFormat"
                     :rules="[(v) => v.length > 0 || `Pole format arkusza nie może być puste.`, (v) => v.length < 21 || `Pole nazwa przekroczyło limit znaków.`,
@@ -30,6 +33,7 @@
                     placeholder="Format arkusza (w mm)"
                 />
                 <va-select
+                    id="fibers"
                     class="mb-4 some-space"
                     v-model="selectedFiberDirection"
                     :options="fiberDirections"
@@ -37,24 +41,27 @@
                     noOptionsText="Brak kierunków do wybrania"
                  />
                 <va-input
+                    id="paperOpacity"
                     class="some-space mb-4"
                     v-model="paperOpacity"
                     :rules="[ (v) => v >= 0 || `Grubość nie może być ujemna.`]"
                     label="Grubość papieru (w gramach)"
                 />
                 <va-input
+                    id="paperQuantity"
                     class="some-space mb-4"
                     v-model="paperQuantity"
                     :rules="[ (v) => v >= 0 || `Nakład nie może być ujemny.`]"
                     label="Nakład do druku"
                 />
                 <va-input
+                    id="pricePerKilogram"
                     class="some-space mb-4"
                     v-model="pricePerKilogram"
                     :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.`]"
                     label="Cena za kilogram"
                 />
-                <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="addNewPaper" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
     </va-modal>

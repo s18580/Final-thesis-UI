@@ -8,6 +8,7 @@
         <div class="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalServiceForm" tag="form" ref="modalServiceForm" @validation="isServiceFormValidate = $event">
                 <va-select
+                    id="servicesDropdown"
                     class="mb-4 some-space"
                     v-model="selectedService"
                     :options="services"
@@ -15,13 +16,14 @@
                     noOptionsText="Brak usług do wybrania"
                  />
                 <va-input
+                    id="servicePrice"
                     class="some-space mb-4"
                     v-model="servicePrice"
                     :rules="[ (v) => v >= 0 || `Cena nie może być ujemna.`]"
                     label="Cena"
                     placeholder="Cena usługi"
                 />
-                <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="addNewService" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
     </va-modal>

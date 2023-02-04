@@ -3,24 +3,28 @@
       <h4>Wyszukaj dostawcę</h4>
       <div id="search-params">
         <va-input
+            id="supplierName"
             class="search-box"
             v-model="supplierName"
             label="Nazwa:"
             placeholder="Nazwa"
         />
         <va-input
+            id="supplierEmail"
             class="search-box"
             v-model="supplierEmail"
             label="Email:"
             placeholder="Email"
         />
         <va-input
+            id="supplierPhone"
             class="search-box"
             v-model="supplierPhone"
             label="Telefon:"
             placeholder="Telefon"
         />
         <va-input
+            id="repName"
             v-if="largeMode"
             class="search-box"
             v-model="concactName"
@@ -28,6 +32,7 @@
             placeholder="Imię"
         />
         <va-input
+            id="repLastName"
             v-if="largeMode"
             class="search-box"
             v-model="concactSurrname"
@@ -35,6 +40,7 @@
             placeholder="Nazwisko"
         />
         <va-input
+            id="addressName"
             v-if="largeMode"
             class="search-box"
             v-model="addressName"
@@ -42,6 +48,7 @@
             placeholder="Nazwa adresu"
         />
         <va-input
+            id="addressStreet"
             v-if="largeMode"
             class="search-box"
             v-model="addressStreet"
@@ -49,6 +56,7 @@
             placeholder="Ulica"
         />
         <va-input
+            id="addressCity"
             v-if="largeMode"
             class="search-box"
             v-model="addressCity"
@@ -56,6 +64,7 @@
             placeholder="Miasto"
         />
         <va-input
+            id="supplierDescription"
             v-if="largeMode"
             type="textarea"
             class="search-box"
@@ -74,7 +83,7 @@
                 </svg>
             </div>
       </div>
-      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
+      <va-button id="search" @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">
