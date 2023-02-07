@@ -8,13 +8,14 @@
         <div class="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalForm" tag="form" ref="modalForm">
                 <va-select
+                    id="address"
                     class="mb-4 some-space"
                     v-model="selectedAddress"
                     :options="addresses"
                     label="Adres"
                     noOptionsText="Brak adresów do wybrania"
                  />
-                <va-button type="submit" color="info" gradient class="my-3 sub"> {{ message }} </va-button>
+                <va-button id="addDeliveryAddress" type="submit" color="info" gradient class="my-3 sub"> {{ message }} </va-button>
             </va-form>
         </div>
     </va-modal>

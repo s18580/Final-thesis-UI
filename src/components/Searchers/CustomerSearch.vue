@@ -3,36 +3,42 @@
       <h4>Wyszukaj klienta</h4>
       <div id="search-params">
         <va-input
+            id="companyName"
             class="search-box"
             v-model="companyName"
             label="Nazwa firmy:"
             placeholder="Nazwa firmy"
         />
         <va-input
+            id="companyPhone"
             class="search-box"
             v-model="companyPhone"
             label="Telefon firmy:"
             placeholder="Telefon firmy"
         />
         <va-input
+            id="companyEmail"
             class="search-box"
             v-model="companyEmail"
             label="Email firmy:"
             placeholder="Email firmy"
         />
         <va-input
+            id="companyNip"
             class="search-box"
             v-model="nip"
             label="NIP:"
             placeholder="NIP"
         />
         <va-input
+            id="companyRegon"
             class="search-box"
             v-model="regon"
             label="REGON:"
             placeholder="REGON"
         />
         <va-input
+            id="repName"
             v-if="largeMode"
             class="search-box"
             v-model="repName"
@@ -40,6 +46,7 @@
             placeholder="Imię"
         />
         <va-input
+            id="repLastName"
             v-if="largeMode"
             class="search-box"
             v-model="repLastName"
@@ -47,6 +54,7 @@
             placeholder="Nazwisko"
         />
         <va-input
+            id="repPhone"
             v-if="largeMode"
             class="search-box"
             v-model="repPhone"
@@ -54,6 +62,7 @@
             placeholder="Telefon"
         />
         <va-input
+            id="repEmail"
             v-if="largeMode"
             class="search-box"
             v-model="repEmail"
@@ -61,6 +70,7 @@
             placeholder="Email"
         />
         <va-select
+            id="workerLider"
             v-if="largeMode"
             class="search-box"
             v-model="selectedWorker"

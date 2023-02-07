@@ -63,7 +63,7 @@
                     label="Numer mieszkania (opcjonalne)"
                     placeholder="Numer mieszkania"
                 />
-                <va-button id="addAddress" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="addAdd" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
     </va-modal>

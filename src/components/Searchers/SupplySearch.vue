@@ -3,12 +3,14 @@
       <h4>Wyszukaj dostawę</h4>
       <div id="search-params">
         <va-date-input
+            id="supplyDate"
             class="search-box"
             v-model="supplyDate"
             label="Data dostawy:"
             placeholder="Data dostawy"
         />
         <va-select
+            id="supplyItemType"
             class="search-box"
             v-model="selectedSupplyItemType"
             :options="supplyItemTypes"
@@ -16,6 +18,7 @@
             noOptionsText="Brak typów do wybrania"
         />
         <va-select
+            id="supplier"
             class="search-box"
             v-model="seledtedSupplier"
             :options="suppliers"
@@ -23,6 +26,7 @@
             noOptionsText="Brak dostawców do wybrania"
         />
         <va-select
+            id="representative"
             class="search-box"
             v-model="selectedRepresentative"
             :options="representatives"
@@ -33,7 +37,7 @@
             <div class="search-input-box">
                 <label>Dostawa odebrana:</label>
                 <div>
-                   <input v-model="supplyReceived" type="checkbox"> 
+                   <input id="supplyReceived" v-model="supplyReceived" type="checkbox"> 
                 </div>
             </div>
         </div>
@@ -49,7 +53,7 @@
                 </svg>
             </div>
       </div>
-      <va-button @click="searchForResults()" color="info" gradient>Szukaj</va-button>
+      <va-button id="search" @click="searchForResults()" color="info" gradient>Szukaj</va-button>
 	</div>
     <div v-if="showResults" id="resultCo">
       <div class="result-table">

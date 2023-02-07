@@ -8,13 +8,14 @@
         <div class="background-modal">
             <va-form @submit.prevent="submitForm()" id="modalColorForm" tag="form" ref="modalColorForm" @validation="isColorFormValidate = $event">
                 <va-input
+                    id="colorName"
                     class="some-space mb-4"
                     v-model="colorName"
                     :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 11 || `Pole nazwa przekroczyło limit znaków.`]"
                     label="Nazwa"
                     placeholder="Nazwa koloru"
                 />
-                <va-button type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="addNewColor" type="submit" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </va-form>
         </div>
     </va-modal>

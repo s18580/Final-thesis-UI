@@ -9,6 +9,7 @@
                 <h5>Wybierz zamówienie i przedmiot zamówienia, do którego chcesz stworzyć wycenę</h5>
                 <div id="orderItemPicker">
                     <va-select
+                        id="orders"
                         class="inputWidth"
                         v-model="selectedOrder"
                         :options="orders"
@@ -17,6 +18,7 @@
                         @update:model-value="getOrderItems($event)"
                     />
                     <va-select
+                        id="orderItems"
                         v-if="selectedOrder != ''"
                         class="inputWidth"
                         v-model="selectedOrderItem"
@@ -25,7 +27,7 @@
                         noOptionsText="Brak przedmiotów do wybrania"
                         @update:model-value="getOrderItemDetails($event)"
                     />
-                    <va-button @click="withoutOrdrItem()" color="info" gradient class="my-3">Wycena bez przedmiotu zamówienia</va-button>
+                    <va-button id="withoutOrderItem" @click="withoutOrdrItem()" color="info" gradient class="my-3">Wycena bez przedmiotu zamówienia</va-button>
                 </div>
             </div>
         </div>
@@ -33,8 +35,8 @@
             <div>
                 <h5>Wybierz szablon wyceny</h5>
                 <div id="valuationPicker">
-                    <va-button @click="loadCopiedData()" color="info" gradient class="my-3">Załaduj dane ze schowka</va-button>
-                    <va-button @click="blankForm()" color="info" gradient class="my-3">Czysty szablon</va-button>
+                    <va-button id="loadCopiedData" @click="loadCopiedData()" color="info" gradient class="my-3">Załaduj dane ze schowka</va-button>
+                    <va-button id="loadBlankForm" @click="blankForm()" color="info" gradient class="my-3">Czysty szablon</va-button>
                 </div>
             </div>
         </div>
@@ -42,17 +44,20 @@
             <va-form @submit.prevent="" id="preDetailsform" tag="preDetailsform" ref="preDetailsform" @validation="isPreDetailsFormValidate = $event">
                 <div id="preDetails">
                     <va-input
+                        id="authorName"
                         class="inputWidth"
                         v-model="authorName"
                         label="Autor"
                         readonly
                     />
                     <va-date-input
+                        id="offerValidity"
                         class="inputWidth"
                         v-model="offerValidity"
                         label="Ważność oferty"
                     />
                     <va-input
+                        id="valuationName"
                         class="longInputWidth"
                         v-model="valuationName"
                         label="Nazwa wyceny"
@@ -60,6 +65,7 @@
                         placeholder="Nazwa wyceny"
                     />
                     <va-input
+                        id="valuationRecipient"
                         class="longInputWidth"
                         v-model="valuationRecipient"
                         label="Odbiorca wyceny"
@@ -78,9 +84,10 @@
                             <div class="detailsCo">
                                 <div id="checkboxCo">
                                     <p>Pokaż szczegóły okładki: </p>
-                                    <input v-model="showCoverForm" type="checkbox">
+                                    <input id="showCoverForm" v-model="showCoverForm" type="checkbox">
                                 </div>
                                 <va-input
+                                    id="insideFormat"
                                     class="inputWidth"
                                     v-model="insideFormat"
                                     label="Format użytku (w mm)"
@@ -89,6 +96,7 @@
                                     placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
+                                    id="insideFormatSheet"
                                     class="inputWidth"
                                     v-model="insideFormatSheet"
                                     label="Format arkusza (w mm)"
@@ -97,6 +105,7 @@
                                     placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
+                                    id="insideCirculation"
                                     class="inputWidth"
                                     v-model="insideCirculation"
                                     label="Nakład"
@@ -104,6 +113,7 @@
                                     placeholder="Nakład"
                                 />
                                 <va-input
+                                    id="insideCapacity"
                                     class="inputWidth"
                                     v-model="insideCapacity"
                                     label="Objętość"
@@ -111,6 +121,7 @@
                                     placeholder="Objętość"
                                 />
                                 <va-input
+                                    id="insideSheetNumber"
                                     class="inputWidth"
                                     v-model="insideSheetNumber"
                                     label="Ilość arkuszy"
@@ -118,6 +129,7 @@
                                     placeholder="Ilość arkuszy"
                                 />
                                 <va-input
+                                    id="isnideOther"
                                     class="inputWidth"
                                     v-model="isnideOther"
                                     type="textarea"
@@ -132,6 +144,7 @@
                     <h5>Kolorystyka</h5>
                     <div id="insideColorsCo">
                         <va-input
+                            id="insidePlateNumber"
                             class="inputWidth"
                             v-model="insidePlateNumber"
                             label="Liczba blach"
@@ -165,7 +178,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button class="modalButton" @click="showInsideColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
+                        <va-button id="addInsideColor" class="modalButton" @click="showInsideColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
                     </div>
                 </div>
             </div>
@@ -178,6 +191,7 @@
                         <div id="detailsCover">
                             <div class="detailsCo">
                                 <va-input
+                                    id="coverFormat"
                                     class="inputWidth"
                                     v-model="coverFormat"
                                     label="Format użytku (w mm)"
@@ -186,6 +200,7 @@
                                     placeholder="Format użytku (w mm)"
                                 />
                                 <va-input
+                                    id="coverFormatSheet"
                                     class="inputWidth"
                                     v-model="coverFormatSheet"
                                     label="Format arkusza (w mm)"
@@ -194,6 +209,7 @@
                                     placeholder="Format arkusza (w mm)"
                                 />
                                 <va-input
+                                    id="coverCirculation"
                                     class="inputWidth"
                                     v-model="coverCirculation"
                                     label="Nakład"
@@ -201,6 +217,7 @@
                                     placeholder="Nakład"
                                 />
                                 <va-input
+                                    id="coverSheetNumber"
                                     class="inputWidth"
                                     v-model="coverSheetNumber"
                                     label="Ilość arkuszy"
@@ -208,6 +225,7 @@
                                     placeholder="Ilość arkuszy"
                                 />
                                 <va-select
+                                    id="bindings"
                                     class="inputWidth"
                                     v-model="selectedBinding"
                                     :options="bindings"
@@ -215,6 +233,7 @@
                                     noOptionsText="Brak typów szycia do wybrania"
                                 />
                                 <va-input
+                                    id="coverOther"
                                     class="inputWidth"
                                     v-model="coverOther"
                                     type="textarea"
@@ -229,6 +248,7 @@
                     <h5>Kolorystyka okładki</h5>
                     <div id="coverColorsCo">
                         <va-input
+                            id="coverPlateNumber"
                             class="inputWidth"
                             v-model="coverPlateNumber"
                             label="Liczba blach"
@@ -261,7 +281,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button class="modalButton" @click="showCoverColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
+                        <va-button id="addCoverColor" class="modalButton" @click="showCoverColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
                     </div>
                 </div>
             </div>
@@ -313,7 +333,7 @@
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
-                    <va-button class="modalButton" @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
+                    <va-button id="addInsidePaper" class="modalButton" @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
                 </div>
             </div>
             <div v-if="showCoverForm">
@@ -360,7 +380,7 @@
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
-                    <va-button class="modalButton" @click="showCoverPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
+                    <va-button id="addCoverPaper" class="modalButton" @click="showCoverPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
                 </div>
             </div>
         </div>
@@ -401,7 +421,7 @@
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
-                    <va-button class="modalButton" @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
+                    <va-button id="addInsideService" class="modalButton" @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
                 </div>
             </div>
             <div v-if="showCoverForm">
@@ -438,7 +458,7 @@
                             </va-list-item-section>
                         </va-list-item>
                     </va-list>
-                    <va-button class="modalButton" @click="showCoverServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
+                    <va-button id="addCoverService" class="modalButton" @click="showCoverServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
                 </div>
             </div>
         </div>
@@ -449,16 +469,19 @@
                 <h5>Podsumowanie cenowe</h5>
                 <div id="summary">
                     <va-input
+                        id="finalPrice"
                         class="inputWidth"
                         v-model="finalPrice"
                         label="Cena zbiorcza"
                     />
                     <va-input
+                        id="mainCirculation"
                         class="inputWidth"
                         v-model="mainCirculation"
                         label="Nakład"
                     />
                     <va-input
+                        id="unitPrice"
                         class="inputWidth"
                         v-model="unitPrice"
                         label="Cena jednostkowa"
@@ -468,8 +491,8 @@
             </div>
         </div>
         <div v-if="showValuationForm" id="addOrderButtonCo">
-            <va-button @click="calcPrices()" color="info" gradient class="my-3">Wylicz cenę</va-button>
-            <va-button @click="submitForm()" color="info" gradient class="my-3"> {{ saveButtonMessage }} </va-button>
+            <va-button id="calcPrices" @click="calcPrices()" color="info" gradient class="my-3">Wylicz cenę</va-button>
+            <va-button id="addValuation" @click="submitForm()" color="info" gradient class="my-3"> {{ saveButtonMessage }} </va-button>
         </div>
     </div>
 </template>
@@ -878,7 +901,7 @@ export default {
             return (this.isPreDetailsFormValidate && this.isDetailsInsideFormValidate && this.isDetailsCoverFormValidate);
         },
         async submitForm() {
-            if(this.validateForm) {
+            if(this.validateForm()) {
                 const userStore = useUserStore();
 
                 let orderItemId = "";

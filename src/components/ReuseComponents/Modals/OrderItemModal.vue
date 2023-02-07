@@ -17,6 +17,7 @@
                     />
                 </div>
                 <va-input
+                    id="orderItemName"
                     class="some-space mb-4"
                     v-model="orderItemName"
                     :rules="[(v) => v.length > 0 || `Pole nazwa nie może być puste.`, (v) => v.length < 101 || `Pole nazwa przekroczyło limit znaków.`]"
@@ -24,6 +25,7 @@
                     placeholder="Nazwa przedmiotu zamówienia"
                 />
                 <va-input
+                    id="insideFormat"
                     class="some-space mb-4"
                     v-model="insideFormat"
                     :rules="[(v) => v.length > 0 || `Pole format nie może być puste.`, (v) => v.length < 21 || `Pole format przekroczyło limit znaków.`,
@@ -32,12 +34,14 @@
                     placeholder="Format przedmiotu zamówienia"
                 />
                 <va-input
+                    id="circulation"
                     class="some-space mb-4"
                     v-model="circulation"
                     :rules="[(v) => v >= 0 || `Nakład nie może być ujmeny.`]"
                     label="Nakład"
                 />
                 <va-date-input
+                    id="expectedCompletionDate"
                     class="some-space mb-4"
                     v-model="expectedCompletionDate"
                     label="Pożądana data ukończenia"
@@ -45,6 +49,7 @@
                     clearable
                 />
                 <va-date-input
+                    id="completionDate"
                     v-if="!newItemMode"
                     class="some-space mb-4"
                     v-model="completionDate"
@@ -53,6 +58,7 @@
                     clearable
                 />
                 <va-select
+                    id="orderItemTypes"
                     class="mb-4 some-space"
                     v-model="selectedOrderItemType"
                     :options="orderItemTypes"
@@ -60,6 +66,7 @@
                     noOptionsText="Brak typów przedmiotu zamówienia do wybrania"
                 />
                 <va-select
+                    id="deliveryTypes"
                     class="mb-4 some-space"
                     v-model="selectedDeliveryType"
                     :options="deliveryTypes"
@@ -67,6 +74,7 @@
                     noOptionsText="Brak typów dostawy do wybrania"
                 />
                 <va-select
+                    id="valuations"
                     v-if="showValuationSelect && !newItemMode"
                     class="mb-4 some-space"
                     v-model="selectedValuation"
@@ -75,6 +83,7 @@
                     noOptionsText="Brak wycen do wybrania"
                 />
                 <va-input
+                    id="comments"
                     class="mb-4 some-space"
                     v-model="comments"
                     type="textarea"
@@ -110,7 +119,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button @click="showColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
+                        <va-button id="addInsideColor" @click="showColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
                         <ColorModal v-if="showColorModal" @close="showColorModal=false" @createColor="addItem(colors, $event)"/>
                     </div>
                 </div>
@@ -146,7 +155,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
+                        <va-button id="addInsidePaper" @click="showPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
                         <PaperModal v-if="showPaperModal" :paper="papers[editedPaperIndex]" @close="closePaperModal()" @createPaper="addItem(papers, $event)" @editPaper="editPaper($event)"/>
                     </div>
                 </div>
@@ -182,7 +191,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
+                        <va-button id="addInsideService" @click="showServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
                         <ServiceModal v-if="showServiceModal" :service="services[editedServiceIndex]" @close="closeServiceModal()" @createService="addItem(services, $event)" @editService="editService($event)"/>
                     </div>
                 </div>
@@ -190,6 +199,7 @@
             <va-form v-if="showCoverDetails" @submit.prevent="submitForm()" id="modalOrderItemCoverForm" tag="coverForm" ref="modalOrderItemCoverForm" @validation="isOrderItemCoverFormValidate = $event">
                 <div id="someSpace"></div>
                 <va-input
+                    id="coverFormat"
                     class="some-space mb-4"
                     v-model="coverFormat"
                     :rules="[(v) => v.length < 21 || `Pole format okładki przekroczyło limit znaków.`, (v) => formatRegex.test(v) || `Niepoprawny format.`]"
@@ -197,12 +207,14 @@
                     placeholder="Format okładki przedmiotu zamówienia"
                 />
                 <va-input
+                    id="capacity"
                     class="some-space mb-4"
                     v-model="capacity"
                     :rules="[(v) => v >= 0 || `Objętość nie może być ujemna.`]"
                     label="Objętość"
                 />
                 <va-select
+                    id="bindingTypes"
                     class="mb-4 some-space"
                     v-model="selectedBindingTypes"
                     :options="bindingTypes"
@@ -238,7 +250,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button @click="showCoverColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
+                        <va-button id="addCoverColor" @click="showCoverColorModal=true" type="button" color="success" gradient>Dodaj kolor</va-button>
                         <ColorModal v-if="showCoverColorModal" @close="showCoverColorModal=false;" @createColor="addItem(coverColors, $event)"/>
                     </div>
                 </div>
@@ -274,7 +286,7 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button @click="showCoverPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
+                        <va-button id="addCoverPaper" @click="showCoverPaperModal=true" type="button" color="success" gradient>Dodaj papier</va-button>
                         <PaperModal v-if="showCoverPaperModal" :paper="coverPapers[editedCoverPaperIndex]" @close="closeCoverPaperModal()" @createPaper="addItem(coverPapers, $event)" @editPaper="editCoverPaper($event)"/>
                     </div>
                 </div>
@@ -310,13 +322,13 @@
                                 </va-list-item-section>
                             </va-list-item>
                         </va-list>
-                        <va-button @click="showCoverServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
+                        <va-button id="addCoverService" @click="showCoverServiceModal=true" type="button" color="success" gradient>Dodaj usługę</va-button>
                         <ServiceModal v-if="showCoverServiceModal" :service="coverServices[editedCoverServiceIndex]" @close="closeCoverServiceModal()" @createService="addItem(coverServices, $event)" @editService="editCoverService($event)"/>
                     </div>
                 </div>
             </div>
             <div id="buttonCo">
-                <va-button @click="submitForm()" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
+                <va-button id="createOrderItem" @click="submitForm()" color="info" gradient class="my-3 sub">{{ buttonMessage }}</va-button>
             </div>
         </div>
     </va-modal>

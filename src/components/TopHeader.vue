@@ -18,7 +18,7 @@
             <HelpModal v-model="showHelpModal" @close="closeHelpModal()" />
             <AccountModal v-model="showAccountModal" @close="closeAccountModal()" />
             <ul class="dropdown-menu start-25 ml-3 mt-1 moveUserMenu" aria-labelledby="defaultDropdown" data-popper-placement="bottom-end">
-              <li @click="openAccountModal()">
+              <li id="userModal" @click="openAccountModal()">
                 <a class="dropdown-item text-light" href="#">
                   Moje konto
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -27,7 +27,7 @@
                   </svg>
                 </a>
               </li>
-              <li @click="openHelpModal()">
+              <li id="help" @click="openHelpModal()">
                 <a class="dropdown-item text-light" href="#">
                   Pomoc
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-question-octagon" viewBox="0 0 16 16">
@@ -38,7 +38,7 @@
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
-                <a class="dropdown-item text-light" href="#" @click="logout()">
+                <a class="dropdown-item text-light" href="#" id="logout" @click="logout()">
                   Wyloguj
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-door-open" viewBox="0 0 16 16">
                     <path d="M8.5 10c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>

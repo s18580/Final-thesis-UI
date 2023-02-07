@@ -8,7 +8,7 @@
             <va-form @submit.prevent="" id="preDetailsform" tag="preDetailsform" ref="preDetailsform" @validation="isPreDetailsFormValidate = $event">
                 <div id="preDetails">
                     <va-popover message="Kopiuj wycenę do schowka" style="margin-top: 10px">
-                        <va-button flat color="success" icon="content_copy" @click="copyValuation()" />
+                        <va-button id="valuationCopy" flat color="success" icon="content_copy" @click="copyValuation()" />
                     </va-popover>
                     <va-date-input
                         class="inputWidth"

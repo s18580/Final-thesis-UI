@@ -12,6 +12,7 @@
                     <h5>Wybierz zamówienie i przedmiot zamówienia, do którego chcesz dodać dostawę</h5>
                     <div id="orderItemSelection">
                         <va-select
+                            id="orders"
                             class="inputWidth"
                             v-model="selectedOrder"
                             :options="orders"
@@ -20,6 +21,7 @@
                             @update:model-value="getOrderItems()"
                         />
                         <va-select
+                            id="orderItems"
                             v-if="selectedOrder != ''"
                             class="inputWidth"
                             v-model="selectedOrderItem"
@@ -35,11 +37,12 @@
                         <div id="isReceivedCo">
                             <va-icon v-if="isReceived" color="success" class="material-icons">done</va-icon>
                             <va-icon v-if="!isReceived" color="danger" class="material-icons">close</va-icon>
-                            <va-icon @click="isReceived=!isReceived" color="primary" class="material-icons">cached</va-icon>
+                            <va-icon id="isReceived" @click="isReceived=!isReceived" color="primary" class="material-icons">cached</va-icon>
                         </div>
                     </div>
                     <va-form @submit.prevent="this.submitForm()" id="form" tag="form" ref="form" @validation="isFormValidate = $event">
                         <va-input
+                            id="price"
                             class="gridFirstC gridFirstR inputWidth"
                             v-model="price"
                             label="Cena"
@@ -47,6 +50,7 @@
                             placeholder="Cena zamówionych produktów"
                         />
                         <va-input
+                            id="quantity"
                             class="gridFirstC gridSecondR inputWidth"
                             v-model="quantity"
                             label="Ilość"
@@ -54,6 +58,7 @@
                             placeholder="Ilość zamówionych produktów"
                         />
                         <va-select
+                            id="supplyItemType"
                             class="gridFirstC gridThirdR inputWidth"
                             v-model="selectedType"
                             :options="supplyItemTypes"
@@ -62,6 +67,7 @@
                             noOptionsText="Brak typów do wybrania"
                         />
                         <va-select
+                            id="supplier"
                             class="gridFirstC gridFourthR inputWidth"
                             v-model="selectedSupplier"
                             :options="suppliers"
@@ -71,6 +77,7 @@
                             @update:model-value="getRepresentativesData($event)"
                         />
                         <va-select
+                            id="representative"
                             v-if="selectedSupplier !== ''"
                             class="gridFirstC gridFifthR inputWidth"
                             v-model="selectedRepresentative"
@@ -80,6 +87,7 @@
                             noOptionsText="Brak osób do wybrania"
                         />
                         <va-date-input
+                            id="supplyDate"
                             class="gridSecondC gridFirstR inputWidth"
                             v-model="supplyDate"
                             :rules="[(v) => v != null || `Data musi być wybrana.`]"
@@ -87,6 +95,7 @@
                             placeholder="Data realizacji dostawy"
                         />
                         <va-input
+                            id="description"
                             class="gridSecondC gridSpreadR inputWidth"
                             v-model="itemDescription"
                             :rules="[(v) => v.length > 0 || `Pole opis nie może być puste.`, (v) => v.length < 256 || `Pole opis przekroczyło limit znaków.`]"
@@ -96,7 +105,7 @@
                             :min-rows="7"
                         />
                         <div id="submitButtonContainer">
-                            <va-button type="submit" color="info" gradient class="my-3">Dodaj</va-button>
+                            <va-button id="addSupply" type="submit" color="info" gradient class="my-3">Dodaj</va-button>
                         </div>
                     </va-form>
                 </div>
@@ -132,7 +141,7 @@
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
-                <va-button v-if="selectedRepresentative != ''" @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres odbioru</va-button>
+                <va-button id="addAddress" v-if="selectedRepresentative != ''" @click="showAddressModal=true" type="button" color="success" gradient>Przydziel adres odbioru</va-button>
                 <DeliveryAddress :idSupplier="getSupplierIdByName(this.selectedRepresentative)" v-if="showAddressModal" @createDeliveryAddress="addAddress($event)" @close="closeAddressModal()" />
             </div>
         </div>
@@ -262,7 +271,7 @@ export default {
 
                 await CallAPI.post(callPath, body)
                 .then(res => {
-                    this.$vaToast.init({ message: 'Dostawca został dodany.', color: 'success', duration: 3000 });
+                    this.$vaToast.init({ message: 'Dostawa została dodana.', color: 'success', duration: 3000 });
                     this.$router.push({ name: "SupplyDetails", params: { id: res.data, mode: 'edit' } });
                     return res.data;
                 })
@@ -270,7 +279,7 @@ export default {
                     if(err.message.includes("422")) {
                         this.$vaToast.init({ message: 'Niepoprawne dane formularza.', color: 'danger', duration: 3000 })
                     }else{
-                        this.$vaToast.init({ message: 'Błąd dodawania dostawcy.', color: 'danger', duration: 3000 })
+                        this.$vaToast.init({ message: 'Błąd dodawania dostawy.', color: 'danger', duration: 3000 })
                     }
 
                     CallSeq.post('', {"Events":[{"Timestamp": new Date().toISOString(), "MessageTemplate": err.message, "Properties": { error: err }}]})
